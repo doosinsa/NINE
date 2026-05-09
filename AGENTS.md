@@ -2,6 +2,16 @@
 
 Read `prd.md` before changing behavior. NINE is a personal investment prep tool, not a recommendation engine.
 
+## Resume Trigger
+- If the user says `다음 작업 이어가자`, `이어서 하자`, `계속하자`, `resume`, or `continue`, do not ask what to do next.
+- First read `NEXT_ACTION.md`, `docs/SESSION_STATE.md`, and this file.
+- Then run `git status --short --branch` and continue the task named in `NEXT_ACTION.md` unless it needs secrets, account login, payment, or destructive changes.
+
+## Context Checkpoint
+- After a completed phase, successful deploy, or large debugging session, update `NEXT_ACTION.md` and `docs/SESSION_STATE.md`.
+- If the working tree is clean or checkpoint files are committed, proactively suggest: `/clear` 후 `다음 작업 이어가자`라고 말하면 이어서 진행할 수 있습니다.
+- Do not suggest `/clear` while risky edits, migrations, env changes, or deploys are half-finished.
+
 ## Non-Negotiables
 - Do not add automated trading, backtesting, realtime price alerts, technical charting, social sharing, or SaaS/multi-user features.
 - Do not show price movement, portfolio P/L, realtime prices, or charts on holding-focused screens.
@@ -32,6 +42,7 @@ Read `prd.md` before changing behavior. NINE is a personal investment prep tool,
 ## Before Work
 - Search existing contracts/routes before adding new ones.
 - Check `docs/api-contract.md` for current endpoint behavior.
+- Check `docs/RUNBOOK.md` for repeated setup/deploy commands.
 - If changing a public contract, update `src/types/contracts.ts`, API route, mock data, and docs together.
 
 ## Verification
