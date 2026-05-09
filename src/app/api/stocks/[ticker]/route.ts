@@ -1,9 +1,11 @@
 import { fail, ok } from "@/lib/server/api";
 import { getStockDetail } from "@/lib/server/mock-data";
+import { fetchStockDetailFromSupabase } from "@/lib/server/supabase";
 
 export async function GET(_request: Request, { params }: { params: Promise<{ ticker: string }> }) {
   const { ticker } = await params;
-  const detail = getStockDetail(decodeURIComponent(ticker));
+  const decodedTicker = decodeURIComponent(ticker);
+  const detail = (await fetchStockDetailFromSupabase(decodedTicker)) ?? getStockDetail(decodedTicker);
 
   if (!detail) {
     return fail("NOT_FOUND", "Stock was not found in the NINE universe.", 404);

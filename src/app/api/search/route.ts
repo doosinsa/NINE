@@ -1,5 +1,6 @@
 import { fail, ok } from "@/lib/server/api";
 import { getStockDetail } from "@/lib/server/mock-data";
+import { fetchStockDetailFromSupabase, getSupabaseAdmin } from "@/lib/server/supabase";
 import type { SearchResponse } from "@/types/contracts";
 
 const dailyLimit = 10;
@@ -13,7 +14,7 @@ export async function GET(request: Request) {
     return fail("BAD_REQUEST", "Search query is required.");
   }
 
-  const result = getStockDetail(query);
+  const result = (await fetchStockDetailFromSupabase(query)) ?? getStockDetail(query);
   const response: SearchResponse = {
     query,
     dailyCap: {
@@ -39,7 +40,16 @@ export async function POST(request: Request) {
     return fail("DAILY_CAP_REACHED", "오늘 ad-hoc 검색 한도 도달. 내일 다시.", 429);
   }
 
-  const result = getStockDetail(body.ticker);
+  const supabase = getSupabaseAdmin();
+  if (supabase) {
+    await supabase.from("daily_search_log").upsert({
+      date: new Date().toISOString().slice(0, 10),
+      ticker: body.ticker,
+      is_universe_outside: true,
+    });
+  }
+
+  const result = (await fetchStockDetailFromSupabase(body.ticker)) ?? getStockDetail(body.ticker);
   return ok({
     query: body.ticker,
     dailyCap: {

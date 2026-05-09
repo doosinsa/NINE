@@ -1,9 +1,10 @@
 import { ok } from "@/lib/server/api";
 import { getHoldings } from "@/lib/server/mock-data";
+import { fetchHoldingsFromSupabase } from "@/lib/server/supabase";
 import type { HoldingsResponse } from "@/types/contracts";
 
 export async function GET() {
-  const holdings = getHoldings();
+  const holdings = (await fetchHoldingsFromSupabase()) ?? getHoldings();
   const averageNineScore =
     holdings.length === 0
       ? 0
