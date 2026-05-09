@@ -1,0 +1,95 @@
+# NINE API Contract
+
+All API responses use one envelope:
+
+```ts
+type ApiResponse<T> =
+  | { ok: true; data: T }
+  | { ok: false; error: { code: string; message: string } };
+```
+
+Canonical TypeScript contracts live in `src/types/contracts.ts`.
+
+## Endpoints
+
+### `GET /api/candidates`
+Returns the weekly review list.
+
+Response data: `CandidatesResponse`
+
+### `GET /api/stocks/:ticker`
+Returns one stock detail with latest score, latest LLM brief, recent EPS snapshots, and the fixed thesis watermark.
+
+Response data: `StockDetailResponse`
+
+### `POST /api/scores/manual`
+Saves manual demand/supply scores and optional decision metadata.
+
+Request: `ManualScoreRequest`
+
+Rules:
+- `scoreDemand` and `scoreSupply` must be integers from 0 to 3.
+- `decision: "buy"` requires `thesisKill1`, `thesisKill2`, and `thesisKill3`.
+- A buy decision below 7 points returns a warning but is not blocked.
+
+Response data: `ManualScoreResponse`
+
+### `GET /api/holdings`
+Returns holding cards without price movement or chart data.
+
+Response data: `HoldingsResponse`
+
+### `GET /api/quarterly-reviews`
+Returns quarterly review progress and saved reviews.
+
+Response data: `QuarterlyReviewsResponse`
+
+### `POST /api/quarterly-reviews`
+Saves one quarterly review decision.
+
+Request: `QuarterlyReviewRequest`
+
+Response data: `QuarterlyReview`
+
+### `GET /api/search?q=:query`
+Searches the current universe. If no match exists, `requiresOutsideUniverseAnalysis` is `true`.
+
+Response data: `SearchResponse`
+
+### `POST /api/search`
+Starts outside-universe analysis and consumes the daily ad-hoc search cap.
+
+Request:
+
+```ts
+{ ticker: string }
+```
+
+Response data: `SearchResponse`
+
+### `GET /api/discover`
+Returns this week's Discover themes.
+
+Response data: `DiscoverResponse`
+
+### `POST /api/discover`
+Sends selected Discover tickers into Core universe intake.
+
+Request: `DiscoverSendToCoreRequest`
+
+Response data: `DiscoverSendToCoreResponse`
+
+### `POST /api/auth/login`
+Placeholder contract for single-password login. Replace with env hash verification before deployment.
+
+Request:
+
+```ts
+{ password: string }
+```
+
+Response data:
+
+```ts
+{ authenticated: boolean; mode: string; note: string }
+```

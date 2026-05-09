@@ -1,0 +1,68 @@
+@import "tailwindcss";
+
+@theme {
+  --color-nine-primary: #1E3A5F;
+  --color-nine-secondary: #6B7280;
+  
+  --color-bg-base: var(--background);
+  --color-fg-base: var(--foreground);
+  --color-surface: var(--surface);
+  --color-border-color: var(--border);
+
+  --color-score-9: var(--score-9);
+  --color-score-7: var(--score-7);
+  --color-score-4: var(--score-4);
+  --color-score-0: var(--score-0);
+
+  --color-danger: #DC2626;
+  --color-badge: #2563EB;
+
+  --font-sans: -apple-system, BlinkMacSystemFont, "Pretendard Variable", "SF Pro Text", system-ui, sans-serif;
+}
+
+:root {
+  color-scheme: light dark;
+  --background: #FFFFFF;
+  --foreground: #111827;
+  --surface: #F9FAFB;
+  --border: #E5E7EB;
+
+  --score-9: #B45309;
+  --score-7: #15803D;
+  --score-4: #6B7280;
+  --score-0: #D1D5DB;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0F172A;
+    --foreground: #F9FAFB;
+    --surface: #1E293B;
+    --border: #334155;
+
+    --score-9: #FCD34D;
+    --score-7: #86EFAC;
+    --score-4: #9CA3AF;
+    --score-0: #4B5563;
+  }
+}
+
+html, body {
+  min-height: 100dvh;
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* iOS Input Zoom 방지 */
+input, textarea, select {
+  font-size: 16px !important;
+}
+
+/* Safe Area Utilities */
+.safe-pt { padding-top: env(safe-area-inset-top); }
+.safe-pb { padding-bottom: env(safe-area-inset-bottom); }
+.safe-pl { padding-left: env(safe-area-inset-left); }
+.safe-pr { padding-right: env(safe-area-inset-right); }
+.safe-min-h { min-height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom)); }
