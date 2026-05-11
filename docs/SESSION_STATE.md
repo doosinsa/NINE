@@ -4,23 +4,23 @@ Last updated: 2026-05-12 KST
 
 ## Next Action
 
-Deploy actionable quarterly review workflow to production.
+Make impulse search daily cap use real search log.
 
 Acceptance criteria:
-- Run `git status --short --branch`.
+- Replace the hardcoded `/api/search` daily cap count with `daily_search_log` when Supabase is configured.
+- Keep mock fallback behavior when Supabase is unavailable.
+- Update shared contracts/docs only if response shape changes.
+- Smoke test `GET /api/search?q=PLTR` and outside-universe `POST /api/search`.
 - Run `npm run typecheck` and `npm run build`.
-- Deploy with `vercel deploy --prod --yes`.
-- Smoke test production `/api/quarterly-reviews` and `/reviews` with a valid session cookie.
-- Verify `/reviews` at 428px width on production.
 
 ## Current Status
 
 - GitHub repo connected: `https://github.com/doosinsa/NINE.git`
 - Current branch: `main`
-- Latest pushed commit: `ce86d43`
+- Latest pushed commit: `490c8a7`
 - Vercel project: `nine`
 - Production URL: `https://nine-red-three.vercel.app`
-- Latest verified deployment: `https://nine-2j61qs3gk-doosinsas-projects.vercel.app`
+- Latest verified deployment: `https://nine-9jai338j9-doosinsas-projects.vercel.app`
 - Supabase project linked through CLI.
 - Supabase migration applied.
 - Supabase seed applied.
@@ -100,6 +100,14 @@ Acceptance criteria:
   - `npm run typecheck` passed.
   - `npm run build` passed.
   - Local 428px visual QA passed for `/reviews`; no viewport overflow, and the save button ended at `728.75px` above bottom nav starting at `861px`.
+- Actionable quarterly review workflow production deployment verified after deploying `490c8a7`:
+  - Deployment URL: `https://nine-9jai338j9-doosinsas-projects.vercel.app`
+  - Alias: `https://nine-red-three.vercel.app`
+  - `npm run build` passed; `npm run typecheck` passed after build regenerated `.next/types`.
+  - `/api/quarterly-reviews` returned `200` with `items.length = 1`.
+  - `/reviews` returned `200` with a valid production session cookie.
+  - Production 428px visual QA passed for `/reviews`; no viewport overflow.
+  - Production bottom check confirmed save button ended at `728.75px` above bottom nav starting at `861px`.
 - Auth implementation verified locally with temporary env values:
   - `npm run typecheck` passed.
   - `npm run build` passed.

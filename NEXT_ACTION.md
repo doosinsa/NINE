@@ -1,6 +1,6 @@
 # NEXT_ACTION
 
-Deploy actionable quarterly review workflow to production.
+Make impulse search daily cap use real search log.
 
 ## Resume Command
 
@@ -11,8 +11,8 @@ Deploy actionable quarterly review workflow to production.
 - Read `AGENTS.md`.
 - Read `docs/SESSION_STATE.md`.
 - Read `prd.md`.
-- Run `git status --short --branch`.
+- Replace the hardcoded `/api/search` daily cap count with `daily_search_log` when Supabase is configured.
+- Keep mock fallback behavior when Supabase is unavailable.
+- Update shared contracts/docs only if response shape changes.
+- Smoke test `GET /api/search?q=PLTR` and outside-universe `POST /api/search`.
 - Run `npm run typecheck` and `npm run build`.
-- Deploy with `vercel deploy --prod --yes`.
-- Smoke test production `/api/quarterly-reviews` and `/reviews` with a valid session cookie.
-- Verify `/reviews` at 428px width on production.
