@@ -1,6 +1,6 @@
 # NEXT_ACTION
 
-Deploy mobile text-overlap polish to production.
+Run production mobile visual QA for the deployed text-overlap polish.
 
 ## Resume Command
 
@@ -10,8 +10,7 @@ Deploy mobile text-overlap polish to production.
 
 - Read `AGENTS.md`.
 - Read `docs/SESSION_STATE.md`.
-- Run `git status --short --branch`.
-- Run `git status --short --branch`.
-- Run `npm run typecheck` and `npm run build`.
-- Deploy with `vercel deploy --prod --yes`.
-- Smoke test production `/candidates`, `/holdings`, and `/stocks/PLTR`.
+- Read `prd.md`.
+- Verify `/candidates`, `/holdings`, and `/stocks/PLTR` at 428px width on production.
+- Confirm long ticker/name text does not overlap score badges or adjacent content.
+- Fix and redeploy if visual overlap remains.

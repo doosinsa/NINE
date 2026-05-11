@@ -1,24 +1,24 @@
 # NINE Session State
 
-Last updated: 2026-05-11 KST
+Last updated: 2026-05-12 KST
 
 ## Next Action
 
-Deploy mobile text-overlap polish to production.
+Run production mobile visual QA for the deployed text-overlap polish.
 
 Acceptance criteria:
-- Production deploy succeeds from current `main`.
-- Production smoke tests pass for `/candidates`, `/holdings`, and `/stocks/PLTR` with a valid session cookie.
-- Update latest verified deployment URL in this file.
+- Verify `/candidates`, `/holdings`, and `/stocks/PLTR` at 428px width.
+- Confirm long ticker/name text does not overlap score badges or adjacent content.
+- Fix and redeploy if visual overlap remains.
 
 ## Current Status
 
 - GitHub repo connected: `https://github.com/doosinsa/NINE.git`
 - Current branch: `main`
-- Latest pushed commit: `e72983e Implement password auth`
+- Latest pushed commit: `a88d067`
 - Vercel project: `nine`
 - Production URL: `https://nine-red-three.vercel.app`
-- Latest verified deployment: `https://nine-a93z0eglg-doosinsas-projects.vercel.app`
+- Latest verified deployment: `https://nine-2j61qs3gk-doosinsas-projects.vercel.app`
 - Supabase project linked through CLI.
 - Supabase migration applied.
 - Supabase seed applied.
@@ -77,6 +77,12 @@ Acceptance criteria:
   - Stock detail score labels now reserve score width and wrap labels instead of overlapping.
   - `npm run typecheck` passed.
   - `npm run build` passed.
+- Mobile polish production deployment verified after deploying `a88d067`:
+  - Deployment URL: `https://nine-2j61qs3gk-doosinsas-projects.vercel.app`
+  - Alias: `https://nine-red-three.vercel.app`
+  - `npm run typecheck` passed.
+  - `npm run build` passed.
+  - `/candidates`, `/holdings`, and `/stocks/PLTR` returned `200` with a valid production session cookie.
 - Auth implementation verified locally with temporary env values:
   - `npm run typecheck` passed.
   - `npm run build` passed.
