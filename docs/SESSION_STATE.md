@@ -1,17 +1,16 @@
 # NINE Session State
 
-Last updated: 2026-05-10 KST
+Last updated: 2026-05-11 KST
 
 ## Next Action
 
-Implement real password login using `NINE_PASSWORD_HASH` and `NINE_SESSION_SECRET`.
+Configure `NINE_PASSWORD_HASH` and `NINE_SESSION_SECRET` in local and Vercel environments, then deploy auth.
 
 Acceptance criteria:
-- `/api/auth/login` verifies a password against `NINE_PASSWORD_HASH`.
-- Successful login sets an HTTP-only session cookie signed or protected with `NINE_SESSION_SECRET`.
-- App routes can distinguish authenticated and unauthenticated requests.
-- Placeholder auth response is removed.
-- `npm run typecheck` and `npm run build` pass.
+- Secret values are generated and set locally without committing them.
+- Vercel production env has `NINE_PASSWORD_HASH` and `NINE_SESSION_SECRET`.
+- Production deploy succeeds.
+- Production smoke test confirms login succeeds and protected app routes require the session cookie.
 
 ## Current Status
 
@@ -37,6 +36,13 @@ Acceptance criteria:
   - `/api/discover`
 - Production smoke test passed for:
   - `https://nine-red-three.vercel.app/api/candidates`
+- Auth implementation verified locally with temporary env values:
+  - `npm run typecheck` passed.
+  - `npm run build` passed.
+  - Wrong password returned `401 UNAUTHORIZED`.
+  - Correct password returned `200 OK` and set `nine_session` as HTTP-only.
+  - `/candidates` without a cookie redirected to `/login`.
+  - `/candidates` with the session cookie returned `200 OK`.
 
 ## Important Notes
 
@@ -45,7 +51,10 @@ Acceptance criteria:
 - `NEXT_PUBLIC_SUPABASE_URL` must be the Supabase origin only, not `/rest/v1`.
 - `SUPABASE_SERVICE_ROLE_KEY` is server-only and must never be exposed to client code.
 - Vercel preview env is not fully configured; production and development Supabase envs are present.
-- `/api/auth/login` is still placeholder and must be implemented before real use.
+- `/api/auth/login` now verifies `NINE_PASSWORD_HASH` using scrypt format `scrypt:N:r:p:salt:key`.
+- Successful login sets an HTTP-only `nine_session` cookie signed with `NINE_SESSION_SECRET`.
+- `(main)` app routes redirect unauthenticated requests to `/login`.
+- Local `.env` auth values are still empty and must be filled before normal local auth use.
 
 ## Resume Protocol
 

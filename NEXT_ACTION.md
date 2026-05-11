@@ -1,6 +1,6 @@
 # NEXT_ACTION
 
-Implement real password login using `NINE_PASSWORD_HASH` and `NINE_SESSION_SECRET`.
+Configure `NINE_PASSWORD_HASH` and `NINE_SESSION_SECRET` in local and Vercel environments, then deploy auth.
 
 ## Resume Command
 
@@ -11,4 +11,6 @@ Implement real password login using `NINE_PASSWORD_HASH` and `NINE_SESSION_SECRE
 - Read `AGENTS.md`.
 - Read `docs/SESSION_STATE.md`.
 - Run `git status --short --branch`.
-- Run `npm run typecheck` after changes.
+- Generate `NINE_PASSWORD_HASH` with the command in `docs/ENVIRONMENT.md`.
+- Generate `NINE_SESSION_SECRET` with `openssl rand -base64 32`.
+- Do not commit secret values.

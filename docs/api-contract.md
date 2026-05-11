@@ -80,16 +80,16 @@ Request: `DiscoverSendToCoreRequest`
 Response data: `DiscoverSendToCoreResponse`
 
 ### `POST /api/auth/login`
-Placeholder contract for single-password login. Replace with env hash verification before deployment.
+Verifies the single app password against `NINE_PASSWORD_HASH`. On success, sets an HTTP-only session cookie protected with `NINE_SESSION_SECRET`.
 
 Request:
 
 ```ts
-{ password: string }
+LoginRequest
 ```
 
 Response data:
 
 ```ts
-{ authenticated: boolean; mode: string; note: string }
+LoginResponse
 ```

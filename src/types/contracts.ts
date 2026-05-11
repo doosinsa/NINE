@@ -26,6 +26,14 @@ export type ApiSuccess<T> = {
 
 export type ApiResponse<T> = ApiSuccess<T> | ApiError;
 
+export type LoginRequest = {
+  password: string;
+};
+
+export type LoginResponse = {
+  authenticated: true;
+};
+
 export type ScoreTier = "nine" | "seven_eight" | "four_six" | "zero_three";
 
 export type Stock = {
