@@ -7,12 +7,12 @@ import { useState } from "react";
 // TODO: Replace with SWR & API fetch
 const mockCandidates = [
   {
-    ticker: "012450",
-    name: "한화에어로스페이스",
+    ticker: "272210.KQ",
+    name: "Hanwha Systems",
     country: "KR" as const,
-    score: 9,
-    isNewSevenPlus: true,
-    scoreChange: 2,
+    score: 6,
+    isNewSevenPlus: false,
+    scoreChange: null,
   },
   {
     ticker: "PLTR",
@@ -23,8 +23,8 @@ const mockCandidates = [
     scoreChange: 0,
   },
   {
-    ticker: "005930",
-    name: "삼성전자",
+    ticker: "005930.KS",
+    name: "Samsung Electronics",
     country: "KR" as const,
     score: 4,
     isNewSevenPlus: false,

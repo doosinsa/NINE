@@ -4,12 +4,12 @@ Last updated: 2026-05-11 KST
 
 ## Next Action
 
-Connect stock detail decisions to `/api/scores/manual`.
+Connect candidates list to `/api/candidates`.
 
 Acceptance criteria:
-- Stock detail `Pass`, `Watch`, and `Buy` controls persist through the manual score API.
-- Buy still requires all three Thesis Kill conditions before save.
-- Remove console-only buy save behavior.
+- Candidates page reads `CandidatesResponse` from `/api/candidates`.
+- Existing filters still work with API data.
+- Cards route to real stock tickers returned by the API.
 - `npm run typecheck` and `npm run build` pass.
 
 ## Current Status
@@ -41,6 +41,13 @@ Acceptance criteria:
   - Correct password returned `200 OK`.
   - `/candidates` without a cookie redirected to `/login`.
   - `/candidates` with the session cookie returned `200 OK`.
+- Stock detail decision implementation verified locally:
+  - `/api/stocks/PLTR` returned a valid `StockDetailResponse`.
+  - Detail page now loads current API score data instead of hardcoded stock data.
+  - `Pass`, `Watch`, and `Buy` save through `/api/scores/manual`.
+  - Buy modal keeps the 3 Thesis Kill requirement and supports buy date.
+  - `npm run typecheck` passed.
+  - `npm run build` passed.
 - Auth implementation verified locally with temporary env values:
   - `npm run typecheck` passed.
   - `npm run build` passed.

@@ -1,6 +1,6 @@
 # NEXT_ACTION
 
-Connect stock detail decisions to `/api/scores/manual`.
+Connect candidates list to `/api/candidates`.
 
 ## Resume Command
 
@@ -11,7 +11,7 @@ Connect stock detail decisions to `/api/scores/manual`.
 - Read `AGENTS.md`.
 - Read `docs/SESSION_STATE.md`.
 - Run `git status --short --branch`.
-- Check `src/app/(main)/stocks/[ticker]/page.tsx`.
-- Check `src/components/domain/ThesisKillModal.tsx`.
-- Preserve the three Thesis Kill requirement for `buy`.
+- Check `src/app/(main)/candidates/page.tsx`.
+- Check `src/components/domain/StockCard.tsx`.
+- Preserve candidate filters and mobile card density.
 - Run `npm run typecheck` and `npm run build` after changes.

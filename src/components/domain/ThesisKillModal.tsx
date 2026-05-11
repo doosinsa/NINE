@@ -9,13 +9,15 @@ interface ThesisKillModalProps {
   onOpenChange: (open: boolean) => void;
   ticker: string;
   currentScore: number;
+  isSaving?: boolean;
   onSave: (data: {
     thesisKill1: string;
     thesisKill2: string;
     thesisKill3: string;
     positionSizeKrw: number;
     boughtAtPrice: number;
-  }) => void;
+    boughtAtDate: string;
+  }) => void | Promise<void>;
 }
 
 export function ThesisKillModal({
@@ -23,6 +25,7 @@ export function ThesisKillModal({
   onOpenChange,
   ticker,
   currentScore,
+  isSaving = false,
   onSave,
 }: ThesisKillModalProps) {
   const [tk1, setTk1] = useState("");
@@ -30,24 +33,38 @@ export function ThesisKillModal({
   const [tk3, setTk3] = useState("");
   const [posSize, setPosSize] = useState("");
   const [price, setPrice] = useState("");
+  const [boughtAtDate, setBoughtAtDate] = useState(() => new Date().toISOString().slice(0, 10));
 
   const isWarning = currentScore < 7;
-  const isFormValid = tk1.length >= 30 && tk2.length >= 30 && tk3.length >= 30 && posSize && price;
+  const hasValidThesisKills =
+    tk1.trim().length >= 30 &&
+    tk1.trim().length <= 100 &&
+    tk2.trim().length >= 30 &&
+    tk2.trim().length <= 100 &&
+    tk3.trim().length >= 30 &&
+    tk3.trim().length <= 100;
+  const isFormValid = hasValidThesisKills && posSize && price && boughtAtDate;
 
-  const handleSave = () => {
-    if (!isFormValid) return;
-    onSave({
-      thesisKill1: tk1,
-      thesisKill2: tk2,
-      thesisKill3: tk3,
-      positionSizeKrw: Number(posSize) * 10000,
-      boughtAtPrice: Number(price),
-    });
+  const handleSave = async () => {
+    if (!isFormValid || isSaving) return;
+    try {
+      await onSave({
+        thesisKill1: tk1.trim(),
+        thesisKill2: tk2.trim(),
+        thesisKill3: tk3.trim(),
+        positionSizeKrw: Number(posSize) * 10000,
+        boughtAtPrice: Number(price),
+        boughtAtDate,
+      });
+    } catch {
+      return;
+    }
     setTk1("");
     setTk2("");
     setTk3("");
     setPosSize("");
     setPrice("");
+    setBoughtAtDate(new Date().toISOString().slice(0, 10));
     onOpenChange(false);
   };
 
@@ -69,7 +86,7 @@ export function ThesisKillModal({
             )}
             
             <p className="text-sm text-nine-secondary mb-4">
-              출구 조건 없이 매수 못 함. 3개 조건 먼저 적어. (각 30자 이상)
+              출구 조건 없이 매수 못 함. 3개 조건 먼저 적어. (각 30~100자)
             </p>
 
             <div className="space-y-4 mb-6">
@@ -78,6 +95,7 @@ export function ThesisKillModal({
                 <textarea 
                   className="w-full border border-border-color rounded-lg p-3 text-[16px] bg-bg-base placeholder-nine-secondary/50 focus:outline-none focus:ring-1 focus:ring-nine-primary"
                   rows={2}
+                  maxLength={100}
                   value={tk1}
                   onChange={(e) => setTk1(e.target.value)}
                   placeholder="ex) 핵심 제품 매출 증가율이 2분기 연속 YOY 10% 미만으로 떨어질 경우"
@@ -89,6 +107,7 @@ export function ThesisKillModal({
                 <textarea 
                   className="w-full border border-border-color rounded-lg p-3 text-[16px] bg-bg-base placeholder-nine-secondary/50 focus:outline-none focus:ring-1 focus:ring-nine-primary"
                   rows={2}
+                  maxLength={100}
                   value={tk2}
                   onChange={(e) => setTk2(e.target.value)}
                   placeholder="ex) 주요 원자재 가격 급등으로 GPM이 40% 밑으로 하락할 경우"
@@ -100,6 +119,7 @@ export function ThesisKillModal({
                 <textarea 
                   className="w-full border border-border-color rounded-lg p-3 text-[16px] bg-bg-base placeholder-nine-secondary/50 focus:outline-none focus:ring-1 focus:ring-nine-primary"
                   rows={2}
+                  maxLength={100}
                   value={tk3}
                   onChange={(e) => setTk3(e.target.value)}
                   placeholder="ex) 창업자 또는 현 CEO가 사임하거나 횡령 등 중대 이슈가 발생할 경우"
@@ -108,8 +128,8 @@ export function ThesisKillModal({
               </div>
             </div>
 
-            <div className="flex gap-4 mb-8">
-              <div className="flex-1">
+            <div className="grid grid-cols-2 gap-4 mb-8">
+              <div>
                 <label className="block text-sm font-medium mb-1">매수 비중 (만원)</label>
                 <input 
                   type="number" 
@@ -119,7 +139,7 @@ export function ThesisKillModal({
                   placeholder="1000"
                 />
               </div>
-              <div className="flex-1">
+              <div>
                 <label className="block text-sm font-medium mb-1">매수가</label>
                 <input 
                   type="number" 
@@ -129,19 +149,28 @@ export function ThesisKillModal({
                   placeholder="150"
                 />
               </div>
+              <div className="col-span-2">
+                <label className="block text-sm font-medium mb-1">매수 일자</label>
+                <input
+                  type="date"
+                  className="w-full border border-border-color rounded-lg p-3 text-[16px] bg-bg-base focus:outline-none focus:ring-1 focus:ring-nine-primary"
+                  value={boughtAtDate}
+                  onChange={(e) => setBoughtAtDate(e.target.value)}
+                />
+              </div>
             </div>
             
             <button
               onClick={handleSave}
-              disabled={!isFormValid}
+              disabled={!isFormValid || isSaving}
               className={cn(
                 "w-full py-4 rounded-xl font-bold text-lg transition-colors mb-[env(safe-area-inset-bottom)]",
-                isFormValid 
+                isFormValid && !isSaving
                   ? "bg-nine-primary text-white" 
                   : "bg-border-color text-nine-secondary cursor-not-allowed"
               )}
             >
-              저장하기
+              {isSaving ? "저장 중" : "저장하기"}
             </button>
           </div>
         </Drawer.Content>
