@@ -132,8 +132,8 @@ export default function StockDetailPage({ params }: { params: Promise<{ ticker: 
   return (
     <div className="p-5 pb-32">
       <header className="mb-8">
-        <h1 className="text-[24px] font-bold mb-1">{detail.stock.name}</h1>
-        <div className="text-[14px] text-nine-secondary">{detail.stock.ticker} · {detail.stock.country}</div>
+        <h1 className="text-[24px] font-bold mb-1 break-words leading-tight">{detail.stock.name}</h1>
+        <div className="break-all text-[14px] text-nine-secondary">{detail.stock.ticker} · {detail.stock.country}</div>
       </header>
 
       {/* Hero Score Section */}
@@ -154,9 +154,9 @@ export default function StockDetailPage({ params }: { params: Promise<{ ticker: 
       {/* Manual Scoring Section */}
       <div className="space-y-8 bg-surface p-6 rounded-2xl border border-border-color mb-8">
         <div>
-          <div className="flex justify-between items-end mb-4">
-            <h3 className="font-semibold">Quant Score (자동)</h3>
-            <span className="text-xl font-bold text-nine-primary">{quantScore}/3</span>
+          <div className="flex justify-between items-end gap-3 mb-4">
+            <h3 className="min-w-0 font-semibold leading-snug">Quant Score (자동)</h3>
+            <span className="shrink-0 text-xl font-bold text-nine-primary">{quantScore}/3</span>
           </div>
           <div className="w-full h-2 bg-border-color rounded-full overflow-hidden">
             <div className="h-full bg-nine-primary transition-all" style={{ width: `${(quantScore/3)*100}%` }} />
@@ -164,9 +164,9 @@ export default function StockDetailPage({ params }: { params: Promise<{ ticker: 
         </div>
 
         <div>
-          <div className="flex justify-between items-end mb-4">
-            <h3 className="font-semibold">Demand Score (수동)</h3>
-            <span className="text-xl font-bold text-nine-primary">{demandScore}/3</span>
+          <div className="flex justify-between items-end gap-3 mb-4">
+            <h3 className="min-w-0 font-semibold leading-snug">Demand Score (수동)</h3>
+            <span className="shrink-0 text-xl font-bold text-nine-primary">{demandScore}/3</span>
           </div>
           <input 
             type="range" 
@@ -179,9 +179,9 @@ export default function StockDetailPage({ params }: { params: Promise<{ ticker: 
         </div>
 
         <div>
-          <div className="flex justify-between items-end mb-4">
-            <h3 className="font-semibold">Supply Score (수동)</h3>
-            <span className="text-xl font-bold text-nine-primary">{supplyScore}/3</span>
+          <div className="flex justify-between items-end gap-3 mb-4">
+            <h3 className="min-w-0 font-semibold leading-snug">Supply Score (수동)</h3>
+            <span className="shrink-0 text-xl font-bold text-nine-primary">{supplyScore}/3</span>
           </div>
           <input 
             type="range" 

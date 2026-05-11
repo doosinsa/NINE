@@ -50,22 +50,22 @@ export function StockCard({
         </div>
       )}
       
-      <div className="flex justify-between items-start">
-        <div>
-          <h2 className="text-[18px] font-semibold tracking-tight text-fg-base mb-1">
+      <div className="flex justify-between items-start gap-3">
+        <div className="min-w-0 flex-1 pr-1">
+          <h2 className="text-[18px] font-semibold tracking-tight text-fg-base mb-1 break-words leading-snug">
             {name}
           </h2>
-          <div className="flex items-center gap-2">
+          <div className="flex min-w-0 items-center gap-2">
             <span className="text-[13px] font-medium text-nine-secondary">
               {country}
             </span>
-            <span className="text-[13px] text-nine-secondary/70">
+            <span className="min-w-0 break-all text-[13px] text-nine-secondary/70">
               {ticker}
             </span>
           </div>
         </div>
         
-        <div className="flex flex-col items-end">
+        <div className="flex shrink-0 flex-col items-end">
           <ScoreBadge score={score} className="text-[32px] leading-none" />
           {scoreChange !== undefined && scoreChange !== null && (
             <span className={cn(

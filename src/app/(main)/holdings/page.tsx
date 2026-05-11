@@ -67,12 +67,14 @@ export default function HoldingsPage() {
             onClick={() => router.push(`/stocks/${encodeURIComponent(holding.stock.ticker)}`)}
             className="bg-surface border border-border-color rounded-[16px] p-5 active:scale-[0.98] transition-transform cursor-pointer"
           >
-            <div className="flex justify-between items-start mb-4">
-              <div>
-                <h2 className="text-[18px] font-semibold text-fg-base mb-1">{holding.stock.name}</h2>
-                <div className="text-[13px] text-nine-secondary">{holding.stock.ticker}</div>
+            <div className="flex justify-between items-start gap-3 mb-4">
+              <div className="min-w-0 flex-1 pr-1">
+                <h2 className="text-[18px] font-semibold text-fg-base mb-1 break-words leading-snug">
+                  {holding.stock.name}
+                </h2>
+                <div className="break-all text-[13px] text-nine-secondary">{holding.stock.ticker}</div>
               </div>
-              <ScoreBadge score={holding.score.totalScore} className="text-[28px]" />
+              <ScoreBadge score={holding.score.totalScore} className="shrink-0 text-[28px]" />
             </div>
             
             {/* Thesis Kill 상태 표시 영역 */}

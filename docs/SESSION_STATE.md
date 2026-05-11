@@ -4,12 +4,12 @@ Last updated: 2026-05-11 KST
 
 ## Next Action
 
-Review production UI on mobile and decide next MVP polish.
+Deploy mobile text-overlap polish to production.
 
 Acceptance criteria:
-- User can inspect production on mobile-sized viewport.
-- Any layout or UX issues are captured as the next implementation target.
-- No behavior changes unless a concrete issue is found.
+- Production deploy succeeds from current `main`.
+- Production smoke tests pass for `/candidates`, `/holdings`, and `/stocks/PLTR` with a valid session cookie.
+- Update latest verified deployment URL in this file.
 
 ## Current Status
 
@@ -72,6 +72,11 @@ Acceptance criteria:
   - `/candidates` without a cookie redirected to `/login`.
   - `/candidates`, `/holdings`, `/reviews`, `/search`, `/discover`, and `/stocks/PLTR` returned `200` with a valid cookie.
   - `/api/candidates`, `/api/holdings`, `/api/quarterly-reviews`, `/api/search?q=PLTR`, and `/api/discover` returned `200`.
+- Mobile polish implementation verified locally:
+  - Candidate cards, holding cards, and stock detail headers now guard long names/tickers with `min-w-0`, wrapping, and non-shrinking score badges.
+  - Stock detail score labels now reserve score width and wrap labels instead of overlapping.
+  - `npm run typecheck` passed.
+  - `npm run build` passed.
 - Auth implementation verified locally with temporary env values:
   - `npm run typecheck` passed.
   - `npm run build` passed.

@@ -1,6 +1,6 @@
 # NEXT_ACTION
 
-Review production UI on mobile and decide next MVP polish.
+Deploy mobile text-overlap polish to production.
 
 ## Resume Command
 
@@ -11,7 +11,7 @@ Review production UI on mobile and decide next MVP polish.
 - Read `AGENTS.md`.
 - Read `docs/SESSION_STATE.md`.
 - Run `git status --short --branch`.
-- Open `https://nine-red-three.vercel.app` on mobile width.
-- Check login, candidates, stock detail, holdings, reviews, search, and discover.
-- Verify no text overlap at 428px width.
-- Keep PRD non-negotiables intact.
+- Run `git status --short --branch`.
+- Run `npm run typecheck` and `npm run build`.
+- Deploy with `vercel deploy --prod --yes`.
+- Smoke test production `/candidates`, `/holdings`, and `/stocks/PLTR`.
