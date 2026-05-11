@@ -1,6 +1,6 @@
 # NEXT_ACTION
 
-Run production mobile visual QA for the deployed text-overlap polish.
+Audit remaining MVP gaps against `prd.md` and choose the next build slice.
 
 ## Resume Command
 
@@ -11,6 +11,6 @@ Run production mobile visual QA for the deployed text-overlap polish.
 - Read `AGENTS.md`.
 - Read `docs/SESSION_STATE.md`.
 - Read `prd.md`.
-- Verify `/candidates`, `/holdings`, and `/stocks/PLTR` at 428px width on production.
-- Confirm long ticker/name text does not overlap score badges or adjacent content.
-- Fix and redeploy if visual overlap remains.
+- Compare implemented routes/APIs against PRD MVP scope.
+- Identify the next task that does not require new provider secrets, account login, payment, or destructive changes.
+- Update `NEXT_ACTION.md` and `docs/SESSION_STATE.md` with the selected task before editing behavior.

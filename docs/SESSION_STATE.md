@@ -4,18 +4,18 @@ Last updated: 2026-05-12 KST
 
 ## Next Action
 
-Run production mobile visual QA for the deployed text-overlap polish.
+Audit remaining MVP gaps against `prd.md` and choose the next build slice.
 
 Acceptance criteria:
-- Verify `/candidates`, `/holdings`, and `/stocks/PLTR` at 428px width.
-- Confirm long ticker/name text does not overlap score badges or adjacent content.
-- Fix and redeploy if visual overlap remains.
+- Compare implemented routes/APIs against PRD MVP scope.
+- Identify the next task that does not require new provider secrets, account login, payment, or destructive changes.
+- Update `NEXT_ACTION.md` and `docs/SESSION_STATE.md` with the selected task before editing behavior.
 
 ## Current Status
 
 - GitHub repo connected: `https://github.com/doosinsa/NINE.git`
 - Current branch: `main`
-- Latest pushed commit: `a88d067`
+- Latest pushed commit: `c6d60c7`
 - Vercel project: `nine`
 - Production URL: `https://nine-red-three.vercel.app`
 - Latest verified deployment: `https://nine-2j61qs3gk-doosinsas-projects.vercel.app`
@@ -83,6 +83,11 @@ Acceptance criteria:
   - `npm run typecheck` passed.
   - `npm run build` passed.
   - `/candidates`, `/holdings`, and `/stocks/PLTR` returned `200` with a valid production session cookie.
+- Mobile polish production visual QA passed at 428px:
+  - `/candidates`, `/holdings`, and `/stocks/PLTR` rendered with no viewport overflow.
+  - Long names/tickers did not overlap score badges or adjacent text.
+  - Stock detail action buttons were confirmed usable after scrolling; buttons ended at `718px`, bottom nav started at `861px`.
+  - Screenshots were generated under `/tmp/nine-visual-qa/`.
 - Auth implementation verified locally with temporary env values:
   - `npm run typecheck` passed.
   - `npm run build` passed.
