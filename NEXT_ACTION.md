@@ -1,6 +1,6 @@
 # NEXT_ACTION
 
-Audit remaining MVP gaps against `prd.md` and choose the next build slice.
+Deploy actionable quarterly review workflow to production.
 
 ## Resume Command
 
@@ -11,6 +11,8 @@ Audit remaining MVP gaps against `prd.md` and choose the next build slice.
 - Read `AGENTS.md`.
 - Read `docs/SESSION_STATE.md`.
 - Read `prd.md`.
-- Compare implemented routes/APIs against PRD MVP scope.
-- Identify the next task that does not require new provider secrets, account login, payment, or destructive changes.
-- Update `NEXT_ACTION.md` and `docs/SESSION_STATE.md` with the selected task before editing behavior.
+- Run `git status --short --branch`.
+- Run `npm run typecheck` and `npm run build`.
+- Deploy with `vercel deploy --prod --yes`.
+- Smoke test production `/api/quarterly-reviews` and `/reviews` with a valid session cookie.
+- Verify `/reviews` at 428px width on production.

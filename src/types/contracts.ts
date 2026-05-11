@@ -152,12 +152,18 @@ export type QuarterlyReview = {
   action: QuarterlyAction;
 };
 
+export type QuarterlyReviewItem = {
+  holding: Holding;
+  latestReview: QuarterlyReview | null;
+};
+
 export type QuarterlyReviewsResponse = {
   quarter: string;
   progress: {
     completed: number;
     total: number;
   };
+  items: QuarterlyReviewItem[];
   reviews: QuarterlyReview[];
 };
 

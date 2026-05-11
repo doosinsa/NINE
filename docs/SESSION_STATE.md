@@ -4,18 +4,20 @@ Last updated: 2026-05-12 KST
 
 ## Next Action
 
-Audit remaining MVP gaps against `prd.md` and choose the next build slice.
+Deploy actionable quarterly review workflow to production.
 
 Acceptance criteria:
-- Compare implemented routes/APIs against PRD MVP scope.
-- Identify the next task that does not require new provider secrets, account login, payment, or destructive changes.
-- Update `NEXT_ACTION.md` and `docs/SESSION_STATE.md` with the selected task before editing behavior.
+- Run `git status --short --branch`.
+- Run `npm run typecheck` and `npm run build`.
+- Deploy with `vercel deploy --prod --yes`.
+- Smoke test production `/api/quarterly-reviews` and `/reviews` with a valid session cookie.
+- Verify `/reviews` at 428px width on production.
 
 ## Current Status
 
 - GitHub repo connected: `https://github.com/doosinsa/NINE.git`
 - Current branch: `main`
-- Latest pushed commit: `c6d60c7`
+- Latest pushed commit: `ce86d43`
 - Vercel project: `nine`
 - Production URL: `https://nine-red-three.vercel.app`
 - Latest verified deployment: `https://nine-2j61qs3gk-doosinsas-projects.vercel.app`
@@ -88,6 +90,16 @@ Acceptance criteria:
   - Long names/tickers did not overlap score badges or adjacent text.
   - Stock detail action buttons were confirmed usable after scrolling; buttons ended at `718px`, bottom nav started at `861px`.
   - Screenshots were generated under `/tmp/nine-visual-qa/`.
+- MVP gap audit selected the next build slice:
+  - PRD Scenario B needs actionable quarterly Thesis Kill review, but `/reviews` currently only renders saved review records.
+  - This task does not require new external provider secrets, account login, payment, or destructive changes.
+- Actionable quarterly review workflow verified locally:
+  - `QuarterlyReviewsResponse` now includes `items`, one per current holding, with the latest review attached.
+  - `/reviews` lets each holding set 0-3 triggered Thesis Kill conditions, see the system recommendation, choose Hold/Reduce 50/Sell All, add a note, and save.
+  - `/api/quarterly-reviews` GET returned `200`; invalid POST validation returned `400`; authenticated `/reviews` returned `200`.
+  - `npm run typecheck` passed.
+  - `npm run build` passed.
+  - Local 428px visual QA passed for `/reviews`; no viewport overflow, and the save button ended at `728.75px` above bottom nav starting at `861px`.
 - Auth implementation verified locally with temporary env values:
   - `npm run typecheck` passed.
   - `npm run build` passed.

@@ -44,10 +44,23 @@ Returns quarterly review progress and saved reviews.
 
 Response data: `QuarterlyReviewsResponse`
 
+Response includes `items`, one per current holding:
+
+```ts
+type QuarterlyReviewItem = {
+  holding: Holding;
+  latestReview: QuarterlyReview | null;
+};
+```
+
 ### `POST /api/quarterly-reviews`
 Saves one quarterly review decision.
 
 Request: `QuarterlyReviewRequest`
+
+Rules:
+- `killConditionsTriggered` must be an integer from 0 to 3.
+- `action` must be `hold`, `reduce_50`, or `sell_all`.
 
 Response data: `QuarterlyReview`
 
