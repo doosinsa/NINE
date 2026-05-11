@@ -16,6 +16,9 @@
 
   --color-danger: #DC2626;
   --color-badge: #2563EB;
+  --color-slider-active: var(--slider-active);
+  --color-slider-thumb: var(--slider-thumb);
+  --color-slider-track: var(--slider-track);
 
   --font-sans: -apple-system, BlinkMacSystemFont, "Pretendard Variable", "SF Pro Text", system-ui, sans-serif;
 }
@@ -31,6 +34,9 @@
   --score-7: #15803D;
   --score-4: #6B7280;
   --score-0: #D1D5DB;
+  --slider-active: #2563EB;
+  --slider-thumb: #1D4ED8;
+  --slider-track: #CBD5E1;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -44,6 +50,9 @@
     --score-7: #86EFAC;
     --score-4: #9CA3AF;
     --score-0: #4B5563;
+    --slider-active: #60A5FA;
+    --slider-thumb: #93C5FD;
+    --slider-track: #475569;
   }
 }
 
@@ -66,3 +75,52 @@ input, textarea, select {
 .safe-pl { padding-left: env(safe-area-inset-left); }
 .safe-pr { padding-right: env(safe-area-inset-right); }
 .safe-min-h { min-height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom)); }
+
+input[type="range"].score-slider {
+  height: 28px;
+  background: transparent;
+  cursor: pointer;
+}
+
+input[type="range"].score-slider::-webkit-slider-runnable-track {
+  height: 10px;
+  border-radius: 999px;
+  background: linear-gradient(
+    to right,
+    var(--slider-active) 0%,
+    var(--slider-active) var(--slider-progress),
+    var(--slider-track) var(--slider-progress),
+    var(--slider-track) 100%
+  );
+}
+
+input[type="range"].score-slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 28px;
+  height: 28px;
+  margin-top: -9px;
+  border-radius: 999px;
+  border: 3px solid var(--surface);
+  background: var(--slider-thumb);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--slider-thumb) 70%, black);
+}
+
+input[type="range"].score-slider::-moz-range-track {
+  height: 10px;
+  border-radius: 999px;
+  background: var(--slider-track);
+}
+
+input[type="range"].score-slider::-moz-range-progress {
+  height: 10px;
+  border-radius: 999px;
+  background: var(--slider-active);
+}
+
+input[type="range"].score-slider::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  border: 3px solid var(--surface);
+  background: var(--slider-thumb);
+}

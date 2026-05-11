@@ -173,7 +173,8 @@ export default function StockDetailPage({ params }: { params: Promise<{ ticker: 
             min="0" max="3" step="1" 
             value={demandScore}
             onChange={(e) => setDemandScore(Number(e.target.value))}
-            className="w-full accent-nine-primary h-2 bg-border-color rounded-lg appearance-none cursor-pointer"
+            style={{ "--slider-progress": `${(demandScore / 3) * 100}%` } as React.CSSProperties}
+            className="score-slider w-full appearance-none"
           />
         </div>
 
@@ -187,7 +188,8 @@ export default function StockDetailPage({ params }: { params: Promise<{ ticker: 
             min="0" max="3" step="1" 
             value={supplyScore}
             onChange={(e) => setSupplyScore(Number(e.target.value))}
-            className="w-full accent-nine-primary h-2 bg-border-color rounded-lg appearance-none cursor-pointer"
+            style={{ "--slider-progress": `${(supplyScore / 3) * 100}%` } as React.CSSProperties}
+            className="score-slider w-full appearance-none"
           />
         </div>
       </div>
