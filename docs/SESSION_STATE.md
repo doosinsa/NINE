@@ -4,12 +4,12 @@ Last updated: 2026-05-11 KST
 
 ## Next Action
 
-Connect candidates list to `/api/candidates`.
+Connect holding/review pages to their API routes.
 
 Acceptance criteria:
-- Candidates page reads `CandidatesResponse` from `/api/candidates`.
-- Existing filters still work with API data.
-- Cards route to real stock tickers returned by the API.
+- Holdings page reads `HoldingsResponse` from `/api/holdings`.
+- Reviews page reads `QuarterlyReviewsResponse` from `/api/quarterly-reviews`.
+- Holding-focused screens do not show price movement, P/L, realtime prices, or charts.
 - `npm run typecheck` and `npm run build` pass.
 
 ## Current Status
@@ -48,6 +48,11 @@ Acceptance criteria:
   - Buy modal keeps the 3 Thesis Kill requirement and supports buy date.
   - `npm run typecheck` passed.
   - `npm run build` passed.
+- Candidates page API implementation verified locally:
+  - `/api/candidates` returned `200 OK`.
+  - `/candidates` returned `200 OK` with a valid session cookie.
+  - Page now reads `CandidatesResponse` and applies filters client-side.
+  - Cards route to API tickers.
 - Auth implementation verified locally with temporary env values:
   - `npm run typecheck` passed.
   - `npm run build` passed.

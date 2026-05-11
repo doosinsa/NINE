@@ -1,6 +1,6 @@
 # NEXT_ACTION
 
-Connect candidates list to `/api/candidates`.
+Connect holding/review pages to their API routes.
 
 ## Resume Command
 
@@ -11,7 +11,7 @@ Connect candidates list to `/api/candidates`.
 - Read `AGENTS.md`.
 - Read `docs/SESSION_STATE.md`.
 - Run `git status --short --branch`.
-- Check `src/app/(main)/candidates/page.tsx`.
-- Check `src/components/domain/StockCard.tsx`.
-- Preserve candidate filters and mobile card density.
+- Check `src/app/(main)/holdings/page.tsx`.
+- Check `src/app/(main)/reviews/page.tsx`.
+- Keep holding screens free of price movement, P/L, realtime prices, and charts.
 - Run `npm run typecheck` and `npm run build` after changes.
