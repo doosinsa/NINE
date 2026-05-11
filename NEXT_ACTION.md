@@ -1,6 +1,6 @@
 # NEXT_ACTION
 
-Deploy latest API-connected UI to production.
+Review production UI on mobile and decide next MVP polish.
 
 ## Resume Command
 
@@ -11,7 +11,7 @@ Deploy latest API-connected UI to production.
 - Read `AGENTS.md`.
 - Read `docs/SESSION_STATE.md`.
 - Run `git status --short --branch`.
-- Run `git status --short --branch`.
-- Run `npm run typecheck` and `npm run build`.
-- Deploy with `vercel deploy --prod --yes`.
-- Smoke test production protected pages and key API routes.
+- Open `https://nine-red-three.vercel.app` on mobile width.
+- Check login, candidates, stock detail, holdings, reviews, search, and discover.
+- Verify no text overlap at 428px width.
+- Keep PRD non-negotiables intact.

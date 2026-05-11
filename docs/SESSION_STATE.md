@@ -4,12 +4,12 @@ Last updated: 2026-05-11 KST
 
 ## Next Action
 
-Deploy latest API-connected UI to production.
+Review production UI on mobile and decide next MVP polish.
 
 Acceptance criteria:
-- Production deploy succeeds from current `main`.
-- Production smoke tests pass for login, `/candidates`, `/holdings`, `/reviews`, `/search`, `/discover`, and key API routes.
-- Update latest verified deployment URL in this file.
+- User can inspect production on mobile-sized viewport.
+- Any layout or UX issues are captured as the next implementation target.
+- No behavior changes unless a concrete issue is found.
 
 ## Current Status
 
@@ -18,7 +18,7 @@ Acceptance criteria:
 - Latest pushed commit: `e72983e Implement password auth`
 - Vercel project: `nine`
 - Production URL: `https://nine-red-three.vercel.app`
-- Latest verified deployment: `https://nine-gbj5xte25-doosinsas-projects.vercel.app`
+- Latest verified deployment: `https://nine-a93z0eglg-doosinsas-projects.vercel.app`
 - Supabase project linked through CLI.
 - Supabase migration applied.
 - Supabase seed applied.
@@ -64,6 +64,14 @@ Acceptance criteria:
   - `/search` returned `200 OK` with a valid session cookie.
   - `/discover` returned `200 OK` with a valid session cookie.
   - Discover send-to-Core POST returned `200 OK` using an existing ticker.
+- Production deployment verified after deploying `5358397`:
+  - Deployment URL: `https://nine-a93z0eglg-doosinsas-projects.vercel.app`
+  - Alias: `https://nine-red-three.vercel.app`
+  - Wrong login returned `401`.
+  - Correct login returned `200`.
+  - `/candidates` without a cookie redirected to `/login`.
+  - `/candidates`, `/holdings`, `/reviews`, `/search`, `/discover`, and `/stocks/PLTR` returned `200` with a valid cookie.
+  - `/api/candidates`, `/api/holdings`, `/api/quarterly-reviews`, `/api/search?q=PLTR`, and `/api/discover` returned `200`.
 - Auth implementation verified locally with temporary env values:
   - `npm run typecheck` passed.
   - `npm run build` passed.
