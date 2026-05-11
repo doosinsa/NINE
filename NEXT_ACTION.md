@@ -1,6 +1,6 @@
 # NEXT_ACTION
 
-Connect holding/review pages to their API routes.
+Connect search and Discover pages to their API routes.
 
 ## Resume Command
 
@@ -11,7 +11,7 @@ Connect holding/review pages to their API routes.
 - Read `AGENTS.md`.
 - Read `docs/SESSION_STATE.md`.
 - Run `git status --short --branch`.
-- Check `src/app/(main)/holdings/page.tsx`.
-- Check `src/app/(main)/reviews/page.tsx`.
-- Keep holding screens free of price movement, P/L, realtime prices, and charts.
+- Check `src/app/(main)/search/page.tsx`.
+- Check `src/app/(main)/discover/page.tsx`.
+- Preserve daily search cap display and Discover send-to-Core behavior.
 - Run `npm run typecheck` and `npm run build` after changes.

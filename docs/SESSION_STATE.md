@@ -4,12 +4,12 @@ Last updated: 2026-05-11 KST
 
 ## Next Action
 
-Connect holding/review pages to their API routes.
+Connect search and Discover pages to their API routes.
 
 Acceptance criteria:
-- Holdings page reads `HoldingsResponse` from `/api/holdings`.
-- Reviews page reads `QuarterlyReviewsResponse` from `/api/quarterly-reviews`.
-- Holding-focused screens do not show price movement, P/L, realtime prices, or charts.
+- Search page uses `/api/search` for universe lookup and outside-universe analysis start.
+- Discover page uses `/api/discover` for themes and send-to-Core.
+- UI does not invent API fields beyond `src/types/contracts.ts`.
 - `npm run typecheck` and `npm run build` pass.
 
 ## Current Status
@@ -53,6 +53,12 @@ Acceptance criteria:
   - `/candidates` returned `200 OK` with a valid session cookie.
   - Page now reads `CandidatesResponse` and applies filters client-side.
   - Cards route to API tickers.
+- Holdings/reviews API implementation verified locally:
+  - `/api/holdings` returned `200 OK`.
+  - `/api/quarterly-reviews` returned `200 OK`.
+  - `/holdings` returned `200 OK` with a valid session cookie.
+  - `/reviews` returned `200 OK` with a valid session cookie.
+  - Holding screen remains free of price movement, P/L, realtime prices, and charts.
 - Auth implementation verified locally with temporary env values:
   - `npm run typecheck` passed.
   - `npm run build` passed.
