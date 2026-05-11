@@ -4,26 +4,26 @@ Last updated: 2026-05-11 KST
 
 ## Next Action
 
-Configure `NINE_PASSWORD_HASH` and `NINE_SESSION_SECRET` in local and Vercel environments, then deploy auth.
+Connect stock detail decisions to `/api/scores/manual`.
 
 Acceptance criteria:
-- Secret values are generated and set locally without committing them.
-- Vercel production env has `NINE_PASSWORD_HASH` and `NINE_SESSION_SECRET`.
-- Production deploy succeeds.
-- Production smoke test confirms login succeeds and protected app routes require the session cookie.
+- Stock detail `Pass`, `Watch`, and `Buy` controls persist through the manual score API.
+- Buy still requires all three Thesis Kill conditions before save.
+- Remove console-only buy save behavior.
+- `npm run typecheck` and `npm run build` pass.
 
 ## Current Status
 
 - GitHub repo connected: `https://github.com/doosinsa/NINE.git`
 - Current branch: `main`
-- Latest pushed commit: `48e3761 Connect APIs to Supabase`
+- Latest pushed commit: `e72983e Implement password auth`
 - Vercel project: `nine`
 - Production URL: `https://nine-red-three.vercel.app`
-- Latest verified deployment: `https://nine-4v88pj0na-doosinsas-projects.vercel.app`
+- Latest verified deployment: `https://nine-gbj5xte25-doosinsas-projects.vercel.app`
 - Supabase project linked through CLI.
 - Supabase migration applied.
 - Supabase seed applied.
-- Vercel production env has Supabase URL, anon key, service role key, and project ref.
+- Vercel production env has Supabase URL, anon key, service role key, project ref, `NINE_PASSWORD_HASH`, and `NINE_SESSION_SECRET`.
 - API routes now read Supabase first and fall back to mock data.
 
 ## Verified
@@ -36,6 +36,11 @@ Acceptance criteria:
   - `/api/discover`
 - Production smoke test passed for:
   - `https://nine-red-three.vercel.app/api/candidates`
+- Production auth smoke test passed after deploying `e72983e`:
+  - Wrong password returned `401 UNAUTHORIZED`.
+  - Correct password returned `200 OK`.
+  - `/candidates` without a cookie redirected to `/login`.
+  - `/candidates` with the session cookie returned `200 OK`.
 - Auth implementation verified locally with temporary env values:
   - `npm run typecheck` passed.
   - `npm run build` passed.
@@ -54,7 +59,8 @@ Acceptance criteria:
 - `/api/auth/login` now verifies `NINE_PASSWORD_HASH` using scrypt format `scrypt:N:r:p:salt:key`.
 - Successful login sets an HTTP-only `nine_session` cookie signed with `NINE_SESSION_SECRET`.
 - `(main)` app routes redirect unauthenticated requests to `/login`.
-- Local `.env` auth values are still empty and must be filled before normal local auth use.
+- Local `.env` auth values are configured and ignored by git.
+- Current local/prod login password was set during the session; do not write the plain password into tracked docs.
 
 ## Resume Protocol
 

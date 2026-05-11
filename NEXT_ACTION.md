@@ -1,6 +1,6 @@
 # NEXT_ACTION
 
-Configure `NINE_PASSWORD_HASH` and `NINE_SESSION_SECRET` in local and Vercel environments, then deploy auth.
+Connect stock detail decisions to `/api/scores/manual`.
 
 ## Resume Command
 
@@ -11,6 +11,7 @@ Configure `NINE_PASSWORD_HASH` and `NINE_SESSION_SECRET` in local and Vercel env
 - Read `AGENTS.md`.
 - Read `docs/SESSION_STATE.md`.
 - Run `git status --short --branch`.
-- Generate `NINE_PASSWORD_HASH` with the command in `docs/ENVIRONMENT.md`.
-- Generate `NINE_SESSION_SECRET` with `openssl rand -base64 32`.
-- Do not commit secret values.
+- Check `src/app/(main)/stocks/[ticker]/page.tsx`.
+- Check `src/components/domain/ThesisKillModal.tsx`.
+- Preserve the three Thesis Kill requirement for `buy`.
+- Run `npm run typecheck` and `npm run build` after changes.
