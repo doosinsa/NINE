@@ -1,6 +1,6 @@
 # NEXT_ACTION
 
-Connect search and Discover pages to their API routes.
+Deploy latest API-connected UI to production.
 
 ## Resume Command
 
@@ -11,7 +11,7 @@ Connect search and Discover pages to their API routes.
 - Read `AGENTS.md`.
 - Read `docs/SESSION_STATE.md`.
 - Run `git status --short --branch`.
-- Check `src/app/(main)/search/page.tsx`.
-- Check `src/app/(main)/discover/page.tsx`.
-- Preserve daily search cap display and Discover send-to-Core behavior.
-- Run `npm run typecheck` and `npm run build` after changes.
+- Run `git status --short --branch`.
+- Run `npm run typecheck` and `npm run build`.
+- Deploy with `vercel deploy --prod --yes`.
+- Smoke test production protected pages and key API routes.

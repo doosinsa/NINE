@@ -4,13 +4,12 @@ Last updated: 2026-05-11 KST
 
 ## Next Action
 
-Connect search and Discover pages to their API routes.
+Deploy latest API-connected UI to production.
 
 Acceptance criteria:
-- Search page uses `/api/search` for universe lookup and outside-universe analysis start.
-- Discover page uses `/api/discover` for themes and send-to-Core.
-- UI does not invent API fields beyond `src/types/contracts.ts`.
-- `npm run typecheck` and `npm run build` pass.
+- Production deploy succeeds from current `main`.
+- Production smoke tests pass for login, `/candidates`, `/holdings`, `/reviews`, `/search`, `/discover`, and key API routes.
+- Update latest verified deployment URL in this file.
 
 ## Current Status
 
@@ -59,6 +58,12 @@ Acceptance criteria:
   - `/holdings` returned `200 OK` with a valid session cookie.
   - `/reviews` returned `200 OK` with a valid session cookie.
   - Holding screen remains free of price movement, P/L, realtime prices, and charts.
+- Search/Discover API implementation verified locally:
+  - `/api/search?q=PLTR` returned `200 OK`.
+  - `/api/discover` returned `200 OK`.
+  - `/search` returned `200 OK` with a valid session cookie.
+  - `/discover` returned `200 OK` with a valid session cookie.
+  - Discover send-to-Core POST returned `200 OK` using an existing ticker.
 - Auth implementation verified locally with temporary env values:
   - `npm run typecheck` passed.
   - `npm run build` passed.
