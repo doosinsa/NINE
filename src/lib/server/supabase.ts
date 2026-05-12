@@ -338,6 +338,30 @@ export async function upsertDailyPricesInSupabase(prices: DailyPrice[]): Promise
   return prices.length;
 }
 
+export async function upsertWeeklyEpsInSupabase(estimates: EpsEstimate[]): Promise<number | null> {
+  const supabase = getSupabaseAdmin();
+  if (!supabase) return null;
+  if (estimates.length === 0) return 0;
+
+  const { error } = await supabase.from("eps_estimates").upsert(
+    estimates.map((estimate) => ({
+      ticker: estimate.ticker,
+      snapshot_date: estimate.snapshotDate,
+      fy_year: estimate.fyYear,
+      consensus: estimate.consensus,
+      analyst_count: estimate.analystCount,
+      data_source: estimate.dataSource,
+    })),
+    { onConflict: "ticker,snapshot_date,fy_year" },
+  );
+
+  if (error) {
+    throw new Error("Failed to persist weekly EPS estimates.");
+  }
+
+  return estimates.length;
+}
+
 export function toDailyPriceSnapshot(price: DailyPrice): DailyPriceSnapshot {
   return {
     ticker: price.ticker,

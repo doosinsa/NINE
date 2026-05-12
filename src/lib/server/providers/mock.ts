@@ -85,9 +85,14 @@ export function createMockProviders(): ExternalProviders {
       },
     },
     eps: {
-      async fetchWeeklyEps(tickers) {
+      async fetchWeeklyEps(tickers, snapshotDate) {
         const normalizedTickers = new Set(tickers.map((ticker) => ticker.toUpperCase()));
-        return epsEstimates.filter((estimate) => normalizedTickers.has(estimate.ticker.toUpperCase()));
+        return epsEstimates
+          .filter((estimate) => normalizedTickers.has(estimate.ticker.toUpperCase()))
+          .map((estimate) => ({
+            ...estimate,
+            snapshotDate,
+          }));
       },
     },
     earnings: {

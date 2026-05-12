@@ -109,6 +109,21 @@ export type EpsEstimate = {
   dataSource: "naver" | "hankyung" | "finnhub" | "fnguide";
 };
 
+export type WeeklyEpsCollectionRequest = {
+  tickers?: string[];
+  snapshotDate?: string;
+};
+
+export type WeeklyEpsCollectionResponse = {
+  snapshotDate: string;
+  requestedTickers: string[];
+  collectedCount: number;
+  persistedCount: number;
+  persisted: boolean;
+  providerMode: "mock" | "live";
+  estimates: EpsEstimate[];
+};
+
 export type DailyPriceSnapshot = {
   ticker: string;
   date: string;

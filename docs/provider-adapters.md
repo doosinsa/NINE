@@ -20,6 +20,7 @@ Mock adapters return stable local data so route handlers can be wired without ex
 
 - `GET /api/discover` reads Supabase first, then falls back to `createExternalProviders()` for mock Discover signals and mock Claude-style clustering, then falls back to static mock data if provider initialization fails.
 - `POST /api/prices/collect` calls `createExternalProviders().price.fetchDailyPrices`, then upserts collected rows into Supabase `prices` when Supabase is configured. In mock mode it uses stable mock prices and requires no external provider secrets.
+- `POST /api/eps/collect` calls `createExternalProviders().eps.fetchWeeklyEps`, then upserts collected rows into Supabase `eps_estimates` when Supabase is configured. In mock mode it uses stable mock EPS snapshots and requires no external provider secrets.
 - KIS has a live KR daily price adapter shell. It is inactive by default and only replaces the mock price provider when both `NINE_PROVIDER_MODE=live` and `NINE_PRICE_PROVIDER=kis` are set.
 - Yahoo Finance has a live US daily price adapter shell. It is inactive by default and only replaces the mock price provider when both `NINE_PROVIDER_MODE=live` and `NINE_PRICE_PROVIDER=yahoo-finance` are set.
 - Composite daily price wiring is inactive by default and only replaces the mock price provider when both `NINE_PROVIDER_MODE=live` and `NINE_PRICE_PROVIDER=composite` are set.

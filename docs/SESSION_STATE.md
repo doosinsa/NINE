@@ -4,16 +4,16 @@ Last updated: 2026-05-12 KST
 
 ## Next Action
 
-Add mock-first weekly EPS collection route.
+Add mock-first quarterly earnings collection route.
 
 Acceptance criteria:
 - Run `git status --short --branch`.
 - Read `docs/provider-adapters.md`.
 - Keep `NINE_PROVIDER_MODE=mock` as the default and do not run live calls without an explicit live provider selection.
-- Add a server-only API route or handler path that collects weekly EPS snapshots through `createExternalProviders().eps`.
-- Persist collected EPS estimates to Supabase when configured, with mock fallback behavior when Supabase is unavailable.
+- Add a server-only API route or handler path that collects quarterly earnings snapshots through `createExternalProviders().earnings`.
+- Persist collected earnings snapshots to Supabase when configured, with mock fallback behavior when Supabase is unavailable.
 - Preserve the current mock provider behavior and API response envelopes.
-- Update API/provider docs with the EPS collection route, request shape, and mock/live activation behavior.
+- Update API/provider docs with the earnings collection route, request shape, and mock/live activation behavior.
 - Run `npm run typecheck` and `npm run build`.
 
 ## Current Status
@@ -38,6 +38,7 @@ Acceptance criteria:
 - Yahoo Finance daily price adapter shell exists, inactive by default.
 - Composite KR/US daily price provider wiring exists, inactive by default.
 - Mock-first daily price collection route exists.
+- Mock-first weekly EPS collection route exists.
 
 ## Verified
 
@@ -226,6 +227,16 @@ Acceptance criteria:
   - Added `DailyPriceCollectionRequest`, `DailyPriceSnapshot`, and `DailyPriceCollectionResponse` contracts.
   - The route defaults to current KST date and Supabase `stocks` tickers when configured; otherwise it falls back to mock tickers.
   - Collected prices are upserted into Supabase `prices` when Supabase is configured.
+  - Mock/Supabase-disabled smoke test returned `200` for `PLTR` and `005930.KS` with `providerMode: "mock"` and `persisted: false`.
+  - No live provider calls were run.
+  - `npm run typecheck` passed.
+  - `npm run build` passed.
+- Mock-first weekly EPS collection route verified locally:
+  - Added `POST /api/eps/collect` using `createExternalProviders().eps.fetchWeeklyEps`.
+  - Added `WeeklyEpsCollectionRequest` and `WeeklyEpsCollectionResponse` contracts.
+  - The route defaults to current KST date and Supabase `stocks` tickers when configured; otherwise it falls back to mock tickers.
+  - Collected EPS estimates are upserted into Supabase `eps_estimates` when Supabase is configured.
+  - Mock provider now applies the requested `snapshotDate` to returned EPS estimates.
   - Mock/Supabase-disabled smoke test returned `200` for `PLTR` and `005930.KS` with `providerMode: "mock"` and `persisted: false`.
   - No live provider calls were run.
   - `npm run typecheck` passed.

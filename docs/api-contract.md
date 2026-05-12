@@ -112,6 +112,22 @@ When `tickers` is omitted, the route collects the current Supabase `stocks` univ
 
 Response data: `DailyPriceCollectionResponse`
 
+### `POST /api/eps/collect`
+Collects weekly consensus EPS snapshots through the configured server-only EPS provider.
+
+Request: `WeeklyEpsCollectionRequest`
+
+```ts
+{
+  tickers?: string[];
+  snapshotDate?: string; // YYYY-MM-DD, defaults to current KST date
+}
+```
+
+When `tickers` is omitted, the route collects the current Supabase `stocks` universe if Supabase is configured, otherwise the mock universe. With `NINE_PROVIDER_MODE=mock`, the route uses mock EPS estimates and does not require external provider secrets. When Supabase is configured, collected rows are upserted into `eps_estimates`; without Supabase, the response still returns collected mock/provider rows with `persisted: false`.
+
+Response data: `WeeklyEpsCollectionResponse`
+
 ### `POST /api/auth/login`
 Verifies the single app password against `NINE_PASSWORD_HASH`. On success, sets an HTTP-only session cookie protected with `NINE_SESSION_SECRET`.
 
