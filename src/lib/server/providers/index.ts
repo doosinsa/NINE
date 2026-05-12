@@ -1,7 +1,8 @@
 import "server-only";
 
-import { getProviderMode, getProviderStatuses } from "@/lib/server/providers/config";
+import { assertProviderConfigured, getProviderMode } from "@/lib/server/providers/config";
 import { createMockProviders } from "@/lib/server/providers/mock";
+import { createNewsApiDiscoverSignalProvider } from "@/lib/server/providers/newsapi";
 import type { ExternalProviders } from "@/lib/server/providers/types";
 
 export { getProviderMode, getProviderStatuses } from "@/lib/server/providers/config";
@@ -25,21 +26,16 @@ export type {
 
 export function createExternalProviders(): ExternalProviders {
   const mode = getProviderMode();
-  const statuses = getProviderStatuses(mode);
+  const providers = createMockProviders();
 
-  if (mode === "live") {
-    const missingProviders = statuses.filter((status) => !status.configured);
-    if (missingProviders.length > 0) {
-      throw new Error(
-        `Live provider mode is not ready. Missing env for: ${missingProviders
-          .map((status) => status.provider)
-          .join(", ")}`,
-      );
-    }
-
-    // Live adapters should be wired here after provider accounts and keys exist.
-    throw new Error("Live external provider adapters are not implemented yet.");
+  if (mode === "mock") {
+    return providers;
   }
 
-  return createMockProviders();
+  if (process.env.NINE_DISCOVER_SIGNAL_PROVIDER === "newsapi") {
+    assertProviderConfigured("newsapi");
+    providers.discoverSignals = createNewsApiDiscoverSignalProvider();
+  }
+
+  return providers;
 }

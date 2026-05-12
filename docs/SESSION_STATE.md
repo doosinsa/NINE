@@ -4,15 +4,15 @@ Last updated: 2026-05-12 KST
 
 ## Next Action
 
-Add the first live provider adapter shell.
+Add the Anthropic LLM provider adapter shell.
 
 Acceptance criteria:
 - Run `git status --short --branch`.
 - Read `docs/provider-adapters.md`.
-- Pick the lowest-risk provider surface for a live adapter shell, likely NewsAPI Discover signals.
 - Keep `NINE_PROVIDER_MODE=mock` as the default and do not run live calls without keys.
-- Preserve the current mock adapter behavior and API response envelopes.
-- Update provider docs with the live adapter's required env and activation path.
+- Add a server-only Anthropic adapter shell for Core briefs and Discover clustering.
+- Preserve the current mock LLM behavior and API response envelopes.
+- Update provider docs with the Anthropic adapter's required env and activation path.
 - Run `npm run typecheck` and `npm run build`.
 
 ## Current Status
@@ -30,6 +30,7 @@ Acceptance criteria:
 - API routes now read Supabase first and fall back to mock data.
 - External provider adapter interfaces and mock implementations exist under `src/lib/server/providers`.
 - `GET /api/discover` now uses the provider adapter fallback path before static mock data.
+- NewsAPI Discover signal adapter shell exists, inactive by default.
 
 ## Verified
 
@@ -158,6 +159,14 @@ Acceptance criteria:
   - `GET /api/discover` now reads Supabase first, then `createExternalProviders()` mock Discover signals and mock Claude-style clustering, then static mock data as a final fallback.
   - Existing `DiscoverResponse` envelope and fields were preserved.
   - Local `GET /api/discover` returned `200`.
+  - `npm run typecheck` passed.
+  - `npm run build` passed.
+- NewsAPI Discover signal adapter shell verified locally:
+  - Added a server-only NewsAPI `/v2/everything` adapter shell for Discover signals.
+  - The adapter is inactive by default and only activates with `NINE_PROVIDER_MODE=live` plus `NINE_DISCOVER_SIGNAL_PROVIDER=newsapi`.
+  - Added `NEWS_API_BASE_URL`, `NEWS_API_LANGUAGE`, and `NEWS_API_DISCOVER_QUERIES` placeholders.
+  - Updated provider docs with the activation path.
+  - Local `GET /api/discover` returned `200` with existing response envelope.
   - `npm run typecheck` passed.
   - `npm run build` passed.
 - Auth implementation verified locally with temporary env values:

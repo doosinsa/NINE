@@ -43,9 +43,10 @@ Provider adapter mode:
 
 ```env
 NINE_PROVIDER_MODE=mock
+NINE_DISCOVER_SIGNAL_PROVIDER=mock
 ```
 
-Use `mock` until provider accounts are ready. `live` should only be enabled after all required provider env values are configured and live adapters are implemented.
+Use `mock` until provider accounts are ready. `live` should only be enabled for a provider surface after that surface has a live adapter and its required env values are configured.
 
 Future provider keys and settings:
 
@@ -58,6 +59,9 @@ KIS_BASE_URL=
 DART_API_KEY=
 FINNHUB_API_KEY=
 NEWS_API_KEY=
+NEWS_API_BASE_URL=https://newsapi.org
+NEWS_API_LANGUAGE=en
+NEWS_API_DISCOVER_QUERIES=AI semiconductor,defense electronics,energy infrastructure,robotics automation,biotech platform
 KITA_API_KEY=
 SOLAPI_API_KEY=
 SOLAPI_API_SECRET=
@@ -80,6 +84,7 @@ Already configured:
 Needed before live external provider calls:
 
 - `NINE_PROVIDER_MODE=live`
+- `NINE_DISCOVER_SIGNAL_PROVIDER=newsapi`
 - `ANTHROPIC_API_KEY`
 - `ANTHROPIC_MODEL`
 - `KIS_APP_KEY`
@@ -88,6 +93,9 @@ Needed before live external provider calls:
 - `DART_API_KEY`
 - `FINNHUB_API_KEY`
 - `NEWS_API_KEY`
+- `NEWS_API_BASE_URL`
+- `NEWS_API_LANGUAGE`
+- `NEWS_API_DISCOVER_QUERIES`
 - `KITA_API_KEY`
 - `SOLAPI_API_KEY`
 - `SOLAPI_API_SECRET`

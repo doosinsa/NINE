@@ -19,6 +19,7 @@ Mock adapters return stable local data so route handlers can be wired without ex
 ## Current Wiring
 
 - `GET /api/discover` reads Supabase first, then falls back to `createExternalProviders()` for mock Discover signals and mock Claude-style clustering, then falls back to static mock data if provider initialization fails.
+- NewsAPI has a live Discover signal adapter shell. It is inactive by default and only replaces the mock Discover signal provider when both `NINE_PROVIDER_MODE=live` and `NINE_DISCOVER_SIGNAL_PROVIDER=newsapi` are set.
 
 ## Adapter Surfaces
 
@@ -29,6 +30,21 @@ Mock adapters return stable local data so route handlers can be wired without ex
 - `llm.extractDiscoverThemes`: Claude Haiku Discover clustering.
 - `discoverSignals.fetchDiscoverSignals`: NewsAPI, KITA export signals, and curated capex signals.
 - `notifications.send`: Solapi LMS for tiered alerts and health checks.
+
+## NewsAPI Shell
+
+Activation env:
+
+```env
+NINE_PROVIDER_MODE=live
+NINE_DISCOVER_SIGNAL_PROVIDER=newsapi
+NEWS_API_KEY=
+NEWS_API_BASE_URL=https://newsapi.org
+NEWS_API_LANGUAGE=en
+NEWS_API_DISCOVER_QUERIES=AI semiconductor,defense electronics,energy infrastructure,robotics automation,biotech platform
+```
+
+The shell uses NewsAPI `/v2/everything` with `X-Api-Key`, `q`, `from`, `to`, `language`, `sortBy=publishedAt`, and `pageSize=20`. It maps article counts into a rough news signal and does not attempt stock recommendation or ticker extraction. KITA export signals and Claude theme clustering remain separate adapter surfaces.
 
 ## Required Before Live Calls
 
