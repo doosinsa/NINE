@@ -305,3 +305,29 @@ export async function fetchQuarterlyReviewsFromSupabase(): Promise<QuarterlyRevi
   if (error || !data) return null;
   return data.map(toQuarterlyReview);
 }
+
+export async function fetchDailySearchUsedFromSupabase(date: string): Promise<number | null> {
+  const supabase = getSupabaseAdmin();
+  if (!supabase) return null;
+
+  const { count, error } = await supabase
+    .from("daily_search_log")
+    .select("ticker", { count: "exact", head: true })
+    .eq("date", date);
+
+  if (error || count === null) return null;
+  return count;
+}
+
+export async function upsertDailySearchLogInSupabase(ticker: string, date: string): Promise<boolean | null> {
+  const supabase = getSupabaseAdmin();
+  if (!supabase) return null;
+
+  const { error } = await supabase.from("daily_search_log").upsert({
+    date,
+    ticker,
+    is_universe_outside: true,
+  });
+
+  return !error;
+}

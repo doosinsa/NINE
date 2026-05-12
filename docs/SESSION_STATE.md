@@ -4,20 +4,20 @@ Last updated: 2026-05-12 KST
 
 ## Next Action
 
-Make impulse search daily cap use real search log.
+Deploy real impulse search daily cap to production.
 
 Acceptance criteria:
-- Replace the hardcoded `/api/search` daily cap count with `daily_search_log` when Supabase is configured.
-- Keep mock fallback behavior when Supabase is unavailable.
-- Update shared contracts/docs only if response shape changes.
-- Smoke test `GET /api/search?q=PLTR` and outside-universe `POST /api/search`.
+- Run `git status --short --branch`.
 - Run `npm run typecheck` and `npm run build`.
+- Deploy with `vercel deploy --prod --yes`.
+- Smoke test production `GET /api/search?q=PLTR`.
+- Smoke test production outside-universe `POST /api/search` using a temporary ticker, then remove that test row from `daily_search_log`.
 
 ## Current Status
 
 - GitHub repo connected: `https://github.com/doosinsa/NINE.git`
 - Current branch: `main`
-- Latest pushed commit: `490c8a7`
+- Latest pushed commit: `b29eda6`
 - Vercel project: `nine`
 - Production URL: `https://nine-red-three.vercel.app`
 - Latest verified deployment: `https://nine-9jai338j9-doosinsas-projects.vercel.app`
@@ -108,6 +108,14 @@ Acceptance criteria:
   - `/reviews` returned `200` with a valid production session cookie.
   - Production 428px visual QA passed for `/reviews`; no viewport overflow.
   - Production bottom check confirmed save button ended at `728.75px` above bottom nav starting at `861px`.
+- Real impulse search daily cap implementation verified locally:
+  - `/api/search` now counts `daily_search_log` for the current KST date when Supabase is configured.
+  - Supabase-unavailable fallback keeps the existing mock usage behavior.
+  - `GET /api/search?q=PLTR` returned `200` with a valid result and daily cap from the log.
+  - Outside-universe `POST /api/search` returned `200`, recorded a temporary `NINECAPTEST` log row, and returned `requiresOutsideUniverseAnalysis: true`.
+  - The temporary `NINECAPTEST` row was deleted after verification; `GET /api/search?q=PLTR` returned daily cap `0/10` afterward.
+  - `npm run typecheck` passed.
+  - `npm run build` passed.
 - Auth implementation verified locally with temporary env values:
   - `npm run typecheck` passed.
   - `npm run build` passed.

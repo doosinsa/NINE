@@ -69,6 +69,8 @@ Searches the current universe. If no match exists, `requiresOutsideUniverseAnaly
 
 Response data: `SearchResponse`
 
+`dailyCap` is counted from `daily_search_log` for the current KST date when Supabase is configured, and falls back to mock usage otherwise.
+
 ### `POST /api/search`
 Starts outside-universe analysis and consumes the daily ad-hoc search cap.
 

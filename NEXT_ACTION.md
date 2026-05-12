@@ -1,6 +1,6 @@
 # NEXT_ACTION
 
-Make impulse search daily cap use real search log.
+Deploy real impulse search daily cap to production.
 
 ## Resume Command
 
@@ -11,8 +11,8 @@ Make impulse search daily cap use real search log.
 - Read `AGENTS.md`.
 - Read `docs/SESSION_STATE.md`.
 - Read `prd.md`.
-- Replace the hardcoded `/api/search` daily cap count with `daily_search_log` when Supabase is configured.
-- Keep mock fallback behavior when Supabase is unavailable.
-- Update shared contracts/docs only if response shape changes.
-- Smoke test `GET /api/search?q=PLTR` and outside-universe `POST /api/search`.
+- Run `git status --short --branch`.
 - Run `npm run typecheck` and `npm run build`.
+- Deploy with `vercel deploy --prod --yes`.
+- Smoke test production `GET /api/search?q=PLTR`.
+- Smoke test production outside-universe `POST /api/search` using a temporary ticker, then remove that test row from `daily_search_log`.
