@@ -94,7 +94,7 @@ Already configured:
 Needed before live external provider calls:
 
 - `NINE_PROVIDER_MODE=live`
-- `NINE_PRICE_PROVIDER=kis` for KR prices or `NINE_PRICE_PROVIDER=yahoo-finance` for US prices
+- `NINE_PRICE_PROVIDER=composite` for KR and US prices together, or `kis`/`yahoo-finance` for a single price surface
 - `NINE_DISCOVER_SIGNAL_PROVIDER=newsapi`
 - `NINE_LLM_PROVIDER=anthropic`
 - `NINE_EPS_PROVIDER=finnhub`

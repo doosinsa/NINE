@@ -1,6 +1,6 @@
 # NEXT_ACTION
 
-Add composite KR/US daily price provider wiring.
+Add mock-first daily price collection route.
 
 ## Resume Command
 
@@ -14,7 +14,8 @@ Add composite KR/US daily price provider wiring.
 - Run `git status --short --branch`.
 - Read `docs/provider-adapters.md`.
 - Keep `NINE_PROVIDER_MODE=mock` as the default and do not run live calls without an explicit live provider selection.
-- Add a server-only composite price provider path that can route KR tickers to KIS and US tickers to Yahoo Finance.
+- Add a server-only API route or handler path that collects daily prices through `createExternalProviders().price`.
+- Persist collected prices to Supabase when configured, with mock fallback behavior when Supabase is unavailable.
 - Preserve the current mock price behavior and API response envelopes.
-- Update provider docs with the composite price activation path and provider selection rules.
+- Update API/provider docs with the collection route, request shape, and mock/live activation behavior.
 - Run `npm run typecheck` and `npm run build`.

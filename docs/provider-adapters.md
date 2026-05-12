@@ -21,6 +21,7 @@ Mock adapters return stable local data so route handlers can be wired without ex
 - `GET /api/discover` reads Supabase first, then falls back to `createExternalProviders()` for mock Discover signals and mock Claude-style clustering, then falls back to static mock data if provider initialization fails.
 - KIS has a live KR daily price adapter shell. It is inactive by default and only replaces the mock price provider when both `NINE_PROVIDER_MODE=live` and `NINE_PRICE_PROVIDER=kis` are set.
 - Yahoo Finance has a live US daily price adapter shell. It is inactive by default and only replaces the mock price provider when both `NINE_PROVIDER_MODE=live` and `NINE_PRICE_PROVIDER=yahoo-finance` are set.
+- Composite daily price wiring is inactive by default and only replaces the mock price provider when both `NINE_PROVIDER_MODE=live` and `NINE_PRICE_PROVIDER=composite` are set.
 - NewsAPI has a live Discover signal adapter shell. It is inactive by default and only replaces the mock Discover signal provider when both `NINE_PROVIDER_MODE=live` and `NINE_DISCOVER_SIGNAL_PROVIDER=newsapi` are set.
 - Anthropic has a live LLM adapter shell. It is inactive by default and only replaces the mock LLM provider when both `NINE_PROVIDER_MODE=live` and `NINE_LLM_PROVIDER=anthropic` are set.
 - Finnhub has a live EPS adapter shell. It is inactive by default and only replaces the mock EPS provider when both `NINE_PROVIDER_MODE=live` and `NINE_EPS_PROVIDER=finnhub` are set.
@@ -66,6 +67,23 @@ YAHOO_FINANCE_BASE_URL=https://query1.finance.yahoo.com
 The shell uses Yahoo Finance chart responses from `GET /v8/finance/chart/{symbol}` with `period1`, `period2`, `interval=1d`, `events=history`, and `includeAdjustedClose=true`. It maps quote arrays into NINE `DailyPrice` rows with `source: "yahoo-finance"`.
 
 This adapter skips KR ticker formats and accepts US symbols such as `PLTR`, `NVDA`, and class-share inputs like `BRK.B`, which are normalized to Yahoo's `BRK-B` request format. Yahoo Finance is a configurable external source surface, not a client-side dependency; keep replacement-provider decisions isolated inside this adapter.
+
+## Composite Daily Price Wiring
+
+Activation env:
+
+```env
+NINE_PROVIDER_MODE=live
+NINE_PRICE_PROVIDER=composite
+KIS_APP_KEY=
+KIS_APP_SECRET=
+KIS_BASE_URL=https://openapi.koreainvestment.com:9443
+KIS_MARKET_DIV_CODE=J
+KIS_DAILY_PRICE_TR_ID=FHKST03010100
+YAHOO_FINANCE_BASE_URL=https://query1.finance.yahoo.com
+```
+
+The composite price provider calls both the KIS and Yahoo Finance price adapters with the same ticker list and date, then returns the combined `DailyPrice[]`. Provider-specific ticker filtering stays inside each adapter: KIS accepts six-digit KR tickers, while Yahoo Finance skips KR ticker formats and handles US symbols. Use the single-provider selections only for isolated provider verification.
 
 ## NewsAPI Shell
 

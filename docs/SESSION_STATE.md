@@ -4,15 +4,16 @@ Last updated: 2026-05-12 KST
 
 ## Next Action
 
-Add composite KR/US daily price provider wiring.
+Add mock-first daily price collection route.
 
 Acceptance criteria:
 - Run `git status --short --branch`.
 - Read `docs/provider-adapters.md`.
 - Keep `NINE_PROVIDER_MODE=mock` as the default and do not run live calls without an explicit live provider selection.
-- Add a server-only composite price provider path that can route KR tickers to KIS and US tickers to Yahoo Finance.
+- Add a server-only API route or handler path that collects daily prices through `createExternalProviders().price`.
+- Persist collected prices to Supabase when configured, with mock fallback behavior when Supabase is unavailable.
 - Preserve the current mock price behavior and API response envelopes.
-- Update provider docs with the composite price activation path and provider selection rules.
+- Update API/provider docs with the collection route, request shape, and mock/live activation behavior.
 - Run `npm run typecheck` and `npm run build`.
 
 ## Current Status
@@ -35,6 +36,7 @@ Acceptance criteria:
 - Finnhub EPS adapter shell exists, inactive by default.
 - KIS daily price adapter shell exists, inactive by default.
 - Yahoo Finance daily price adapter shell exists, inactive by default.
+- Composite KR/US daily price provider wiring exists, inactive by default.
 
 ## Verified
 
@@ -207,6 +209,15 @@ Acceptance criteria:
   - The adapter skips KR ticker formats and normalizes US class-share symbols such as `BRK.B` to Yahoo request format `BRK-B`.
   - Updated provider docs with the Yahoo Finance activation path and endpoint mapping.
   - No live Yahoo Finance calls were run.
+  - `npm run typecheck` passed.
+  - `npm run build` passed.
+- Composite KR/US daily price provider wiring verified locally:
+  - Added a server-only composite price provider that calls both KIS and Yahoo Finance price adapters and combines the returned `DailyPrice[]`.
+  - The composite path is inactive by default and only activates with `NINE_PROVIDER_MODE=live` plus `NINE_PRICE_PROVIDER=composite`.
+  - Provider-specific ticker filtering remains isolated inside each provider adapter.
+  - Single-provider selections `kis` and `yahoo-finance` remain available for isolated provider verification.
+  - Updated provider docs with composite activation env and selection rules.
+  - No live provider calls were run.
   - `npm run typecheck` passed.
   - `npm run build` passed.
 - Auth implementation verified locally with temporary env values:

@@ -2,6 +2,7 @@ import "server-only";
 
 import { assertProviderConfigured, getProviderMode } from "@/lib/server/providers/config";
 import { createAnthropicLlmProvider } from "@/lib/server/providers/anthropic";
+import { createCompositePriceProvider } from "@/lib/server/providers/composite-price";
 import { createFinnhubEpsProvider } from "@/lib/server/providers/finnhub";
 import { createKisPriceProvider } from "@/lib/server/providers/kis";
 import { createMockProviders } from "@/lib/server/providers/mock";
@@ -51,14 +52,25 @@ export function createExternalProviders(): ExternalProviders {
     providers.eps = createFinnhubEpsProvider();
   }
 
-  if (process.env.NINE_PRICE_PROVIDER === "kis") {
+  const priceProvider = process.env.NINE_PRICE_PROVIDER;
+
+  if (priceProvider === "kis") {
     assertProviderConfigured("kis");
     providers.price = createKisPriceProvider();
   }
 
-  if (process.env.NINE_PRICE_PROVIDER === "yahoo-finance") {
+  if (priceProvider === "yahoo-finance") {
     assertProviderConfigured("yahoo-finance");
     providers.price = createYahooFinancePriceProvider();
+  }
+
+  if (priceProvider === "composite") {
+    assertProviderConfigured("kis");
+    assertProviderConfigured("yahoo-finance");
+    providers.price = createCompositePriceProvider({
+      kis: createKisPriceProvider(),
+      yahooFinance: createYahooFinancePriceProvider(),
+    });
   }
 
   return providers;
