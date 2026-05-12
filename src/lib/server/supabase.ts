@@ -99,6 +99,10 @@ type DbEarningsSnapshot = {
   reported_at: string;
 };
 
+type DbNotificationEvent = {
+  id: number;
+};
+
 export function getSupabaseAdmin() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -481,6 +485,38 @@ export async function insertCoreBriefsInSupabase(briefs: LlmBrief[]): Promise<nu
   }
 
   return briefs.length;
+}
+
+export async function insertNotificationEventInSupabase({
+  tier,
+  ticker,
+  message,
+  sent,
+}: {
+  tier: "tier_1" | "tier_2" | "tier_3";
+  ticker: string | null;
+  message: string;
+  sent: boolean;
+}): Promise<number | null> {
+  const supabase = getSupabaseAdmin();
+  if (!supabase) return null;
+
+  const { data, error } = await supabase
+    .from("notification_events")
+    .insert({
+      tier,
+      ticker,
+      message,
+      sent_at: sent ? new Date().toISOString() : null,
+    })
+    .select("id")
+    .single<DbNotificationEvent>();
+
+  if (error || !data) {
+    throw new Error("Failed to persist notification event.");
+  }
+
+  return data.id;
 }
 
 export function toDailyPriceSnapshot(price: DailyPrice): DailyPriceSnapshot {

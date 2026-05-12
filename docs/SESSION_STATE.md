@@ -1,19 +1,19 @@
 # NINE Session State
 
-Last updated: 2026-05-12 KST
+Last updated: 2026-05-13 KST
 
 ## Next Action
 
-Add mock-first notification dispatch route.
+Add Solapi notification provider adapter shell.
 
 Acceptance criteria:
 - Run `git status --short --branch`.
 - Read `docs/provider-adapters.md`.
 - Keep `NINE_PROVIDER_MODE=mock` as the default and do not run live calls without an explicit live provider selection.
-- Add a server-only API route or handler path that sends notification messages through `createExternalProviders().notifications.send`.
-- Persist notification events to Supabase when configured, with mock fallback behavior when Supabase is unavailable.
+- Add a server-only Solapi notification provider shell for LMS dispatch.
+- Keep it inactive by default and only activate it with `NINE_PROVIDER_MODE=live` plus an explicit notification provider selection.
 - Preserve the current mock provider behavior and API response envelopes.
-- Update API/provider docs with the notification dispatch route, request shape, and mock/live activation behavior.
+- Update provider docs and environment docs with the Solapi activation path and required env.
 - Run `npm run typecheck` and `npm run build`.
 
 ## Current Status
@@ -41,6 +41,7 @@ Acceptance criteria:
 - Mock-first weekly EPS collection route exists.
 - Mock-first quarterly earnings collection route exists.
 - Mock-first LLM core brief collection route exists.
+- Mock-first notification dispatch route exists.
 
 ## Verified
 
@@ -259,6 +260,14 @@ Acceptance criteria:
   - Generated briefs are inserted into Supabase `llm_briefs` when Supabase is configured.
   - Mock/Supabase-disabled smoke test returned `200` for `PLTR` and `005930.KS` with `providerMode: "mock"` and `persisted: false`.
   - No live LLM calls were run.
+  - `npm run typecheck` passed.
+  - `npm run build` passed.
+- Mock-first notification dispatch route verified locally:
+  - Added `POST /api/notifications/send` using `createExternalProviders().notifications.send`.
+  - Added `NotificationDispatchRequest` and `NotificationDispatchResponse` contracts.
+  - Notification events are inserted into Supabase `notification_events` when Supabase is configured.
+  - Mock/Supabase-disabled smoke test returned `200` with `providerMode: "mock"`, `sent: false`, and `persisted: false`.
+  - No live LMS calls were run.
   - `npm run typecheck` passed.
   - `npm run build` passed.
 - Auth implementation verified locally with temporary env values:

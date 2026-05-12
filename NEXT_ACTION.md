@@ -1,6 +1,6 @@
 # NEXT_ACTION
 
-Add mock-first notification dispatch route.
+Add Solapi notification provider adapter shell.
 
 ## Resume Command
 
@@ -14,8 +14,8 @@ Add mock-first notification dispatch route.
 - Run `git status --short --branch`.
 - Read `docs/provider-adapters.md`.
 - Keep `NINE_PROVIDER_MODE=mock` as the default and do not run live calls without an explicit live provider selection.
-- Add a server-only API route or handler path that sends notification messages through `createExternalProviders().notifications.send`.
-- Persist notification events to Supabase when configured, with mock fallback behavior when Supabase is unavailable.
+- Add a server-only Solapi notification provider shell for LMS dispatch.
+- Keep it inactive by default and only activate it with `NINE_PROVIDER_MODE=live` plus an explicit notification provider selection.
 - Preserve the current mock provider behavior and API response envelopes.
-- Update API/provider docs with the notification dispatch route, request shape, and mock/live activation behavior.
+- Update provider docs and environment docs with the Solapi activation path and required env.
 - Run `npm run typecheck` and `npm run build`.

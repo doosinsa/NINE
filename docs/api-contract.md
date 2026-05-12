@@ -158,6 +158,24 @@ When `tickers` is omitted, the route uses the current Supabase `stocks` universe
 
 Response data: `CoreBriefCollectionResponse`
 
+### `POST /api/notifications/send`
+Dispatches one notification through the configured server-only notification provider.
+
+Request: `NotificationDispatchRequest`
+
+```ts
+{
+  tier: "tier_1" | "tier_2" | "tier_3";
+  to: string;
+  body: string;
+  ticker?: string;
+}
+```
+
+With `NINE_PROVIDER_MODE=mock`, the route uses the mock notification provider and does not send a real LMS. When Supabase is configured, the route records a `notification_events` row; without Supabase, the response returns `persisted: false`.
+
+Response data: `NotificationDispatchResponse`
+
 ### `POST /api/auth/login`
 Verifies the single app password against `NINE_PASSWORD_HASH`. On success, sets an HTTP-only session cookie protected with `NINE_SESSION_SECRET`.
 

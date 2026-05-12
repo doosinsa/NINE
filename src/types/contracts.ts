@@ -161,6 +161,23 @@ export type CoreBriefCollectionResponse = {
   briefs: LlmBrief[];
 };
 
+export type NotificationDispatchRequest = {
+  tier: AlertTier;
+  to: string;
+  body: string;
+  ticker?: string;
+};
+
+export type NotificationDispatchResponse = {
+  tier: AlertTier;
+  ticker: string | null;
+  sent: boolean;
+  providerMessageId: string | null;
+  persisted: boolean;
+  eventId: number | null;
+  providerMode: "mock" | "live";
+};
+
 export type DailyPriceSnapshot = {
   ticker: string;
   date: string;
