@@ -39,18 +39,31 @@ Generate `NINE_SESSION_SECRET` with:
 openssl rand -base64 32
 ```
 
-Future provider keys:
+Provider adapter mode:
+
+```env
+NINE_PROVIDER_MODE=mock
+```
+
+Use `mock` until provider accounts are ready. `live` should only be enabled after all required provider env values are configured and live adapters are implemented.
+
+Future provider keys and settings:
 
 ```env
 ANTHROPIC_API_KEY=
+ANTHROPIC_MODEL=claude-haiku-4-5-20251001
 KIS_APP_KEY=
 KIS_APP_SECRET=
+KIS_BASE_URL=
 DART_API_KEY=
 FINNHUB_API_KEY=
 NEWS_API_KEY=
+KITA_API_KEY=
 SOLAPI_API_KEY=
 SOLAPI_API_SECRET=
+SOLAPI_SENDER=
 SEC_USER_AGENT_EMAIL=
+YAHOO_FINANCE_BASE_URL=https://query1.finance.yahoo.com
 ```
 
 ## Vercel Production Env
@@ -61,11 +74,26 @@ Already configured:
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 - `SUPABASE_SERVICE_ROLE_KEY`
 - `SUPABASE_PROJECT_REF`
-
-Needed before auth deployment:
-
 - `NINE_PASSWORD_HASH`
 - `NINE_SESSION_SECRET`
+
+Needed before live external provider calls:
+
+- `NINE_PROVIDER_MODE=live`
+- `ANTHROPIC_API_KEY`
+- `ANTHROPIC_MODEL`
+- `KIS_APP_KEY`
+- `KIS_APP_SECRET`
+- `KIS_BASE_URL`
+- `DART_API_KEY`
+- `FINNHUB_API_KEY`
+- `NEWS_API_KEY`
+- `KITA_API_KEY`
+- `SOLAPI_API_KEY`
+- `SOLAPI_API_SECRET`
+- `SOLAPI_SENDER`
+- `SEC_USER_AGENT_EMAIL`
+- `YAHOO_FINANCE_BASE_URL`
 
 ## URL Format
 

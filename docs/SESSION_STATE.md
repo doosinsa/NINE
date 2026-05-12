@@ -4,14 +4,14 @@ Last updated: 2026-05-12 KST
 
 ## Next Action
 
-Scaffold external provider API adapters.
+Wire provider adapters into API workflows.
 
 Acceptance criteria:
 - Run `git status --short --branch`.
-- Review provider-related PRD requirements and existing API routes.
-- Add server-only provider adapter interfaces with mock/default implementations.
-- Add environment variable placeholders to `.env.example` without adding secrets.
-- Document which real API keys/accounts are still needed before live calls.
+- Read `docs/provider-adapters.md`.
+- Use `createExternalProviders()` in the next mock-backed workflow where it reduces direct mock-data coupling.
+- Keep `NINE_PROVIDER_MODE=mock` as the default; do not make live external calls yet.
+- Preserve existing response envelopes and UI contracts.
 - Run `npm run typecheck` and `npm run build`.
 
 ## Current Status
@@ -27,6 +27,7 @@ Acceptance criteria:
 - Supabase seed applied.
 - Vercel production env has Supabase URL, anon key, service role key, project ref, `NINE_PASSWORD_HASH`, and `NINE_SESSION_SECRET`.
 - API routes now read Supabase first and fall back to mock data.
+- External provider adapter interfaces and mock implementations exist under `src/lib/server/providers`.
 
 ## Verified
 
@@ -143,6 +144,14 @@ Acceptance criteria:
   - Production `/api/stocks/NINEPRODDISCOTEST` returned `200` with `source: discover`, `totalScore: 0`, `decision: watch`, and watermark `이 점수는 prep이지 신탁이 아님`.
   - Supabase `stocks` and `manual_scores` rows were created for the temporary ticker.
   - Temporary `NINEPRODDISCOTEST` `stocks` row was deleted; `manual_scores` was verified deleted by cascade.
+- External provider adapter scaffold verified locally:
+  - Added server-only provider contracts for prices, EPS, earnings, Claude briefs, Discover signals, and Solapi notifications.
+  - Added mock provider implementations so live keys are not required yet.
+  - Added provider configuration/status helpers with `NINE_PROVIDER_MODE=mock` default behavior.
+  - Updated `.env.example` and `docs/ENVIRONMENT.md` with provider placeholders only, no secrets.
+  - Added `docs/provider-adapters.md` documenting required live provider accounts and env values.
+  - `npm run typecheck` passed.
+  - `npm run build` passed.
 - Auth implementation verified locally with temporary env values:
   - `npm run typecheck` passed.
   - `npm run build` passed.

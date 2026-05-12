@@ -1,6 +1,6 @@
 # NEXT_ACTION
 
-Scaffold external provider API adapters.
+Wire provider adapters into API workflows.
 
 ## Resume Command
 
@@ -12,8 +12,8 @@ Scaffold external provider API adapters.
 - Read `docs/SESSION_STATE.md`.
 - Read `prd.md`.
 - Run `git status --short --branch`.
-- Review provider-related PRD requirements and existing API routes.
-- Add server-only provider adapter interfaces with mock/default implementations.
-- Add environment variable placeholders to `.env.example` without adding secrets.
-- Document which real API keys/accounts are still needed before live calls.
+- Read `docs/provider-adapters.md`.
+- Use `createExternalProviders()` in the next mock-backed workflow where it reduces direct mock-data coupling.
+- Keep `NINE_PROVIDER_MODE=mock` as the default; do not make live external calls yet.
+- Preserve existing response envelopes and UI contracts.
 - Run `npm run typecheck` and `npm run build`.
