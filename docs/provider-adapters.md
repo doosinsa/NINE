@@ -16,6 +16,10 @@ Mock adapters return stable local data so route handlers can be wired without ex
 
 `NINE_PROVIDER_MODE=live` intentionally throws until live adapters are implemented and required env values are present.
 
+## Current Wiring
+
+- `GET /api/discover` reads Supabase first, then falls back to `createExternalProviders()` for mock Discover signals and mock Claude-style clustering, then falls back to static mock data if provider initialization fails.
+
 ## Adapter Surfaces
 
 - `price.fetchDailyPrices`: KIS for KR, Yahoo Finance for US.

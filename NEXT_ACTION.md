@@ -1,6 +1,6 @@
 # NEXT_ACTION
 
-Wire provider adapters into API workflows.
+Add the first live provider adapter shell.
 
 ## Resume Command
 
@@ -13,7 +13,8 @@ Wire provider adapters into API workflows.
 - Read `prd.md`.
 - Run `git status --short --branch`.
 - Read `docs/provider-adapters.md`.
-- Use `createExternalProviders()` in the next mock-backed workflow where it reduces direct mock-data coupling.
-- Keep `NINE_PROVIDER_MODE=mock` as the default; do not make live external calls yet.
-- Preserve existing response envelopes and UI contracts.
+- Pick the lowest-risk provider surface for a live adapter shell, likely NewsAPI Discover signals.
+- Keep `NINE_PROVIDER_MODE=mock` as the default and do not run live calls without keys.
+- Preserve the current mock adapter behavior and API response envelopes.
+- Update provider docs with the live adapter's required env and activation path.
 - Run `npm run typecheck` and `npm run build`.

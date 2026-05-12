@@ -1,12 +1,17 @@
 import { fail, ok } from "@/lib/server/api";
 import { discoverThemes, stocks } from "@/lib/server/mock-data";
+import { fetchDiscoverThemesFromProviders } from "@/lib/server/provider-data";
 import { fetchDiscoverThemesFromSupabase, sendDiscoverTickersToCoreInSupabase } from "@/lib/server/supabase";
 import type { DiscoverResponse, DiscoverSendToCoreRequest, DiscoverSendToCoreResponse } from "@/types/contracts";
 
 export async function GET() {
-  const themes = (await fetchDiscoverThemesFromSupabase()) ?? discoverThemes;
+  const fallbackWeekOf = discoverThemes[0]?.weekOf ?? "2026-05-04";
+  const themes =
+    (await fetchDiscoverThemesFromSupabase()) ??
+    (await fetchDiscoverThemesFromProviders(fallbackWeekOf)) ??
+    discoverThemes;
   const response: DiscoverResponse = {
-    weekOf: themes[0]?.weekOf ?? "2026-05-04",
+    weekOf: themes[0]?.weekOf ?? fallbackWeekOf,
     themes,
   };
 

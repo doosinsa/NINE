@@ -4,14 +4,15 @@ Last updated: 2026-05-12 KST
 
 ## Next Action
 
-Wire provider adapters into API workflows.
+Add the first live provider adapter shell.
 
 Acceptance criteria:
 - Run `git status --short --branch`.
 - Read `docs/provider-adapters.md`.
-- Use `createExternalProviders()` in the next mock-backed workflow where it reduces direct mock-data coupling.
-- Keep `NINE_PROVIDER_MODE=mock` as the default; do not make live external calls yet.
-- Preserve existing response envelopes and UI contracts.
+- Pick the lowest-risk provider surface for a live adapter shell, likely NewsAPI Discover signals.
+- Keep `NINE_PROVIDER_MODE=mock` as the default and do not run live calls without keys.
+- Preserve the current mock adapter behavior and API response envelopes.
+- Update provider docs with the live adapter's required env and activation path.
 - Run `npm run typecheck` and `npm run build`.
 
 ## Current Status
@@ -28,6 +29,7 @@ Acceptance criteria:
 - Vercel production env has Supabase URL, anon key, service role key, project ref, `NINE_PASSWORD_HASH`, and `NINE_SESSION_SECRET`.
 - API routes now read Supabase first and fall back to mock data.
 - External provider adapter interfaces and mock implementations exist under `src/lib/server/providers`.
+- `GET /api/discover` now uses the provider adapter fallback path before static mock data.
 
 ## Verified
 
@@ -150,6 +152,12 @@ Acceptance criteria:
   - Added provider configuration/status helpers with `NINE_PROVIDER_MODE=mock` default behavior.
   - Updated `.env.example` and `docs/ENVIRONMENT.md` with provider placeholders only, no secrets.
   - Added `docs/provider-adapters.md` documenting required live provider accounts and env values.
+  - `npm run typecheck` passed.
+  - `npm run build` passed.
+- Provider adapter wiring verified locally:
+  - `GET /api/discover` now reads Supabase first, then `createExternalProviders()` mock Discover signals and mock Claude-style clustering, then static mock data as a final fallback.
+  - Existing `DiscoverResponse` envelope and fields were preserved.
+  - Local `GET /api/discover` returned `200`.
   - `npm run typecheck` passed.
   - `npm run build` passed.
 - Auth implementation verified locally with temporary env values:
