@@ -44,6 +44,7 @@ Provider adapter mode:
 ```env
 NINE_PROVIDER_MODE=mock
 NINE_DISCOVER_SIGNAL_PROVIDER=mock
+NINE_LLM_PROVIDER=mock
 ```
 
 Use `mock` until provider accounts are ready. `live` should only be enabled for a provider surface after that surface has a live adapter and its required env values are configured.
@@ -52,7 +53,10 @@ Future provider keys and settings:
 
 ```env
 ANTHROPIC_API_KEY=
+ANTHROPIC_BASE_URL=https://api.anthropic.com
 ANTHROPIC_MODEL=claude-haiku-4-5-20251001
+ANTHROPIC_VERSION=2023-06-01
+ANTHROPIC_MAX_TOKENS=1200
 KIS_APP_KEY=
 KIS_APP_SECRET=
 KIS_BASE_URL=
@@ -85,8 +89,12 @@ Needed before live external provider calls:
 
 - `NINE_PROVIDER_MODE=live`
 - `NINE_DISCOVER_SIGNAL_PROVIDER=newsapi`
+- `NINE_LLM_PROVIDER=anthropic`
 - `ANTHROPIC_API_KEY`
+- `ANTHROPIC_BASE_URL`
 - `ANTHROPIC_MODEL`
+- `ANTHROPIC_VERSION`
+- `ANTHROPIC_MAX_TOKENS`
 - `KIS_APP_KEY`
 - `KIS_APP_SECRET`
 - `KIS_BASE_URL`

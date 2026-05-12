@@ -12,7 +12,7 @@ const providerEnvSpecs: ProviderEnvSpec[] = [
   {
     provider: "anthropic",
     purpose: "Claude Haiku core briefs and Discover theme clustering.",
-    requiredEnv: ["ANTHROPIC_API_KEY", "ANTHROPIC_MODEL"],
+    requiredEnv: ["ANTHROPIC_API_KEY", "ANTHROPIC_MODEL", "ANTHROPIC_VERSION"],
   },
   {
     provider: "dart",

@@ -20,6 +20,7 @@ Mock adapters return stable local data so route handlers can be wired without ex
 
 - `GET /api/discover` reads Supabase first, then falls back to `createExternalProviders()` for mock Discover signals and mock Claude-style clustering, then falls back to static mock data if provider initialization fails.
 - NewsAPI has a live Discover signal adapter shell. It is inactive by default and only replaces the mock Discover signal provider when both `NINE_PROVIDER_MODE=live` and `NINE_DISCOVER_SIGNAL_PROVIDER=newsapi` are set.
+- Anthropic has a live LLM adapter shell. It is inactive by default and only replaces the mock LLM provider when both `NINE_PROVIDER_MODE=live` and `NINE_LLM_PROVIDER=anthropic` are set.
 
 ## Adapter Surfaces
 
@@ -45,6 +46,22 @@ NEWS_API_DISCOVER_QUERIES=AI semiconductor,defense electronics,energy infrastruc
 ```
 
 The shell uses NewsAPI `/v2/everything` with `X-Api-Key`, `q`, `from`, `to`, `language`, `sortBy=publishedAt`, and `pageSize=20`. It maps article counts into a rough news signal and does not attempt stock recommendation or ticker extraction. KITA export signals and Claude theme clustering remain separate adapter surfaces.
+
+## Anthropic Shell
+
+Activation env:
+
+```env
+NINE_PROVIDER_MODE=live
+NINE_LLM_PROVIDER=anthropic
+ANTHROPIC_API_KEY=
+ANTHROPIC_BASE_URL=https://api.anthropic.com
+ANTHROPIC_MODEL=claude-haiku-4-5-20251001
+ANTHROPIC_VERSION=2023-06-01
+ANTHROPIC_MAX_TOKENS=1200
+```
+
+The shell uses Anthropic Messages API `POST /v1/messages` with `x-api-key`, `anthropic-version`, and JSON request/response bodies. It asks for JSON-only output and parses that into existing `LlmBrief` and `DiscoverTheme` contracts. Prompts explicitly preserve NINE's non-recommendation stance and banned copy rules.
 
 ## Required Before Live Calls
 

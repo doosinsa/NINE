@@ -4,15 +4,15 @@ Last updated: 2026-05-12 KST
 
 ## Next Action
 
-Add the Anthropic LLM provider adapter shell.
+Add the Finnhub EPS provider adapter shell.
 
 Acceptance criteria:
 - Run `git status --short --branch`.
 - Read `docs/provider-adapters.md`.
 - Keep `NINE_PROVIDER_MODE=mock` as the default and do not run live calls without keys.
-- Add a server-only Anthropic adapter shell for Core briefs and Discover clustering.
-- Preserve the current mock LLM behavior and API response envelopes.
-- Update provider docs with the Anthropic adapter's required env and activation path.
+- Add a server-only Finnhub adapter shell for US consensus EPS snapshots.
+- Preserve the current mock EPS behavior and API response envelopes.
+- Update provider docs with the Finnhub adapter's required env and activation path.
 - Run `npm run typecheck` and `npm run build`.
 
 ## Current Status
@@ -31,6 +31,7 @@ Acceptance criteria:
 - External provider adapter interfaces and mock implementations exist under `src/lib/server/providers`.
 - `GET /api/discover` now uses the provider adapter fallback path before static mock data.
 - NewsAPI Discover signal adapter shell exists, inactive by default.
+- Anthropic LLM adapter shell exists, inactive by default.
 
 ## Verified
 
@@ -166,6 +167,14 @@ Acceptance criteria:
   - The adapter is inactive by default and only activates with `NINE_PROVIDER_MODE=live` plus `NINE_DISCOVER_SIGNAL_PROVIDER=newsapi`.
   - Added `NEWS_API_BASE_URL`, `NEWS_API_LANGUAGE`, and `NEWS_API_DISCOVER_QUERIES` placeholders.
   - Updated provider docs with the activation path.
+  - Local `GET /api/discover` returned `200` with existing response envelope.
+  - `npm run typecheck` passed.
+  - `npm run build` passed.
+- Anthropic LLM adapter shell verified locally:
+  - Added a server-only Anthropic Messages API adapter shell for Core briefs and Discover theme clustering.
+  - The adapter is inactive by default and only activates with `NINE_PROVIDER_MODE=live` plus `NINE_LLM_PROVIDER=anthropic`.
+  - Added `ANTHROPIC_BASE_URL`, `ANTHROPIC_VERSION`, and `ANTHROPIC_MAX_TOKENS` placeholders.
+  - Prompts preserve NINE's non-recommendation stance and banned copy rules.
   - Local `GET /api/discover` returned `200` with existing response envelope.
   - `npm run typecheck` passed.
   - `npm run build` passed.
