@@ -4,16 +4,16 @@ Last updated: 2026-05-13 KST
 
 ## Next Action
 
-Add DART quarterly earnings provider adapter shell.
+Add Yahoo Finance earnings provider adapter shell.
 
 Acceptance criteria:
 - Run `git status --short --branch`.
 - Read `docs/provider-adapters.md`.
 - Keep `NINE_PROVIDER_MODE=mock` as the default and do not run live calls without an explicit live provider selection.
-- Add a server-only DART quarterly earnings provider shell for KR earnings snapshots.
+- Add a server-only Yahoo Finance earnings provider shell for US earnings snapshots.
 - Keep it inactive by default and only activate it with `NINE_PROVIDER_MODE=live` plus an explicit earnings provider selection.
 - Preserve the current mock provider behavior and API response envelopes.
-- Update provider docs and environment docs with the DART activation path and required env.
+- Update provider docs and environment docs with the Yahoo Finance earnings activation path and required env.
 - Run `npm run typecheck` and `npm run build`.
 
 ## Current Status
@@ -43,6 +43,7 @@ Acceptance criteria:
 - Mock-first LLM core brief collection route exists.
 - Mock-first notification dispatch route exists.
 - Solapi LMS notification adapter shell exists, inactive by default.
+- DART KR earnings adapter shell exists, inactive by default.
 
 ## Verified
 
@@ -277,6 +278,15 @@ Acceptance criteria:
   - Added `NINE_NOTIFICATION_PROVIDER`, `SOLAPI_BASE_URL`, `SOLAPI_MESSAGE_TYPE`, and `SOLAPI_COUNTRY` placeholders.
   - Updated provider docs with the Solapi activation path and current `POST /messages/v4/send-many/detail` mapping.
   - No live LMS calls were run.
+  - `npm run typecheck` passed.
+  - `npm run build` passed.
+- DART earnings adapter shell verified locally:
+  - Added a server-only OpenDART `fnlttSinglAcnt.json` adapter shell for KR earnings snapshots.
+  - The adapter is inactive by default and only activates with `NINE_PROVIDER_MODE=live` plus `NINE_EARNINGS_PROVIDER=dart`.
+  - Added `NINE_EARNINGS_PROVIDER`, `DART_BASE_URL`, `DART_CORP_CODE_MAP`, `DART_BUSINESS_YEAR`, `DART_REPORT_CODE`, and `DART_FS_DIV` placeholders.
+  - `DART_CORP_CODE_MAP` is required because OpenDART uses 8-digit corporate codes instead of listed 6-digit stock codes.
+  - Updated provider docs with the DART activation path and report code mapping.
+  - No live DART calls were run.
   - `npm run typecheck` passed.
   - `npm run build` passed.
 - Auth implementation verified locally with temporary env values:

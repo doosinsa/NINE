@@ -3,6 +3,7 @@ import "server-only";
 import { assertProviderConfigured, getProviderMode } from "@/lib/server/providers/config";
 import { createAnthropicLlmProvider } from "@/lib/server/providers/anthropic";
 import { createCompositePriceProvider } from "@/lib/server/providers/composite-price";
+import { createDartEarningsProvider } from "@/lib/server/providers/dart";
 import { createFinnhubEpsProvider } from "@/lib/server/providers/finnhub";
 import { createKisPriceProvider } from "@/lib/server/providers/kis";
 import { createMockProviders } from "@/lib/server/providers/mock";
@@ -51,6 +52,11 @@ export function createExternalProviders(): ExternalProviders {
   if (process.env.NINE_EPS_PROVIDER === "finnhub") {
     assertProviderConfigured("finnhub");
     providers.eps = createFinnhubEpsProvider();
+  }
+
+  if (process.env.NINE_EARNINGS_PROVIDER === "dart") {
+    assertProviderConfigured("dart");
+    providers.earnings = createDartEarningsProvider();
   }
 
   if (process.env.NINE_NOTIFICATION_PROVIDER === "solapi") {

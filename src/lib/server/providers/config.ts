@@ -17,7 +17,7 @@ const providerEnvSpecs: ProviderEnvSpec[] = [
   {
     provider: "dart",
     purpose: "KR quarterly filings and earnings snapshots.",
-    requiredEnv: ["DART_API_KEY"],
+    requiredEnv: ["DART_API_KEY", "DART_CORP_CODE_MAP"],
   },
   {
     provider: "finnhub",
