@@ -88,6 +88,7 @@ SOLAPI_MESSAGE_TYPE=LMS
 SOLAPI_COUNTRY=82
 SEC_USER_AGENT_EMAIL=
 YAHOO_FINANCE_BASE_URL=https://query1.finance.yahoo.com
+YAHOO_FINANCE_QUOTE_SUMMARY_BASE_URL=https://query2.finance.yahoo.com
 ```
 
 ## Vercel Production Env
@@ -108,7 +109,7 @@ Needed before live external provider calls:
 - `NINE_DISCOVER_SIGNAL_PROVIDER=newsapi`
 - `NINE_LLM_PROVIDER=anthropic`
 - `NINE_EPS_PROVIDER=finnhub`
-- `NINE_EARNINGS_PROVIDER=dart`
+- `NINE_EARNINGS_PROVIDER=dart` for KR earnings or `yahoo-finance` for US earnings
 - `NINE_NOTIFICATION_PROVIDER=solapi`
 - `ANTHROPIC_API_KEY`
 - `ANTHROPIC_BASE_URL`
@@ -142,6 +143,7 @@ Needed before live external provider calls:
 - `SOLAPI_COUNTRY`
 - `SEC_USER_AGENT_EMAIL`
 - `YAHOO_FINANCE_BASE_URL`
+- `YAHOO_FINANCE_QUOTE_SUMMARY_BASE_URL`
 
 ## URL Format
 

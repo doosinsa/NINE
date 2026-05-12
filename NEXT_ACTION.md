@@ -1,6 +1,6 @@
 # NEXT_ACTION
 
-Add Yahoo Finance earnings provider adapter shell.
+Add composite KR/US earnings provider wiring.
 
 ## Resume Command
 
@@ -14,8 +14,8 @@ Add Yahoo Finance earnings provider adapter shell.
 - Run `git status --short --branch`.
 - Read `docs/provider-adapters.md`.
 - Keep `NINE_PROVIDER_MODE=mock` as the default and do not run live calls without an explicit live provider selection.
-- Add a server-only Yahoo Finance earnings provider shell for US earnings snapshots.
-- Keep it inactive by default and only activate it with `NINE_PROVIDER_MODE=live` plus an explicit earnings provider selection.
+- Add server-only composite earnings wiring that combines DART KR earnings and Yahoo Finance US earnings.
+- Keep it inactive by default and only activate it with `NINE_PROVIDER_MODE=live` plus `NINE_EARNINGS_PROVIDER=composite`.
 - Preserve the current mock provider behavior and API response envelopes.
-- Update provider docs and environment docs with the Yahoo Finance earnings activation path and required env.
+- Update provider docs and environment docs with the composite earnings activation path and required env.
 - Run `npm run typecheck` and `npm run build`.

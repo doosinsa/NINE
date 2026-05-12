@@ -4,16 +4,16 @@ Last updated: 2026-05-13 KST
 
 ## Next Action
 
-Add Yahoo Finance earnings provider adapter shell.
+Add composite KR/US earnings provider wiring.
 
 Acceptance criteria:
 - Run `git status --short --branch`.
 - Read `docs/provider-adapters.md`.
 - Keep `NINE_PROVIDER_MODE=mock` as the default and do not run live calls without an explicit live provider selection.
-- Add a server-only Yahoo Finance earnings provider shell for US earnings snapshots.
-- Keep it inactive by default and only activate it with `NINE_PROVIDER_MODE=live` plus an explicit earnings provider selection.
+- Add server-only composite earnings wiring that combines DART KR earnings and Yahoo Finance US earnings.
+- Keep it inactive by default and only activate it with `NINE_PROVIDER_MODE=live` plus `NINE_EARNINGS_PROVIDER=composite`.
 - Preserve the current mock provider behavior and API response envelopes.
-- Update provider docs and environment docs with the Yahoo Finance earnings activation path and required env.
+- Update provider docs and environment docs with the composite earnings activation path and required env.
 - Run `npm run typecheck` and `npm run build`.
 
 ## Current Status
@@ -44,6 +44,7 @@ Acceptance criteria:
 - Mock-first notification dispatch route exists.
 - Solapi LMS notification adapter shell exists, inactive by default.
 - DART KR earnings adapter shell exists, inactive by default.
+- Yahoo Finance US earnings adapter shell exists, inactive by default.
 
 ## Verified
 
@@ -287,6 +288,14 @@ Acceptance criteria:
   - `DART_CORP_CODE_MAP` is required because OpenDART uses 8-digit corporate codes instead of listed 6-digit stock codes.
   - Updated provider docs with the DART activation path and report code mapping.
   - No live DART calls were run.
+  - `npm run typecheck` passed.
+  - `npm run build` passed.
+- Yahoo Finance earnings adapter shell verified locally:
+  - Added a server-only Yahoo Finance quoteSummary adapter shell for US earnings snapshots.
+  - The adapter is inactive by default and only activates with `NINE_PROVIDER_MODE=live` plus `NINE_EARNINGS_PROVIDER=yahoo-finance`.
+  - Added `YAHOO_FINANCE_QUOTE_SUMMARY_BASE_URL` placeholder while keeping the existing Yahoo price base URL.
+  - The adapter maps the latest earnings history and quarterly financial chart rows into NINE `EarningsSnapshot` rows.
+  - No live Yahoo Finance calls were run.
   - `npm run typecheck` passed.
   - `npm run build` passed.
 - Auth implementation verified locally with temporary env values:

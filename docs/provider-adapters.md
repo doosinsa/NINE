@@ -31,6 +31,7 @@ Mock adapters return stable local data so route handlers can be wired without ex
 - Anthropic has a live LLM adapter shell. It is inactive by default and only replaces the mock LLM provider when both `NINE_PROVIDER_MODE=live` and `NINE_LLM_PROVIDER=anthropic` are set.
 - Finnhub has a live EPS adapter shell. It is inactive by default and only replaces the mock EPS provider when both `NINE_PROVIDER_MODE=live` and `NINE_EPS_PROVIDER=finnhub` are set.
 - DART has a live KR earnings adapter shell. It is inactive by default and only replaces the mock earnings provider when both `NINE_PROVIDER_MODE=live` and `NINE_EARNINGS_PROVIDER=dart` are set.
+- Yahoo Finance has a live US earnings adapter shell. It is inactive by default and only replaces the mock earnings provider when both `NINE_PROVIDER_MODE=live` and `NINE_EARNINGS_PROVIDER=yahoo-finance` are set.
 - Solapi has a live LMS notification adapter shell. It is inactive by default and only replaces the mock notification provider when both `NINE_PROVIDER_MODE=live` and `NINE_NOTIFICATION_PROVIDER=solapi` are set.
 
 ## Adapter Surfaces
@@ -74,6 +75,21 @@ YAHOO_FINANCE_BASE_URL=https://query1.finance.yahoo.com
 The shell uses Yahoo Finance chart responses from `GET /v8/finance/chart/{symbol}` with `period1`, `period2`, `interval=1d`, `events=history`, and `includeAdjustedClose=true`. It maps quote arrays into NINE `DailyPrice` rows with `source: "yahoo-finance"`.
 
 This adapter skips KR ticker formats and accepts US symbols such as `PLTR`, `NVDA`, and class-share inputs like `BRK.B`, which are normalized to Yahoo's `BRK-B` request format. Yahoo Finance is a configurable external source surface, not a client-side dependency; keep replacement-provider decisions isolated inside this adapter.
+
+## Yahoo Finance Earnings Shell
+
+Activation env:
+
+```env
+NINE_PROVIDER_MODE=live
+NINE_EARNINGS_PROVIDER=yahoo-finance
+YAHOO_FINANCE_BASE_URL=https://query1.finance.yahoo.com
+YAHOO_FINANCE_QUOTE_SUMMARY_BASE_URL=https://query2.finance.yahoo.com
+```
+
+The shell uses Yahoo Finance quoteSummary responses from `GET /v10/finance/quoteSummary/{symbol}` with `modules=earningsHistory,earnings` and `formatted=false`. It maps the latest earnings history row and quarterly financial chart row into NINE `EarningsSnapshot` rows with `dataSource: "yahoo-finance"`, reported date, fiscal quarter, EPS actual, EPS surprise, and revenue when present.
+
+This adapter skips KR ticker formats and accepts US symbols such as `PLTR`, `NVDA`, and class-share inputs like `BRK.B`, which are normalized to Yahoo's `BRK-B` request format. Keep it isolated from the DART provider until composite KR/US earnings wiring is explicitly enabled.
 
 ## Composite Daily Price Wiring
 

@@ -9,7 +9,10 @@ import { createKisPriceProvider } from "@/lib/server/providers/kis";
 import { createMockProviders } from "@/lib/server/providers/mock";
 import { createNewsApiDiscoverSignalProvider } from "@/lib/server/providers/newsapi";
 import { createSolapiNotificationProvider } from "@/lib/server/providers/solapi";
-import { createYahooFinancePriceProvider } from "@/lib/server/providers/yahoo-finance";
+import {
+  createYahooFinanceEarningsProvider,
+  createYahooFinancePriceProvider,
+} from "@/lib/server/providers/yahoo-finance";
 import type { ExternalProviders } from "@/lib/server/providers/types";
 
 export { getProviderMode, getProviderStatuses } from "@/lib/server/providers/config";
@@ -57,6 +60,11 @@ export function createExternalProviders(): ExternalProviders {
   if (process.env.NINE_EARNINGS_PROVIDER === "dart") {
     assertProviderConfigured("dart");
     providers.earnings = createDartEarningsProvider();
+  }
+
+  if (process.env.NINE_EARNINGS_PROVIDER === "yahoo-finance") {
+    assertProviderConfigured("yahoo-finance");
+    providers.earnings = createYahooFinanceEarningsProvider();
   }
 
   if (process.env.NINE_NOTIFICATION_PROVIDER === "solapi") {
