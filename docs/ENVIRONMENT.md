@@ -45,6 +45,7 @@ Provider adapter mode:
 NINE_PROVIDER_MODE=mock
 NINE_DISCOVER_SIGNAL_PROVIDER=mock
 NINE_LLM_PROVIDER=mock
+NINE_EPS_PROVIDER=mock
 ```
 
 Use `mock` until provider accounts are ready. `live` should only be enabled for a provider surface after that surface has a live adapter and its required env values are configured.
@@ -62,6 +63,8 @@ KIS_APP_SECRET=
 KIS_BASE_URL=
 DART_API_KEY=
 FINNHUB_API_KEY=
+FINNHUB_BASE_URL=https://finnhub.io/api/v1
+FINNHUB_EPS_FREQ=quarterly
 NEWS_API_KEY=
 NEWS_API_BASE_URL=https://newsapi.org
 NEWS_API_LANGUAGE=en
@@ -90,6 +93,7 @@ Needed before live external provider calls:
 - `NINE_PROVIDER_MODE=live`
 - `NINE_DISCOVER_SIGNAL_PROVIDER=newsapi`
 - `NINE_LLM_PROVIDER=anthropic`
+- `NINE_EPS_PROVIDER=finnhub`
 - `ANTHROPIC_API_KEY`
 - `ANTHROPIC_BASE_URL`
 - `ANTHROPIC_MODEL`
@@ -100,6 +104,8 @@ Needed before live external provider calls:
 - `KIS_BASE_URL`
 - `DART_API_KEY`
 - `FINNHUB_API_KEY`
+- `FINNHUB_BASE_URL`
+- `FINNHUB_EPS_FREQ`
 - `NEWS_API_KEY`
 - `NEWS_API_BASE_URL`
 - `NEWS_API_LANGUAGE`

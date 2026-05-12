@@ -2,6 +2,7 @@ import "server-only";
 
 import { assertProviderConfigured, getProviderMode } from "@/lib/server/providers/config";
 import { createAnthropicLlmProvider } from "@/lib/server/providers/anthropic";
+import { createFinnhubEpsProvider } from "@/lib/server/providers/finnhub";
 import { createMockProviders } from "@/lib/server/providers/mock";
 import { createNewsApiDiscoverSignalProvider } from "@/lib/server/providers/newsapi";
 import type { ExternalProviders } from "@/lib/server/providers/types";
@@ -41,6 +42,11 @@ export function createExternalProviders(): ExternalProviders {
   if (process.env.NINE_LLM_PROVIDER === "anthropic") {
     assertProviderConfigured("anthropic");
     providers.llm = createAnthropicLlmProvider();
+  }
+
+  if (process.env.NINE_EPS_PROVIDER === "finnhub") {
+    assertProviderConfigured("finnhub");
+    providers.eps = createFinnhubEpsProvider();
   }
 
   return providers;

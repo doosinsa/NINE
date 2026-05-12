@@ -21,6 +21,7 @@ Mock adapters return stable local data so route handlers can be wired without ex
 - `GET /api/discover` reads Supabase first, then falls back to `createExternalProviders()` for mock Discover signals and mock Claude-style clustering, then falls back to static mock data if provider initialization fails.
 - NewsAPI has a live Discover signal adapter shell. It is inactive by default and only replaces the mock Discover signal provider when both `NINE_PROVIDER_MODE=live` and `NINE_DISCOVER_SIGNAL_PROVIDER=newsapi` are set.
 - Anthropic has a live LLM adapter shell. It is inactive by default and only replaces the mock LLM provider when both `NINE_PROVIDER_MODE=live` and `NINE_LLM_PROVIDER=anthropic` are set.
+- Finnhub has a live EPS adapter shell. It is inactive by default and only replaces the mock EPS provider when both `NINE_PROVIDER_MODE=live` and `NINE_EPS_PROVIDER=finnhub` are set.
 
 ## Adapter Surfaces
 
@@ -62,6 +63,20 @@ ANTHROPIC_MAX_TOKENS=1200
 ```
 
 The shell uses Anthropic Messages API `POST /v1/messages` with `x-api-key`, `anthropic-version`, and JSON request/response bodies. It asks for JSON-only output and parses that into existing `LlmBrief` and `DiscoverTheme` contracts. Prompts explicitly preserve NINE's non-recommendation stance and banned copy rules.
+
+## Finnhub EPS Shell
+
+Activation env:
+
+```env
+NINE_PROVIDER_MODE=live
+NINE_EPS_PROVIDER=finnhub
+FINNHUB_API_KEY=
+FINNHUB_BASE_URL=https://finnhub.io/api/v1
+FINNHUB_EPS_FREQ=quarterly
+```
+
+The shell uses Finnhub `GET /stock/eps-estimate` with `symbol` and `freq`. It maps Finnhub `epsAvg` into NINE's `EpsEstimate.consensus`, `numberAnalysts` into `analystCount`, and keeps `dataSource: "finnhub"`. It skips non-US ticker formats such as `.KS` and `.KQ`; KR EPS remains a separate Naver/Hankyung/KR provider surface.
 
 ## Required Before Live Calls
 

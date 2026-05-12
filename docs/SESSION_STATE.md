@@ -4,15 +4,15 @@ Last updated: 2026-05-12 KST
 
 ## Next Action
 
-Add the Finnhub EPS provider adapter shell.
+Add the KIS daily price provider adapter shell.
 
 Acceptance criteria:
 - Run `git status --short --branch`.
 - Read `docs/provider-adapters.md`.
 - Keep `NINE_PROVIDER_MODE=mock` as the default and do not run live calls without keys.
-- Add a server-only Finnhub adapter shell for US consensus EPS snapshots.
-- Preserve the current mock EPS behavior and API response envelopes.
-- Update provider docs with the Finnhub adapter's required env and activation path.
+- Add a server-only KIS adapter shell for KR daily price and volume snapshots.
+- Preserve the current mock price behavior and API response envelopes.
+- Update provider docs with the KIS adapter's required env and activation path.
 - Run `npm run typecheck` and `npm run build`.
 
 ## Current Status
@@ -32,6 +32,7 @@ Acceptance criteria:
 - `GET /api/discover` now uses the provider adapter fallback path before static mock data.
 - NewsAPI Discover signal adapter shell exists, inactive by default.
 - Anthropic LLM adapter shell exists, inactive by default.
+- Finnhub EPS adapter shell exists, inactive by default.
 
 ## Verified
 
@@ -175,6 +176,14 @@ Acceptance criteria:
   - The adapter is inactive by default and only activates with `NINE_PROVIDER_MODE=live` plus `NINE_LLM_PROVIDER=anthropic`.
   - Added `ANTHROPIC_BASE_URL`, `ANTHROPIC_VERSION`, and `ANTHROPIC_MAX_TOKENS` placeholders.
   - Prompts preserve NINE's non-recommendation stance and banned copy rules.
+  - Local `GET /api/discover` returned `200` with existing response envelope.
+  - `npm run typecheck` passed.
+  - `npm run build` passed.
+- Finnhub EPS adapter shell verified locally:
+  - Added a server-only Finnhub `GET /stock/eps-estimate` adapter shell for US consensus EPS snapshots.
+  - The adapter is inactive by default and only activates with `NINE_PROVIDER_MODE=live` plus `NINE_EPS_PROVIDER=finnhub`.
+  - Added `FINNHUB_BASE_URL` and `FINNHUB_EPS_FREQ` placeholders.
+  - The adapter maps `epsAvg` to NINE `EpsEstimate.consensus` and `numberAnalysts` to `analystCount`.
   - Local `GET /api/discover` returned `200` with existing response envelope.
   - `npm run typecheck` passed.
   - `npm run build` passed.
