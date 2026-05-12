@@ -109,7 +109,7 @@ Needed before live external provider calls:
 - `NINE_DISCOVER_SIGNAL_PROVIDER=newsapi`
 - `NINE_LLM_PROVIDER=anthropic`
 - `NINE_EPS_PROVIDER=finnhub`
-- `NINE_EARNINGS_PROVIDER=dart` for KR earnings or `yahoo-finance` for US earnings
+- `NINE_EARNINGS_PROVIDER=composite` for KR and US earnings together, or `dart`/`yahoo-finance` for a single earnings surface
 - `NINE_NOTIFICATION_PROVIDER=solapi`
 - `ANTHROPIC_API_KEY`
 - `ANTHROPIC_BASE_URL`

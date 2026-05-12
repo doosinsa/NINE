@@ -32,6 +32,7 @@ Mock adapters return stable local data so route handlers can be wired without ex
 - Finnhub has a live EPS adapter shell. It is inactive by default and only replaces the mock EPS provider when both `NINE_PROVIDER_MODE=live` and `NINE_EPS_PROVIDER=finnhub` are set.
 - DART has a live KR earnings adapter shell. It is inactive by default and only replaces the mock earnings provider when both `NINE_PROVIDER_MODE=live` and `NINE_EARNINGS_PROVIDER=dart` are set.
 - Yahoo Finance has a live US earnings adapter shell. It is inactive by default and only replaces the mock earnings provider when both `NINE_PROVIDER_MODE=live` and `NINE_EARNINGS_PROVIDER=yahoo-finance` are set.
+- Composite KR/US earnings wiring is inactive by default and only replaces the mock earnings provider when both `NINE_PROVIDER_MODE=live` and `NINE_EARNINGS_PROVIDER=composite` are set.
 - Solapi has a live LMS notification adapter shell. It is inactive by default and only replaces the mock notification provider when both `NINE_PROVIDER_MODE=live` and `NINE_NOTIFICATION_PROVIDER=solapi` are set.
 
 ## Adapter Surfaces
@@ -171,6 +172,25 @@ DART_FS_DIV=CFS
 The shell uses OpenDART `GET /api/fnlttSinglAcnt.json` with `crtfc_key`, `corp_code`, `bsns_year`, and `reprt_code`. DART requires an 8-digit corporate code, not the listed 6-digit stock code, so `DART_CORP_CODE_MAP` is required for live use. It accepts JSON object syntax such as `{"005930":"00126380"}` or comma-delimited syntax such as `005930=00126380,000660=00164779`.
 
 `DART_REPORT_CODE` follows OpenDART report codes: `11013` for Q1, `11012` for half-year, `11014` for Q3, and `11011` for annual. The shell maps matching income statement rows into NINE `EarningsSnapshot` rows with `dataSource: "dart"`, revenue, optional revenue YoY from prior-period amounts, optional EPS, and a fiscal quarter label derived from the report code. It skips US tickers and KR tickers that are missing from `DART_CORP_CODE_MAP`.
+
+## Composite KR/US Earnings Wiring
+
+Activation env:
+
+```env
+NINE_PROVIDER_MODE=live
+NINE_EARNINGS_PROVIDER=composite
+DART_API_KEY=
+DART_BASE_URL=https://opendart.fss.or.kr
+DART_CORP_CODE_MAP={"005930":"00126380"}
+DART_BUSINESS_YEAR=2026
+DART_REPORT_CODE=11013
+DART_FS_DIV=CFS
+YAHOO_FINANCE_BASE_URL=https://query1.finance.yahoo.com
+YAHOO_FINANCE_QUOTE_SUMMARY_BASE_URL=https://query2.finance.yahoo.com
+```
+
+The composite earnings provider calls both DART and Yahoo Finance earnings adapters with the same ticker list, then returns the combined `EarningsSnapshot[]`. Provider-specific ticker filtering stays inside each adapter: DART accepts mapped six-digit KR tickers, while Yahoo Finance skips KR ticker formats and handles US symbols. Use the single-provider selections only for isolated provider verification.
 
 ## Solapi Notification Shell
 

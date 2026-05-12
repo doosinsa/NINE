@@ -2,6 +2,7 @@ import "server-only";
 
 import { assertProviderConfigured, getProviderMode } from "@/lib/server/providers/config";
 import { createAnthropicLlmProvider } from "@/lib/server/providers/anthropic";
+import { createCompositeEarningsProvider } from "@/lib/server/providers/composite-earnings";
 import { createCompositePriceProvider } from "@/lib/server/providers/composite-price";
 import { createDartEarningsProvider } from "@/lib/server/providers/dart";
 import { createFinnhubEpsProvider } from "@/lib/server/providers/finnhub";
@@ -65,6 +66,15 @@ export function createExternalProviders(): ExternalProviders {
   if (process.env.NINE_EARNINGS_PROVIDER === "yahoo-finance") {
     assertProviderConfigured("yahoo-finance");
     providers.earnings = createYahooFinanceEarningsProvider();
+  }
+
+  if (process.env.NINE_EARNINGS_PROVIDER === "composite") {
+    assertProviderConfigured("dart");
+    assertProviderConfigured("yahoo-finance");
+    providers.earnings = createCompositeEarningsProvider({
+      dart: createDartEarningsProvider(),
+      yahooFinance: createYahooFinanceEarningsProvider(),
+    });
   }
 
   if (process.env.NINE_NOTIFICATION_PROVIDER === "solapi") {

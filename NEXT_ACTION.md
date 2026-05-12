@@ -1,6 +1,6 @@
 # NEXT_ACTION
 
-Add composite KR/US earnings provider wiring.
+Add provider operations runbook and live smoke checklist.
 
 ## Resume Command
 
@@ -14,8 +14,8 @@ Add composite KR/US earnings provider wiring.
 - Run `git status --short --branch`.
 - Read `docs/provider-adapters.md`.
 - Keep `NINE_PROVIDER_MODE=mock` as the default and do not run live calls without an explicit live provider selection.
-- Add server-only composite earnings wiring that combines DART KR earnings and Yahoo Finance US earnings.
-- Keep it inactive by default and only activate it with `NINE_PROVIDER_MODE=live` plus `NINE_EARNINGS_PROVIDER=composite`.
-- Preserve the current mock provider behavior and API response envelopes.
-- Update provider docs and environment docs with the composite earnings activation path and required env.
+- Document the provider activation sequence for live API connection.
+- Add a live smoke checklist for one provider at a time, including required env, test tickers, rollback to mock mode, and no-secret handling.
+- Include the recommended n8n schedule order for collection routes without enabling any live calls.
+- Preserve `NINE_PROVIDER_MODE=mock` as the default and do not run live calls without explicit keys and provider selections.
 - Run `npm run typecheck` and `npm run build`.
