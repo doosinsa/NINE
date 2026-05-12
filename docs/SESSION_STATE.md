@@ -4,15 +4,15 @@ Last updated: 2026-05-12 KST
 
 ## Next Action
 
-Add the KIS daily price provider adapter shell.
+Add composite KR/US daily price provider wiring.
 
 Acceptance criteria:
 - Run `git status --short --branch`.
 - Read `docs/provider-adapters.md`.
-- Keep `NINE_PROVIDER_MODE=mock` as the default and do not run live calls without keys.
-- Add a server-only KIS adapter shell for KR daily price and volume snapshots.
+- Keep `NINE_PROVIDER_MODE=mock` as the default and do not run live calls without an explicit live provider selection.
+- Add a server-only composite price provider path that can route KR tickers to KIS and US tickers to Yahoo Finance.
 - Preserve the current mock price behavior and API response envelopes.
-- Update provider docs with the KIS adapter's required env and activation path.
+- Update provider docs with the composite price activation path and provider selection rules.
 - Run `npm run typecheck` and `npm run build`.
 
 ## Current Status
@@ -33,6 +33,8 @@ Acceptance criteria:
 - NewsAPI Discover signal adapter shell exists, inactive by default.
 - Anthropic LLM adapter shell exists, inactive by default.
 - Finnhub EPS adapter shell exists, inactive by default.
+- KIS daily price adapter shell exists, inactive by default.
+- Yahoo Finance daily price adapter shell exists, inactive by default.
 
 ## Verified
 
@@ -185,6 +187,26 @@ Acceptance criteria:
   - Added `FINNHUB_BASE_URL` and `FINNHUB_EPS_FREQ` placeholders.
   - The adapter maps `epsAvg` to NINE `EpsEstimate.consensus` and `numberAnalysts` to `analystCount`.
   - Local `GET /api/discover` returned `200` with existing response envelope.
+  - `npm run typecheck` passed.
+  - `npm run build` passed.
+- KIS daily price adapter shell verified locally:
+  - Added a server-only KIS daily price adapter shell for KR OHLCV snapshots.
+  - The adapter is inactive by default and only activates with `NINE_PROVIDER_MODE=live` plus `NINE_PRICE_PROVIDER=kis`.
+  - `NINE_PROVIDER_MODE=mock` and `NINE_PRICE_PROVIDER=mock` remain the documented defaults.
+  - Added KIS base URL, market division code, and daily price TR ID placeholders.
+  - Updated provider docs with the KIS activation path and endpoint mapping.
+  - The adapter normalizes six-digit KR tickers such as `005930`, `005930.KS`, and `005930.KQ`.
+  - No live KIS calls were run.
+  - `npm run typecheck` passed.
+  - `npm run build` passed.
+- Yahoo Finance daily price adapter shell verified locally:
+  - Added a server-only Yahoo Finance chart adapter shell for US OHLCV snapshots.
+  - The adapter is inactive by default and only activates with `NINE_PROVIDER_MODE=live` plus `NINE_PRICE_PROVIDER=yahoo-finance`.
+  - `NINE_PROVIDER_MODE=mock` and `NINE_PRICE_PROVIDER=mock` remain the documented defaults.
+  - The adapter uses `YAHOO_FINANCE_BASE_URL` and maps chart quote arrays into NINE `DailyPrice` rows.
+  - The adapter skips KR ticker formats and normalizes US class-share symbols such as `BRK.B` to Yahoo request format `BRK-B`.
+  - Updated provider docs with the Yahoo Finance activation path and endpoint mapping.
+  - No live Yahoo Finance calls were run.
   - `npm run typecheck` passed.
   - `npm run build` passed.
 - Auth implementation verified locally with temporary env values:

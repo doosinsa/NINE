@@ -43,6 +43,7 @@ Provider adapter mode:
 
 ```env
 NINE_PROVIDER_MODE=mock
+NINE_PRICE_PROVIDER=mock
 NINE_DISCOVER_SIGNAL_PROVIDER=mock
 NINE_LLM_PROVIDER=mock
 NINE_EPS_PROVIDER=mock
@@ -60,7 +61,9 @@ ANTHROPIC_VERSION=2023-06-01
 ANTHROPIC_MAX_TOKENS=1200
 KIS_APP_KEY=
 KIS_APP_SECRET=
-KIS_BASE_URL=
+KIS_BASE_URL=https://openapi.koreainvestment.com:9443
+KIS_MARKET_DIV_CODE=J
+KIS_DAILY_PRICE_TR_ID=FHKST03010100
 DART_API_KEY=
 FINNHUB_API_KEY=
 FINNHUB_BASE_URL=https://finnhub.io/api/v1
@@ -91,6 +94,7 @@ Already configured:
 Needed before live external provider calls:
 
 - `NINE_PROVIDER_MODE=live`
+- `NINE_PRICE_PROVIDER=kis` for KR prices or `NINE_PRICE_PROVIDER=yahoo-finance` for US prices
 - `NINE_DISCOVER_SIGNAL_PROVIDER=newsapi`
 - `NINE_LLM_PROVIDER=anthropic`
 - `NINE_EPS_PROVIDER=finnhub`
@@ -102,6 +106,8 @@ Needed before live external provider calls:
 - `KIS_APP_KEY`
 - `KIS_APP_SECRET`
 - `KIS_BASE_URL`
+- `KIS_MARKET_DIV_CODE`
+- `KIS_DAILY_PRICE_TR_ID`
 - `DART_API_KEY`
 - `FINNHUB_API_KEY`
 - `FINNHUB_BASE_URL`

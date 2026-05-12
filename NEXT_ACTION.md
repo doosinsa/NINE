@@ -1,6 +1,6 @@
 # NEXT_ACTION
 
-Add the KIS daily price provider adapter shell.
+Add composite KR/US daily price provider wiring.
 
 ## Resume Command
 
@@ -13,8 +13,8 @@ Add the KIS daily price provider adapter shell.
 - Read `prd.md`.
 - Run `git status --short --branch`.
 - Read `docs/provider-adapters.md`.
-- Keep `NINE_PROVIDER_MODE=mock` as the default and do not run live calls without keys.
-- Add a server-only KIS adapter shell for KR daily price and volume snapshots.
+- Keep `NINE_PROVIDER_MODE=mock` as the default and do not run live calls without an explicit live provider selection.
+- Add a server-only composite price provider path that can route KR tickers to KIS and US tickers to Yahoo Finance.
 - Preserve the current mock price behavior and API response envelopes.
-- Update provider docs with the KIS adapter's required env and activation path.
+- Update provider docs with the composite price activation path and provider selection rules.
 - Run `npm run typecheck` and `npm run build`.
