@@ -106,7 +106,7 @@ export function createMockProviders(): ExternalProviders {
             eps: null,
             epsSurprise: null,
             reportedAt: "2026-05-01",
-            source: ticker.includes(".") ? "dart" : "yahoo-finance",
+            dataSource: ticker.includes(".") ? "dart" : "yahoo-finance",
           }),
         );
       },

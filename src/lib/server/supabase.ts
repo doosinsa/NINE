@@ -3,6 +3,7 @@ import type {
   Candidate,
   DailyPriceSnapshot,
   DiscoverTheme,
+  EarningsSnapshot,
   EpsEstimate,
   Holding,
   LlmBrief,
@@ -360,6 +361,31 @@ export async function upsertWeeklyEpsInSupabase(estimates: EpsEstimate[]): Promi
   }
 
   return estimates.length;
+}
+
+export async function upsertQuarterlyEarningsInSupabase(earnings: EarningsSnapshot[]): Promise<number | null> {
+  const supabase = getSupabaseAdmin();
+  if (!supabase) return null;
+  if (earnings.length === 0) return 0;
+
+  const { error } = await supabase.from("earnings").upsert(
+    earnings.map((snapshot) => ({
+      ticker: snapshot.ticker,
+      fiscal_quarter: snapshot.fiscalQuarter,
+      revenue: snapshot.revenue,
+      revenue_yoy: snapshot.revenueYoy,
+      eps: snapshot.eps,
+      eps_surprise: snapshot.epsSurprise,
+      reported_at: snapshot.reportedAt,
+    })),
+    { onConflict: "ticker,fiscal_quarter" },
+  );
+
+  if (error) {
+    throw new Error("Failed to persist quarterly earnings snapshots.");
+  }
+
+  return earnings.length;
 }
 
 export function toDailyPriceSnapshot(price: DailyPrice): DailyPriceSnapshot {

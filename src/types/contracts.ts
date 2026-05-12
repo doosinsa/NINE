@@ -124,6 +124,30 @@ export type WeeklyEpsCollectionResponse = {
   estimates: EpsEstimate[];
 };
 
+export type EarningsSnapshot = {
+  ticker: string;
+  fiscalQuarter: string;
+  revenue: number | null;
+  revenueYoy: number | null;
+  eps: number | null;
+  epsSurprise: number | null;
+  reportedAt: string;
+  dataSource: "dart" | "yahoo-finance";
+};
+
+export type QuarterlyEarningsCollectionRequest = {
+  tickers?: string[];
+};
+
+export type QuarterlyEarningsCollectionResponse = {
+  requestedTickers: string[];
+  collectedCount: number;
+  persistedCount: number;
+  persisted: boolean;
+  providerMode: "mock" | "live";
+  earnings: EarningsSnapshot[];
+};
+
 export type DailyPriceSnapshot = {
   ticker: string;
   date: string;

@@ -1,6 +1,8 @@
 import "server-only";
 
-import type { DiscoverTheme, EpsEstimate, LlmBrief } from "@/types/contracts";
+import type { DiscoverTheme, EarningsSnapshot, EpsEstimate, LlmBrief } from "@/types/contracts";
+
+export type { EarningsSnapshot } from "@/types/contracts";
 
 export type ProviderMode = "mock" | "live";
 
@@ -32,17 +34,6 @@ export type DailyPrice = {
   close: number;
   volume: number;
   source: "kis" | "yahoo-finance";
-};
-
-export type EarningsSnapshot = {
-  ticker: string;
-  fiscalQuarter: string;
-  revenue: number | null;
-  revenueYoy: number | null;
-  eps: number | null;
-  epsSurprise: number | null;
-  reportedAt: string;
-  source: "dart" | "yahoo-finance";
 };
 
 export type CoreBriefInput = {
