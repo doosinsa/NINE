@@ -4,23 +4,24 @@ Last updated: 2026-05-12 KST
 
 ## Next Action
 
-Deploy Discover scoring intake rows to production.
+Scaffold external provider API adapters.
 
 Acceptance criteria:
 - Run `git status --short --branch`.
+- Review provider-related PRD requirements and existing API routes.
+- Add server-only provider adapter interfaces with mock/default implementations.
+- Add environment variable placeholders to `.env.example` without adding secrets.
+- Document which real API keys/accounts are still needed before live calls.
 - Run `npm run typecheck` and `npm run build`.
-- Deploy with `vercel deploy --prod --yes`.
-- Smoke test production Discover send-to-Core with a temporary ticker.
-- Confirm the temporary ticker creates both `stocks` and `manual_scores`, then remove the test `stocks` row and verify cascade cleanup.
 
 ## Current Status
 
 - GitHub repo connected: `https://github.com/doosinsa/NINE.git`
 - Current branch: `main`
-- Latest pushed commit: `c78b1fe`
+- Latest deployed app commit: `e67b3df`
 - Vercel project: `nine`
 - Production URL: `https://nine-red-three.vercel.app`
-- Latest verified deployment: `https://nine-gmf8sddy2-doosinsas-projects.vercel.app`
+- Latest verified deployment: `https://nine-ezp4dfeqv-doosinsas-projects.vercel.app`
 - Supabase project linked through CLI.
 - Supabase migration applied.
 - Supabase seed applied.
@@ -134,6 +135,14 @@ Acceptance criteria:
   - Temporary `NINEDISCOTEST` `stocks` row was deleted; `manual_scores` was verified deleted by cascade.
   - `npm run typecheck` passed.
   - `npm run build` passed.
+- Discover scoring intake production deployment verified after deploying `e67b3df`:
+  - Deployment URL: `https://nine-ezp4dfeqv-doosinsas-projects.vercel.app`
+  - Alias: `https://nine-red-three.vercel.app`
+  - `npm run build` passed; `npm run typecheck` passed after build regenerated `.next/types`.
+  - Production `POST /api/discover` with temporary ticker `NINEPRODDISCOTEST` returned `200` with the ticker in `addedTickers`.
+  - Production `/api/stocks/NINEPRODDISCOTEST` returned `200` with `source: discover`, `totalScore: 0`, `decision: watch`, and watermark `이 점수는 prep이지 신탁이 아님`.
+  - Supabase `stocks` and `manual_scores` rows were created for the temporary ticker.
+  - Temporary `NINEPRODDISCOTEST` `stocks` row was deleted; `manual_scores` was verified deleted by cascade.
 - Auth implementation verified locally with temporary env values:
   - `npm run typecheck` passed.
   - `npm run build` passed.

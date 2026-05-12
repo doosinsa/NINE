@@ -1,6 +1,6 @@
 # NEXT_ACTION
 
-Deploy Discover scoring intake rows to production.
+Scaffold external provider API adapters.
 
 ## Resume Command
 
@@ -12,7 +12,8 @@ Deploy Discover scoring intake rows to production.
 - Read `docs/SESSION_STATE.md`.
 - Read `prd.md`.
 - Run `git status --short --branch`.
+- Review provider-related PRD requirements and existing API routes.
+- Add server-only provider adapter interfaces with mock/default implementations.
+- Add environment variable placeholders to `.env.example` without adding secrets.
+- Document which real API keys/accounts are still needed before live calls.
 - Run `npm run typecheck` and `npm run build`.
-- Deploy with `vercel deploy --prod --yes`.
-- Smoke test production Discover send-to-Core with a temporary ticker.
-- Confirm the temporary ticker creates both `stocks` and `manual_scores`, then remove the test `stocks` row and verify cascade cleanup.
