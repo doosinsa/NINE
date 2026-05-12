@@ -109,6 +109,32 @@ export type EpsEstimate = {
   dataSource: "naver" | "hankyung" | "finnhub" | "fnguide";
 };
 
+export type DailyPriceSnapshot = {
+  ticker: string;
+  date: string;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  volume: number;
+  dataSource: "kis" | "yahoo-finance";
+};
+
+export type DailyPriceCollectionRequest = {
+  tickers?: string[];
+  date?: string;
+};
+
+export type DailyPriceCollectionResponse = {
+  date: string;
+  requestedTickers: string[];
+  collectedCount: number;
+  persistedCount: number;
+  persisted: boolean;
+  providerMode: "mock" | "live";
+  prices: DailyPriceSnapshot[];
+};
+
 export type ManualScoreRequest = {
   ticker: string;
   scoreDemand: number;

@@ -4,16 +4,16 @@ Last updated: 2026-05-12 KST
 
 ## Next Action
 
-Add mock-first daily price collection route.
+Add mock-first weekly EPS collection route.
 
 Acceptance criteria:
 - Run `git status --short --branch`.
 - Read `docs/provider-adapters.md`.
 - Keep `NINE_PROVIDER_MODE=mock` as the default and do not run live calls without an explicit live provider selection.
-- Add a server-only API route or handler path that collects daily prices through `createExternalProviders().price`.
-- Persist collected prices to Supabase when configured, with mock fallback behavior when Supabase is unavailable.
-- Preserve the current mock price behavior and API response envelopes.
-- Update API/provider docs with the collection route, request shape, and mock/live activation behavior.
+- Add a server-only API route or handler path that collects weekly EPS snapshots through `createExternalProviders().eps`.
+- Persist collected EPS estimates to Supabase when configured, with mock fallback behavior when Supabase is unavailable.
+- Preserve the current mock provider behavior and API response envelopes.
+- Update API/provider docs with the EPS collection route, request shape, and mock/live activation behavior.
 - Run `npm run typecheck` and `npm run build`.
 
 ## Current Status
@@ -37,6 +37,7 @@ Acceptance criteria:
 - KIS daily price adapter shell exists, inactive by default.
 - Yahoo Finance daily price adapter shell exists, inactive by default.
 - Composite KR/US daily price provider wiring exists, inactive by default.
+- Mock-first daily price collection route exists.
 
 ## Verified
 
@@ -217,6 +218,15 @@ Acceptance criteria:
   - Provider-specific ticker filtering remains isolated inside each provider adapter.
   - Single-provider selections `kis` and `yahoo-finance` remain available for isolated provider verification.
   - Updated provider docs with composite activation env and selection rules.
+  - No live provider calls were run.
+  - `npm run typecheck` passed.
+  - `npm run build` passed.
+- Mock-first daily price collection route verified locally:
+  - Added `POST /api/prices/collect` using `createExternalProviders().price.fetchDailyPrices`.
+  - Added `DailyPriceCollectionRequest`, `DailyPriceSnapshot`, and `DailyPriceCollectionResponse` contracts.
+  - The route defaults to current KST date and Supabase `stocks` tickers when configured; otherwise it falls back to mock tickers.
+  - Collected prices are upserted into Supabase `prices` when Supabase is configured.
+  - Mock/Supabase-disabled smoke test returned `200` for `PLTR` and `005930.KS` with `providerMode: "mock"` and `persisted: false`.
   - No live provider calls were run.
   - `npm run typecheck` passed.
   - `npm run build` passed.

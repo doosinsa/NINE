@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import type {
   Candidate,
+  DailyPriceSnapshot,
   DiscoverTheme,
   EpsEstimate,
   Holding,
@@ -12,6 +13,7 @@ import type {
   Stock,
   StockDetailResponse,
 } from "@/types/contracts";
+import type { DailyPrice } from "@/lib/server/providers/types";
 
 type DbStock = {
   ticker: string;
@@ -80,6 +82,10 @@ type DbDiscoverTheme = {
   capex_signal: string | null;
   representative_tickers: string[];
   created_at: string;
+};
+
+type DbPriceTicker = {
+  ticker: string;
 };
 
 export function getSupabaseAdmin() {
@@ -290,6 +296,59 @@ export async function fetchDiscoverThemesFromSupabase(): Promise<DiscoverTheme[]
 
   if (error || !data) return null;
   return data.map(toDiscoverTheme);
+}
+
+export async function fetchPriceCollectionTickersFromSupabase(): Promise<string[] | null> {
+  const supabase = getSupabaseAdmin();
+  if (!supabase) return null;
+
+  const { data, error } = await supabase
+    .from("stocks")
+    .select("ticker")
+    .order("ticker", { ascending: true })
+    .returns<DbPriceTicker[]>();
+
+  if (error || !data) return null;
+  return data.map((row) => row.ticker);
+}
+
+export async function upsertDailyPricesInSupabase(prices: DailyPrice[]): Promise<number | null> {
+  const supabase = getSupabaseAdmin();
+  if (!supabase) return null;
+  if (prices.length === 0) return 0;
+
+  const { error } = await supabase.from("prices").upsert(
+    prices.map((price) => ({
+      ticker: price.ticker,
+      price_date: price.date,
+      open: price.open,
+      high: price.high,
+      low: price.low,
+      close: price.close,
+      volume: price.volume,
+      data_source: price.source,
+    })),
+    { onConflict: "ticker,price_date" },
+  );
+
+  if (error) {
+    throw new Error("Failed to persist daily prices.");
+  }
+
+  return prices.length;
+}
+
+export function toDailyPriceSnapshot(price: DailyPrice): DailyPriceSnapshot {
+  return {
+    ticker: price.ticker,
+    date: price.date,
+    open: price.open,
+    high: price.high,
+    low: price.low,
+    close: price.close,
+    volume: price.volume,
+    dataSource: price.source,
+  };
 }
 
 export async function sendDiscoverTickersToCoreInSupabase(tickers: string[]) {

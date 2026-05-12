@@ -96,6 +96,22 @@ When Supabase is configured, new tickers create both `stocks` rows and default `
 
 Response data: `DiscoverSendToCoreResponse`
 
+### `POST /api/prices/collect`
+Collects daily OHLCV snapshots through the configured server-only price provider.
+
+Request: `DailyPriceCollectionRequest`
+
+```ts
+{
+  tickers?: string[];
+  date?: string; // YYYY-MM-DD, defaults to current KST date
+}
+```
+
+When `tickers` is omitted, the route collects the current Supabase `stocks` universe if Supabase is configured, otherwise the mock universe. With `NINE_PROVIDER_MODE=mock`, the route uses mock prices and does not require external provider secrets. When Supabase is configured, collected rows are upserted into `prices`; without Supabase, the response still returns collected mock/provider rows with `persisted: false`.
+
+Response data: `DailyPriceCollectionResponse`
+
 ### `POST /api/auth/login`
 Verifies the single app password against `NINE_PASSWORD_HASH`. On success, sets an HTTP-only session cookie protected with `NINE_SESSION_SECRET`.
 
