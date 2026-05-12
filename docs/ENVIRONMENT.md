@@ -47,6 +47,7 @@ NINE_PRICE_PROVIDER=mock
 NINE_DISCOVER_SIGNAL_PROVIDER=mock
 NINE_LLM_PROVIDER=mock
 NINE_EPS_PROVIDER=mock
+NINE_NOTIFICATION_PROVIDER=mock
 ```
 
 Use `mock` until provider accounts are ready. `live` should only be enabled for a provider surface after that surface has a live adapter and its required env values are configured.
@@ -76,6 +77,9 @@ KITA_API_KEY=
 SOLAPI_API_KEY=
 SOLAPI_API_SECRET=
 SOLAPI_SENDER=
+SOLAPI_BASE_URL=https://api.solapi.com
+SOLAPI_MESSAGE_TYPE=LMS
+SOLAPI_COUNTRY=82
 SEC_USER_AGENT_EMAIL=
 YAHOO_FINANCE_BASE_URL=https://query1.finance.yahoo.com
 ```
@@ -98,6 +102,7 @@ Needed before live external provider calls:
 - `NINE_DISCOVER_SIGNAL_PROVIDER=newsapi`
 - `NINE_LLM_PROVIDER=anthropic`
 - `NINE_EPS_PROVIDER=finnhub`
+- `NINE_NOTIFICATION_PROVIDER=solapi`
 - `ANTHROPIC_API_KEY`
 - `ANTHROPIC_BASE_URL`
 - `ANTHROPIC_MODEL`
@@ -120,6 +125,9 @@ Needed before live external provider calls:
 - `SOLAPI_API_KEY`
 - `SOLAPI_API_SECRET`
 - `SOLAPI_SENDER`
+- `SOLAPI_BASE_URL`
+- `SOLAPI_MESSAGE_TYPE`
+- `SOLAPI_COUNTRY`
 - `SEC_USER_AGENT_EMAIL`
 - `YAHOO_FINANCE_BASE_URL`
 

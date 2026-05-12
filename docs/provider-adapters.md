@@ -10,11 +10,11 @@ import { createExternalProviders } from "@/lib/server/providers";
 
 ## Current Mode
 
-`NINE_PROVIDER_MODE=mock` is the supported mode today.
+`NINE_PROVIDER_MODE=mock` is the default mode.
 
 Mock adapters return stable local data so route handlers can be wired without external accounts, secrets, network calls, payment, or provider rate-limit risk.
 
-`NINE_PROVIDER_MODE=live` intentionally throws until live adapters are implemented and required env values are present.
+`NINE_PROVIDER_MODE=live` only replaces an individual provider surface when its explicit selector env is set and the required provider env values are present.
 
 ## Current Wiring
 
@@ -30,6 +30,7 @@ Mock adapters return stable local data so route handlers can be wired without ex
 - NewsAPI has a live Discover signal adapter shell. It is inactive by default and only replaces the mock Discover signal provider when both `NINE_PROVIDER_MODE=live` and `NINE_DISCOVER_SIGNAL_PROVIDER=newsapi` are set.
 - Anthropic has a live LLM adapter shell. It is inactive by default and only replaces the mock LLM provider when both `NINE_PROVIDER_MODE=live` and `NINE_LLM_PROVIDER=anthropic` are set.
 - Finnhub has a live EPS adapter shell. It is inactive by default and only replaces the mock EPS provider when both `NINE_PROVIDER_MODE=live` and `NINE_EPS_PROVIDER=finnhub` are set.
+- Solapi has a live LMS notification adapter shell. It is inactive by default and only replaces the mock notification provider when both `NINE_PROVIDER_MODE=live` and `NINE_NOTIFICATION_PROVIDER=solapi` are set.
 
 ## Adapter Surfaces
 
@@ -134,6 +135,25 @@ FINNHUB_EPS_FREQ=quarterly
 ```
 
 The shell uses Finnhub `GET /stock/eps-estimate` with `symbol` and `freq`. It maps Finnhub `epsAvg` into NINE's `EpsEstimate.consensus`, `numberAnalysts` into `analystCount`, and keeps `dataSource: "finnhub"`. It skips non-US ticker formats such as `.KS` and `.KQ`; KR EPS remains a separate Naver/Hankyung/KR provider surface.
+
+## Solapi Notification Shell
+
+Activation env:
+
+```env
+NINE_PROVIDER_MODE=live
+NINE_NOTIFICATION_PROVIDER=solapi
+SOLAPI_API_KEY=
+SOLAPI_API_SECRET=
+SOLAPI_SENDER=
+SOLAPI_BASE_URL=https://api.solapi.com
+SOLAPI_MESSAGE_TYPE=LMS
+SOLAPI_COUNTRY=82
+```
+
+The shell uses Solapi `POST /messages/v4/send-many/detail` with a single message in the `messages` array, HMAC-SHA256 authorization, and `showMessageList=true` so NINE can retain a provider message id. It sends through the existing `POST /api/notifications/send` route and keeps the route response envelope unchanged.
+
+`SOLAPI_MESSAGE_TYPE` defaults to `LMS`; set it to `SMS` only for isolated provider verification. The adapter strips non-digits from sender and recipient numbers before dispatch because Solapi expects numeric phone fields. No live LMS calls should be run unless `NINE_PROVIDER_MODE=live`, `NINE_NOTIFICATION_PROVIDER=solapi`, and valid Solapi credentials are explicitly configured.
 
 ## Required Before Live Calls
 

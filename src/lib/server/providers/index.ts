@@ -7,6 +7,7 @@ import { createFinnhubEpsProvider } from "@/lib/server/providers/finnhub";
 import { createKisPriceProvider } from "@/lib/server/providers/kis";
 import { createMockProviders } from "@/lib/server/providers/mock";
 import { createNewsApiDiscoverSignalProvider } from "@/lib/server/providers/newsapi";
+import { createSolapiNotificationProvider } from "@/lib/server/providers/solapi";
 import { createYahooFinancePriceProvider } from "@/lib/server/providers/yahoo-finance";
 import type { ExternalProviders } from "@/lib/server/providers/types";
 
@@ -50,6 +51,11 @@ export function createExternalProviders(): ExternalProviders {
   if (process.env.NINE_EPS_PROVIDER === "finnhub") {
     assertProviderConfigured("finnhub");
     providers.eps = createFinnhubEpsProvider();
+  }
+
+  if (process.env.NINE_NOTIFICATION_PROVIDER === "solapi") {
+    assertProviderConfigured("solapi");
+    providers.notifications = createSolapiNotificationProvider();
   }
 
   const priceProvider = process.env.NINE_PRICE_PROVIDER;

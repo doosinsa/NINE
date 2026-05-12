@@ -4,16 +4,16 @@ Last updated: 2026-05-13 KST
 
 ## Next Action
 
-Add Solapi notification provider adapter shell.
+Add DART quarterly earnings provider adapter shell.
 
 Acceptance criteria:
 - Run `git status --short --branch`.
 - Read `docs/provider-adapters.md`.
 - Keep `NINE_PROVIDER_MODE=mock` as the default and do not run live calls without an explicit live provider selection.
-- Add a server-only Solapi notification provider shell for LMS dispatch.
-- Keep it inactive by default and only activate it with `NINE_PROVIDER_MODE=live` plus an explicit notification provider selection.
+- Add a server-only DART quarterly earnings provider shell for KR earnings snapshots.
+- Keep it inactive by default and only activate it with `NINE_PROVIDER_MODE=live` plus an explicit earnings provider selection.
 - Preserve the current mock provider behavior and API response envelopes.
-- Update provider docs and environment docs with the Solapi activation path and required env.
+- Update provider docs and environment docs with the DART activation path and required env.
 - Run `npm run typecheck` and `npm run build`.
 
 ## Current Status
@@ -42,6 +42,7 @@ Acceptance criteria:
 - Mock-first quarterly earnings collection route exists.
 - Mock-first LLM core brief collection route exists.
 - Mock-first notification dispatch route exists.
+- Solapi LMS notification adapter shell exists, inactive by default.
 
 ## Verified
 
@@ -267,6 +268,14 @@ Acceptance criteria:
   - Added `NotificationDispatchRequest` and `NotificationDispatchResponse` contracts.
   - Notification events are inserted into Supabase `notification_events` when Supabase is configured.
   - Mock/Supabase-disabled smoke test returned `200` with `providerMode: "mock"`, `sent: false`, and `persisted: false`.
+  - No live LMS calls were run.
+  - `npm run typecheck` passed.
+  - `npm run build` passed.
+- Solapi notification adapter shell verified locally:
+  - Added a server-only Solapi LMS adapter shell for `notifications.send`.
+  - The adapter is inactive by default and only activates with `NINE_PROVIDER_MODE=live` plus `NINE_NOTIFICATION_PROVIDER=solapi`.
+  - Added `NINE_NOTIFICATION_PROVIDER`, `SOLAPI_BASE_URL`, `SOLAPI_MESSAGE_TYPE`, and `SOLAPI_COUNTRY` placeholders.
+  - Updated provider docs with the Solapi activation path and current `POST /messages/v4/send-many/detail` mapping.
   - No live LMS calls were run.
   - `npm run typecheck` passed.
   - `npm run build` passed.
