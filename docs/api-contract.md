@@ -143,6 +143,21 @@ When `tickers` is omitted, the route collects the current Supabase `stocks` univ
 
 Response data: `QuarterlyEarningsCollectionResponse`
 
+### `POST /api/briefs/collect`
+Generates Core LLM briefs through the configured server-only LLM provider.
+
+Request: `CoreBriefCollectionRequest`
+
+```ts
+{
+  tickers?: string[];
+}
+```
+
+When `tickers` is omitted, the route uses the current Supabase `stocks` universe if Supabase is configured, otherwise the mock universe. With `NINE_PROVIDER_MODE=mock`, the route uses the mock LLM provider and does not require external provider secrets. When Supabase is configured, generated rows are inserted into `llm_briefs`; without Supabase, the response still returns generated mock/provider rows with `persisted: false`.
+
+Response data: `CoreBriefCollectionResponse`
+
 ### `POST /api/auth/login`
 Verifies the single app password against `NINE_PASSWORD_HASH`. On success, sets an HTTP-only session cookie protected with `NINE_SESSION_SECRET`.
 

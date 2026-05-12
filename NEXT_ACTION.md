@@ -1,6 +1,6 @@
 # NEXT_ACTION
 
-Add mock-first LLM core brief collection route.
+Add mock-first notification dispatch route.
 
 ## Resume Command
 
@@ -14,8 +14,8 @@ Add mock-first LLM core brief collection route.
 - Run `git status --short --branch`.
 - Read `docs/provider-adapters.md`.
 - Keep `NINE_PROVIDER_MODE=mock` as the default and do not run live calls without an explicit live provider selection.
-- Add a server-only API route or handler path that generates Core LLM briefs through `createExternalProviders().llm.generateCoreBrief`.
-- Persist generated briefs to Supabase when configured, with mock fallback behavior when Supabase is unavailable.
+- Add a server-only API route or handler path that sends notification messages through `createExternalProviders().notifications.send`.
+- Persist notification events to Supabase when configured, with mock fallback behavior when Supabase is unavailable.
 - Preserve the current mock provider behavior and API response envelopes.
-- Update API/provider docs with the LLM brief collection route, request shape, and mock/live activation behavior.
+- Update API/provider docs with the notification dispatch route, request shape, and mock/live activation behavior.
 - Run `npm run typecheck` and `npm run build`.

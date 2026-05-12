@@ -14,7 +14,7 @@ import type {
   Stock,
   StockDetailResponse,
 } from "@/types/contracts";
-import type { DailyPrice } from "@/lib/server/providers/types";
+import type { CoreBriefInput, DailyPrice } from "@/lib/server/providers/types";
 
 type DbStock = {
   ticker: string;
@@ -87,6 +87,16 @@ type DbDiscoverTheme = {
 
 type DbPriceTicker = {
   ticker: string;
+};
+
+type DbEarningsSnapshot = {
+  ticker: string;
+  fiscal_quarter: string;
+  revenue: number | null;
+  revenue_yoy: number | null;
+  eps: number | null;
+  eps_surprise: number | null;
+  reported_at: string;
 };
 
 export function getSupabaseAdmin() {
@@ -189,6 +199,19 @@ export function toDiscoverTheme(row: DbDiscoverTheme): DiscoverTheme {
     capexSignal: row.capex_signal,
     representativeTickers: row.representative_tickers,
     createdAt: row.created_at,
+  };
+}
+
+function toEarningsSnapshot(row: DbEarningsSnapshot): EarningsSnapshot {
+  return {
+    ticker: row.ticker,
+    fiscalQuarter: row.fiscal_quarter,
+    revenue: row.revenue,
+    revenueYoy: row.revenue_yoy,
+    eps: row.eps,
+    epsSurprise: row.eps_surprise,
+    reportedAt: row.reported_at,
+    dataSource: row.ticker.includes(".") ? "dart" : "yahoo-finance",
   };
 }
 
@@ -313,6 +336,53 @@ export async function fetchPriceCollectionTickersFromSupabase(): Promise<string[
   return data.map((row) => row.ticker);
 }
 
+export async function fetchCoreBriefInputsFromSupabase(tickers: string[]): Promise<CoreBriefInput[] | null> {
+  const supabase = getSupabaseAdmin();
+  if (!supabase) return null;
+
+  const normalizedTickers = [...new Set(tickers.map((ticker) => ticker.trim().toUpperCase()).filter(Boolean))];
+  if (normalizedTickers.length === 0) return [];
+
+  const { data: stockRows, error: stockError } = await supabase
+    .from("stocks")
+    .select("*")
+    .in("ticker", normalizedTickers)
+    .returns<DbStock[]>();
+
+  if (stockError || !stockRows) return null;
+
+  const inputs = await Promise.all(
+    stockRows.map(async (stock): Promise<CoreBriefInput> => {
+      const [{ data: recentEps }, { data: earnings }] = await Promise.all([
+        supabase
+          .from("eps_estimates")
+          .select("*")
+          .eq("ticker", stock.ticker)
+          .order("snapshot_date", { ascending: false })
+          .limit(8)
+          .returns<DbEpsEstimate[]>(),
+        supabase
+          .from("earnings")
+          .select("*")
+          .eq("ticker", stock.ticker)
+          .order("reported_at", { ascending: false })
+          .limit(8)
+          .returns<DbEarningsSnapshot[]>(),
+      ]);
+
+      return {
+        ticker: stock.ticker,
+        companyName: stock.name,
+        country: stock.country,
+        recentEps: (recentEps ?? []).map(toEpsEstimate),
+        earnings: (earnings ?? []).map(toEarningsSnapshot),
+      };
+    }),
+  );
+
+  return inputs;
+}
+
 export async function upsertDailyPricesInSupabase(prices: DailyPrice[]): Promise<number | null> {
   const supabase = getSupabaseAdmin();
   if (!supabase) return null;
@@ -386,6 +456,31 @@ export async function upsertQuarterlyEarningsInSupabase(earnings: EarningsSnapsh
   }
 
   return earnings.length;
+}
+
+export async function insertCoreBriefsInSupabase(briefs: LlmBrief[]): Promise<number | null> {
+  const supabase = getSupabaseAdmin();
+  if (!supabase) return null;
+  if (briefs.length === 0) return 0;
+
+  const { error } = await supabase.from("llm_briefs").insert(
+    briefs.map((brief) => ({
+      ticker: brief.ticker,
+      generated_at: brief.generatedAt,
+      structural_demand: brief.structuralDemand,
+      supply_constraint: brief.supplyConstraint,
+      eps_revision_driver: brief.epsRevisionDriver,
+      bear_case: brief.bearCase,
+      narrative_warning_flag: brief.narrativeWarningFlag,
+      narrative_warning_reason: brief.narrativeWarningReason,
+    })),
+  );
+
+  if (error) {
+    throw new Error("Failed to persist core LLM briefs.");
+  }
+
+  return briefs.length;
 }
 
 export function toDailyPriceSnapshot(price: DailyPrice): DailyPriceSnapshot {

@@ -148,6 +148,19 @@ export type QuarterlyEarningsCollectionResponse = {
   earnings: EarningsSnapshot[];
 };
 
+export type CoreBriefCollectionRequest = {
+  tickers?: string[];
+};
+
+export type CoreBriefCollectionResponse = {
+  requestedTickers: string[];
+  generatedCount: number;
+  persistedCount: number;
+  persisted: boolean;
+  providerMode: "mock" | "live";
+  briefs: LlmBrief[];
+};
+
 export type DailyPriceSnapshot = {
   ticker: string;
   date: string;

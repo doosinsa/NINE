@@ -4,16 +4,16 @@ Last updated: 2026-05-12 KST
 
 ## Next Action
 
-Add mock-first LLM core brief collection route.
+Add mock-first notification dispatch route.
 
 Acceptance criteria:
 - Run `git status --short --branch`.
 - Read `docs/provider-adapters.md`.
 - Keep `NINE_PROVIDER_MODE=mock` as the default and do not run live calls without an explicit live provider selection.
-- Add a server-only API route or handler path that generates Core LLM briefs through `createExternalProviders().llm.generateCoreBrief`.
-- Persist generated briefs to Supabase when configured, with mock fallback behavior when Supabase is unavailable.
+- Add a server-only API route or handler path that sends notification messages through `createExternalProviders().notifications.send`.
+- Persist notification events to Supabase when configured, with mock fallback behavior when Supabase is unavailable.
 - Preserve the current mock provider behavior and API response envelopes.
-- Update API/provider docs with the LLM brief collection route, request shape, and mock/live activation behavior.
+- Update API/provider docs with the notification dispatch route, request shape, and mock/live activation behavior.
 - Run `npm run typecheck` and `npm run build`.
 
 ## Current Status
@@ -40,6 +40,7 @@ Acceptance criteria:
 - Mock-first daily price collection route exists.
 - Mock-first weekly EPS collection route exists.
 - Mock-first quarterly earnings collection route exists.
+- Mock-first LLM core brief collection route exists.
 
 ## Verified
 
@@ -249,6 +250,15 @@ Acceptance criteria:
   - Collected earnings snapshots are upserted into Supabase `earnings` when Supabase is configured.
   - Mock/Supabase-disabled smoke test returned `200` for `PLTR` and `005930.KS` with `providerMode: "mock"` and `persisted: false`.
   - No live provider calls were run.
+  - `npm run typecheck` passed.
+  - `npm run build` passed.
+- Mock-first LLM core brief collection route verified locally:
+  - Added `POST /api/briefs/collect` using `createExternalProviders().llm.generateCoreBrief`.
+  - Added `CoreBriefCollectionRequest` and `CoreBriefCollectionResponse` contracts.
+  - The route builds Core brief inputs from Supabase stock/EPS/earnings context when configured; otherwise it falls back to mock stock/EPS/earnings context.
+  - Generated briefs are inserted into Supabase `llm_briefs` when Supabase is configured.
+  - Mock/Supabase-disabled smoke test returned `200` for `PLTR` and `005930.KS` with `providerMode: "mock"` and `persisted: false`.
+  - No live LLM calls were run.
   - `npm run typecheck` passed.
   - `npm run build` passed.
 - Auth implementation verified locally with temporary env values:
