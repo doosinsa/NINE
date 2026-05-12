@@ -4,23 +4,23 @@ Last updated: 2026-05-12 KST
 
 ## Next Action
 
-Deploy real impulse search daily cap to production.
+Make Discover send-to-Core create scoring intake rows.
 
 Acceptance criteria:
-- Run `git status --short --branch`.
+- Update `POST /api/discover` so Supabase mode checks existing stocks from the database, not mock data.
+- When adding new Discover tickers, create both `stocks` and default `manual_scores` rows so detail/candidates APIs can handle the intake.
+- Preserve mock fallback behavior when Supabase is unavailable.
+- Smoke test Discover send-to-Core with a temporary ticker, then remove any test rows.
 - Run `npm run typecheck` and `npm run build`.
-- Deploy with `vercel deploy --prod --yes`.
-- Smoke test production `GET /api/search?q=PLTR`.
-- Smoke test production outside-universe `POST /api/search` using a temporary ticker, then remove that test row from `daily_search_log`.
 
 ## Current Status
 
 - GitHub repo connected: `https://github.com/doosinsa/NINE.git`
 - Current branch: `main`
-- Latest pushed commit: `b29eda6`
+- Latest pushed commit: `e6aecc3`
 - Vercel project: `nine`
 - Production URL: `https://nine-red-three.vercel.app`
-- Latest verified deployment: `https://nine-9jai338j9-doosinsas-projects.vercel.app`
+- Latest verified deployment: `https://nine-gmf8sddy2-doosinsas-projects.vercel.app`
 - Supabase project linked through CLI.
 - Supabase migration applied.
 - Supabase seed applied.
@@ -116,6 +116,14 @@ Acceptance criteria:
   - The temporary `NINECAPTEST` row was deleted after verification; `GET /api/search?q=PLTR` returned daily cap `0/10` afterward.
   - `npm run typecheck` passed.
   - `npm run build` passed.
+- Real impulse search daily cap production deployment verified after deploying `e6aecc3`:
+  - Deployment URL: `https://nine-gmf8sddy2-doosinsas-projects.vercel.app`
+  - Alias: `https://nine-red-three.vercel.app`
+  - `npm run typecheck` passed.
+  - `npm run build` passed.
+  - Production `GET /api/search?q=PLTR` returned `200`, result present, daily cap `0/10`.
+  - Production outside-universe `POST /api/search` with `NINEPRODCAPTEST` returned `200`, daily cap `1/10`, `requiresOutsideUniverseAnalysis: true`.
+  - The temporary `NINEPRODCAPTEST` row was deleted; `GET /api/search?q=PLTR` returned daily cap `0/10` afterward.
 - Auth implementation verified locally with temporary env values:
   - `npm run typecheck` passed.
   - `npm run build` passed.

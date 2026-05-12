@@ -1,6 +1,6 @@
 # NEXT_ACTION
 
-Deploy real impulse search daily cap to production.
+Make Discover send-to-Core create scoring intake rows.
 
 ## Resume Command
 
@@ -11,8 +11,8 @@ Deploy real impulse search daily cap to production.
 - Read `AGENTS.md`.
 - Read `docs/SESSION_STATE.md`.
 - Read `prd.md`.
-- Run `git status --short --branch`.
+- Update `POST /api/discover` so Supabase mode checks existing stocks from the database, not mock data.
+- When adding new Discover tickers, create both `stocks` and default `manual_scores` rows so detail/candidates APIs can handle the intake.
+- Preserve mock fallback behavior when Supabase is unavailable.
+- Smoke test Discover send-to-Core with a temporary ticker, then remove any test rows.
 - Run `npm run typecheck` and `npm run build`.
-- Deploy with `vercel deploy --prod --yes`.
-- Smoke test production `GET /api/search?q=PLTR`.
-- Smoke test production outside-universe `POST /api/search` using a temporary ticker, then remove that test row from `daily_search_log`.
