@@ -4,20 +4,20 @@ Last updated: 2026-05-12 KST
 
 ## Next Action
 
-Make Discover send-to-Core create scoring intake rows.
+Deploy Discover scoring intake rows to production.
 
 Acceptance criteria:
-- Update `POST /api/discover` so Supabase mode checks existing stocks from the database, not mock data.
-- When adding new Discover tickers, create both `stocks` and default `manual_scores` rows so detail/candidates APIs can handle the intake.
-- Preserve mock fallback behavior when Supabase is unavailable.
-- Smoke test Discover send-to-Core with a temporary ticker, then remove any test rows.
+- Run `git status --short --branch`.
 - Run `npm run typecheck` and `npm run build`.
+- Deploy with `vercel deploy --prod --yes`.
+- Smoke test production Discover send-to-Core with a temporary ticker.
+- Confirm the temporary ticker creates both `stocks` and `manual_scores`, then remove the test `stocks` row and verify cascade cleanup.
 
 ## Current Status
 
 - GitHub repo connected: `https://github.com/doosinsa/NINE.git`
 - Current branch: `main`
-- Latest pushed commit: `e6aecc3`
+- Latest pushed commit: `c78b1fe`
 - Vercel project: `nine`
 - Production URL: `https://nine-red-three.vercel.app`
 - Latest verified deployment: `https://nine-gmf8sddy2-doosinsas-projects.vercel.app`
@@ -124,6 +124,16 @@ Acceptance criteria:
   - Production `GET /api/search?q=PLTR` returned `200`, result present, daily cap `0/10`.
   - Production outside-universe `POST /api/search` with `NINEPRODCAPTEST` returned `200`, daily cap `1/10`, `requiresOutsideUniverseAnalysis: true`.
   - The temporary `NINEPRODCAPTEST` row was deleted; `GET /api/search?q=PLTR` returned daily cap `0/10` afterward.
+- Discover scoring intake implementation verified locally:
+  - `POST /api/discover` now checks existing tickers from Supabase `stocks` when Supabase is configured.
+  - New Discover tickers create both `stocks` and default `manual_scores` rows.
+  - Supabase-unavailable fallback keeps mock existing ticker behavior.
+  - Existing ticker `PLTR` returned as skipped.
+  - Temporary ticker `NINEDISCOTEST` returned as added, then `/api/stocks/NINEDISCOTEST` returned `200` with `source: discover`, `totalScore: 0`, and `decision: watch`.
+  - `/api/candidates` handled the temporary intake ticker.
+  - Temporary `NINEDISCOTEST` `stocks` row was deleted; `manual_scores` was verified deleted by cascade.
+  - `npm run typecheck` passed.
+  - `npm run build` passed.
 - Auth implementation verified locally with temporary env values:
   - `npm run typecheck` passed.
   - `npm run build` passed.

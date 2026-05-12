@@ -292,6 +292,65 @@ export async function fetchDiscoverThemesFromSupabase(): Promise<DiscoverTheme[]
   return data.map(toDiscoverTheme);
 }
 
+export async function sendDiscoverTickersToCoreInSupabase(tickers: string[]) {
+  const supabase = getSupabaseAdmin();
+  if (!supabase) return null;
+
+  const normalizedTickers = [...new Set(tickers.map((ticker) => ticker.trim().toUpperCase()).filter(Boolean))];
+  if (normalizedTickers.length === 0) {
+    return { addedTickers: [], skippedTickers: [] };
+  }
+
+  const { data: existingRows, error: existingError } = await supabase
+    .from("stocks")
+    .select("ticker")
+    .in("ticker", normalizedTickers)
+    .returns<Array<Pick<DbStock, "ticker">>>();
+
+  if (existingError || !existingRows) {
+    throw new Error("Failed to check existing Discover tickers.");
+  }
+
+  const existingTickers = new Set(existingRows.map((row) => row.ticker.toUpperCase()));
+  const addedTickers = normalizedTickers.filter((ticker) => !existingTickers.has(ticker));
+  const skippedTickers = normalizedTickers.filter((ticker) => existingTickers.has(ticker));
+
+  if (addedTickers.length === 0) {
+    return { addedTickers, skippedTickers };
+  }
+
+  const { error: stockError } = await supabase.from("stocks").upsert(
+    addedTickers.map((ticker) => ({
+      ticker,
+      name: ticker,
+      country: ticker.includes(".") ? "KR" : "US",
+      source: "discover",
+    })),
+    { onConflict: "ticker" },
+  );
+
+  if (stockError) {
+    throw new Error("Failed to add Discover tickers to stocks.");
+  }
+
+  const { error: scoreError } = await supabase.from("manual_scores").upsert(
+    addedTickers.map((ticker) => ({
+      ticker,
+      score_quant: 0,
+      score_demand: 0,
+      score_supply: 0,
+      decision: "watch",
+    })),
+    { onConflict: "ticker" },
+  );
+
+  if (scoreError) {
+    throw new Error("Failed to create Discover scoring intake rows.");
+  }
+
+  return { addedTickers, skippedTickers };
+}
+
 export async function fetchQuarterlyReviewsFromSupabase(): Promise<QuarterlyReview[] | null> {
   const supabase = getSupabaseAdmin();
   if (!supabase) return null;

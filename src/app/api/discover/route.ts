@@ -1,6 +1,6 @@
 import { fail, ok } from "@/lib/server/api";
 import { discoverThemes, stocks } from "@/lib/server/mock-data";
-import { fetchDiscoverThemesFromSupabase, getSupabaseAdmin } from "@/lib/server/supabase";
+import { fetchDiscoverThemesFromSupabase, sendDiscoverTickersToCoreInSupabase } from "@/lib/server/supabase";
 import type { DiscoverResponse, DiscoverSendToCoreRequest, DiscoverSendToCoreResponse } from "@/types/contracts";
 
 export async function GET() {
@@ -20,21 +20,23 @@ export async function POST(request: Request) {
     return fail("BAD_REQUEST", "sourceThemeId and tickers are required.");
   }
 
-  const existingTickers = new Set(stocks.map((stock) => stock.ticker.toUpperCase()));
-  const addedTickers = body.tickers.filter((ticker) => !existingTickers.has(ticker.toUpperCase()));
-  const skippedTickers = body.tickers.filter((ticker) => existingTickers.has(ticker.toUpperCase()));
-  const supabase = getSupabaseAdmin();
+  let addedTickers: string[];
+  let skippedTickers: string[];
 
-  if (supabase && addedTickers.length > 0) {
-    await supabase.from("stocks").upsert(
-      addedTickers.map((ticker) => ({
-        ticker,
-        name: ticker,
-        country: ticker.includes(".") ? "KR" : "US",
-        source: "discover",
-      })),
-      { onConflict: "ticker" },
-    );
+  try {
+    const supabaseResult = await sendDiscoverTickersToCoreInSupabase(body.tickers);
+    if (supabaseResult) {
+      addedTickers = supabaseResult.addedTickers;
+      skippedTickers = supabaseResult.skippedTickers;
+    } else {
+      const normalizedTickers = [...new Set(body.tickers.map((ticker) => ticker.trim().toUpperCase()).filter(Boolean))];
+      const existingTickers = new Set(stocks.map((stock) => stock.ticker.toUpperCase()));
+      addedTickers = normalizedTickers.filter((ticker) => !existingTickers.has(ticker));
+      skippedTickers = normalizedTickers.filter((ticker) => existingTickers.has(ticker));
+    }
+  } catch (error) {
+    console.error(error);
+    return fail("SERVER_ERROR", "Failed to send Discover tickers to Core.", 500);
   }
 
   const response: DiscoverSendToCoreResponse = {

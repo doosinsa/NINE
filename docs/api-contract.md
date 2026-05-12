@@ -92,6 +92,8 @@ Sends selected Discover tickers into Core universe intake.
 
 Request: `DiscoverSendToCoreRequest`
 
+When Supabase is configured, new tickers create both `stocks` rows and default `manual_scores` rows so they can enter the next scoring cycle. Existing tickers are returned as `skippedTickers`.
+
 Response data: `DiscoverSendToCoreResponse`
 
 ### `POST /api/auth/login`
