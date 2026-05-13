@@ -116,6 +116,41 @@ NINE_PROVIDER_MODE=mock
 
 Run live smoke tests one provider at a time after the relevant env values are present in the target environment.
 
+Helper command:
+
+```bash
+npm run provider:smoke -- --base-url http://127.0.0.1:3000 --suite status
+```
+
+The helper defaults to `http://127.0.0.1:3000` and the read-only `status` suite. Non-local targets require an explicit live target acknowledgement:
+
+```bash
+NINE_SMOKE_ALLOW_LIVE=true npm run provider:smoke -- \
+  --base-url https://nine-red-three.vercel.app \
+  --suite prices \
+  --date 2026-05-13
+```
+
+Run multiple suites with a comma list, or `--suite all` for status, prices, EPS, earnings, briefs, and Discover:
+
+```bash
+NINE_SMOKE_ALLOW_LIVE=true npm run provider:smoke -- \
+  --base-url "$NINE_BASE_URL" \
+  --suite prices,eps,earnings,briefs,discover \
+  --date 2026-05-13
+```
+
+Notification smoke is intentionally separate because it can send a real LMS. It requires both live-target acknowledgement and notification acknowledgement:
+
+```bash
+NINE_SMOKE_ALLOW_LIVE=true NINE_SMOKE_ALLOW_NOTIFICATIONS=true npm run provider:smoke -- \
+  --base-url "$NINE_BASE_URL" \
+  --suite notifications \
+  --to 01000000000
+```
+
+The helper prints endpoint summaries only. It does not read or print provider secret values.
+
 ### Prices
 
 Required env:

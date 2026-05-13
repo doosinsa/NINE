@@ -4,16 +4,16 @@ Last updated: 2026-05-13 KST
 
 ## Next Action
 
-Add provider live smoke helper script.
+Prepare first live API connection checklist.
 
 Acceptance criteria:
 - Run `git status --short --branch`.
-- Read `docs/provider-adapters.md`.
-- Keep `NINE_PROVIDER_MODE=mock` as the default and do not run live calls without an explicit live provider selection.
-- Add a local-only helper script or documented npm command for running provider smoke requests with explicit base URL and payloads.
-- Keep the helper mock-safe by default and require explicit env to target live provider selectors.
-- Do not include or print provider secret values.
-- Update `docs/RUNBOOK.md` with usage.
+- Read `docs/provider-adapters.md` and `docs/RUNBOOK.md`.
+- Keep `NINE_PROVIDER_MODE=mock` as the default.
+- Do not run live provider calls until the user confirms the needed provider accounts and server-only env values are ready.
+- Add a concise checklist for the user's pre-live API setup steps: provider accounts, key names, Vercel env placement, selector order, first smoke order, rollback.
+- Do not include provider secret values.
+- Update `docs/SESSION_STATE.md` with the handoff.
 - Run `npm run typecheck` and `npm run build`.
 
 ## Current Status
@@ -49,6 +49,7 @@ Acceptance criteria:
 - Provider operations runbook and live smoke checklist exist.
 - Provider status API endpoint exists.
 - Provider status diagnostics page exists.
+- Provider live smoke helper script exists as `npm run provider:smoke`.
 
 ## Verified
 
@@ -332,6 +333,16 @@ Acceptance criteria:
   - The page reads `GET /api/providers/status` and shows provider mode, configured state, missing env names, and provider purpose.
   - Secret values are not shown.
   - No live provider calls were run.
+  - `npm run typecheck` passed.
+  - `npm run build` passed.
+- Provider live smoke helper verified locally:
+  - Added `scripts/provider-smoke.mjs` and `npm run provider:smoke`.
+  - Helper defaults to local `status` smoke against `http://127.0.0.1:3000`.
+  - Non-local smoke targets require `NINE_SMOKE_ALLOW_LIVE=true`.
+  - Notification smoke additionally requires `NINE_SMOKE_ALLOW_NOTIFICATIONS=true` and `--to`.
+  - Runbook documents local, live, multi-suite, and notification smoke usage.
+  - The helper prints response summaries only and does not read or print provider secret values.
+  - Local `status` smoke returned `providerMode: "mock"` against `http://127.0.0.1:3000`.
   - `npm run typecheck` passed.
   - `npm run build` passed.
 - Auth implementation verified locally with temporary env values:

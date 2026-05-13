@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "provider:smoke": "node scripts/provider-smoke.mjs",
     "start": "next start",
     "typecheck": "tsc --noEmit"
   },
