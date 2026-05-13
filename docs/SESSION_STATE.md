@@ -4,15 +4,15 @@ Last updated: 2026-05-13 KST
 
 ## Next Action
 
-Add provider status API endpoint.
+Add provider status diagnostics page.
 
 Acceptance criteria:
 - Run `git status --short --branch`.
 - Read `docs/provider-adapters.md`.
 - Keep `NINE_PROVIDER_MODE=mock` as the default and do not run live calls without an explicit live provider selection.
-- Add a server-only API route that reports provider mode and provider env readiness without exposing secret values.
-- Use `getProviderStatuses()` and keep response envelopes stable.
-- Document the endpoint in `docs/api-contract.md` and `docs/provider-adapters.md`.
+- Add an authenticated/internal diagnostics UI that reads `GET /api/providers/status`.
+- Show provider mode, configured state, missing env names, and purpose without exposing secret values.
+- Keep the page calm and mobile-safe; do not add charts or recommendation copy.
 - Preserve `NINE_PROVIDER_MODE=mock` as the default and do not run live provider calls.
 - Run `npm run typecheck` and `npm run build`.
 
@@ -47,6 +47,7 @@ Acceptance criteria:
 - Yahoo Finance US earnings adapter shell exists, inactive by default.
 - Composite KR/US earnings provider wiring exists, inactive by default.
 - Provider operations runbook and live smoke checklist exist.
+- Provider status API endpoint exists.
 
 ## Verified
 
@@ -313,6 +314,15 @@ Acceptance criteria:
 - Provider operations runbook verified locally:
   - Added provider activation sequence, one-provider-at-a-time live smoke checklist, rollback instructions, no-secret handling, and recommended n8n schedule order to `docs/RUNBOOK.md`.
   - Linked provider adapter docs to the runbook.
+  - No live provider calls were run.
+  - `npm run typecheck` passed.
+  - `npm run build` passed.
+- Provider status API endpoint verified locally:
+  - Added `GET /api/providers/status` using `getProviderStatuses()`.
+  - Added `ProviderStatusItem` and `ProviderStatusResponse` contracts.
+  - Documented the endpoint in `docs/api-contract.md` and `docs/provider-adapters.md`.
+  - Local smoke test returned `200` with `providerMode: "mock"` and provider readiness metadata.
+  - Secret values are not returned; only missing env names are exposed.
   - No live provider calls were run.
   - `npm run typecheck` passed.
   - `npm run build` passed.

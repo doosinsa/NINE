@@ -204,6 +204,28 @@ export type DailyPriceCollectionResponse = {
   prices: DailyPriceSnapshot[];
 };
 
+export type ProviderStatusItem = {
+  provider:
+    | "anthropic"
+    | "dart"
+    | "finnhub"
+    | "kis"
+    | "kita"
+    | "newsapi"
+    | "sec-edgar"
+    | "solapi"
+    | "yahoo-finance";
+  mode: "mock" | "live";
+  configured: boolean;
+  missingEnv: string[];
+  purpose: string;
+};
+
+export type ProviderStatusResponse = {
+  providerMode: "mock" | "live";
+  statuses: ProviderStatusItem[];
+};
+
 export type ManualScoreRequest = {
   ticker: string;
   scoreDemand: number;

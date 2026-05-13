@@ -176,6 +176,26 @@ With `NINE_PROVIDER_MODE=mock`, the route uses the mock notification provider an
 
 Response data: `NotificationDispatchResponse`
 
+### `GET /api/providers/status`
+Returns provider mode and env readiness without exposing secret values.
+
+Response data: `ProviderStatusResponse`
+
+```ts
+{
+  providerMode: "mock" | "live";
+  statuses: Array<{
+    provider: string;
+    mode: "mock" | "live";
+    configured: boolean;
+    missingEnv: string[];
+    purpose: string;
+  }>;
+}
+```
+
+`missingEnv` includes only environment variable names. Secret values are never returned. This endpoint does not initialize live providers and does not make external API calls.
+
 ### `POST /api/auth/login`
 Verifies the single app password against `NINE_PASSWORD_HASH`. On success, sets an HTTP-only session cookie protected with `NINE_SESSION_SECRET`.
 
