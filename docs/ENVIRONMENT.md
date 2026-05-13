@@ -93,6 +93,8 @@ YAHOO_FINANCE_QUOTE_SUMMARY_BASE_URL=https://query2.finance.yahoo.com
 
 ## Vercel Production Env
 
+Before first live external provider activation, use `docs/live-api-connection-checklist.md`.
+
 Already configured:
 
 - `NEXT_PUBLIC_SUPABASE_URL`

@@ -4,17 +4,16 @@ Last updated: 2026-05-13 KST
 
 ## Next Action
 
-Prepare first live API connection checklist.
+Wait for live API credential readiness.
 
 Acceptance criteria:
 - Run `git status --short --branch`.
-- Read `docs/provider-adapters.md` and `docs/RUNBOOK.md`.
+- Read `docs/live-api-connection-checklist.md`, `docs/provider-adapters.md`, and `docs/RUNBOOK.md`.
 - Keep `NINE_PROVIDER_MODE=mock` as the default.
-- Do not run live provider calls until the user confirms the needed provider accounts and server-only env values are ready.
-- Add a concise checklist for the user's pre-live API setup steps: provider accounts, key names, Vercel env placement, selector order, first smoke order, rollback.
-- Do not include provider secret values.
-- Update `docs/SESSION_STATE.md` with the handoff.
-- Run `npm run typecheck` and `npm run build`.
+- Do not run live provider calls until the user confirms provider accounts and server-only env values are ready.
+- If credentials are not ready, pause live activation and ask the user to complete the checklist.
+- If credentials are ready, add only the selected provider env values to the target environment and smoke one provider surface at a time.
+- Do not include provider secret values in chat, docs, commits, or logs.
 
 ## Current Status
 
@@ -50,6 +49,7 @@ Acceptance criteria:
 - Provider status API endpoint exists.
 - Provider status diagnostics page exists.
 - Provider live smoke helper script exists as `npm run provider:smoke`.
+- First live API connection checklist exists.
 
 ## Verified
 
@@ -343,6 +343,14 @@ Acceptance criteria:
   - Runbook documents local, live, multi-suite, and notification smoke usage.
   - The helper prints response summaries only and does not read or print provider secret values.
   - Local `status` smoke returned `providerMode: "mock"` against `http://127.0.0.1:3000`.
+  - `npm run typecheck` passed.
+  - `npm run build` passed.
+- First live API connection checklist verified locally:
+  - Added `docs/live-api-connection-checklist.md`.
+  - Checklist covers provider account readiness, server-only env names, Vercel env placement, selector order, first smoke order, pass criteria, and rollback.
+  - Linked the checklist from `docs/RUNBOOK.md`, `docs/ENVIRONMENT.md`, and `docs/provider-adapters.md`.
+  - No live provider calls were run; `NINE_PROVIDER_MODE=mock` remains the default.
+  - No provider secret values were added.
   - `npm run typecheck` passed.
   - `npm run build` passed.
 - Auth implementation verified locally with temporary env values:

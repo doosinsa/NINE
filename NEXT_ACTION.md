@@ -1,6 +1,6 @@
 # NEXT_ACTION
 
-Prepare first live API connection checklist.
+Wait for live API credential readiness.
 
 ## Resume Command
 
@@ -12,10 +12,9 @@ Prepare first live API connection checklist.
 - Read `docs/SESSION_STATE.md`.
 - Read `prd.md`.
 - Run `git status --short --branch`.
-- Read `docs/provider-adapters.md` and `docs/RUNBOOK.md`.
+- Read `docs/live-api-connection-checklist.md`, `docs/provider-adapters.md`, and `docs/RUNBOOK.md`.
 - Keep `NINE_PROVIDER_MODE=mock` as the default.
-- Do not run live provider calls until the user confirms the needed provider accounts and server-only env values are ready.
-- Add a concise checklist for the user's pre-live API setup steps: provider accounts, key names, Vercel env placement, selector order, first smoke order, rollback.
-- Do not include provider secret values.
-- Update `docs/SESSION_STATE.md` with the handoff.
-- Run `npm run typecheck` and `npm run build`.
+- Do not run live provider calls until the user confirms provider accounts and server-only env values are ready.
+- If credentials are not ready, pause live activation and ask the user to complete the checklist.
+- If credentials are ready, add only the selected provider env values to the target environment and smoke one provider surface at a time.
+- Do not include provider secret values in chat, docs, commits, or logs.

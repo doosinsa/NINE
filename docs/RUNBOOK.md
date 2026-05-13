@@ -75,6 +75,8 @@ curl -sS https://nine-red-three.vercel.app/api/candidates | head -c 500
 
 ## Provider Live Activation
 
+First-time setup checklist: `docs/live-api-connection-checklist.md`.
+
 Default stance:
 
 - Keep `NINE_PROVIDER_MODE=mock` unless a single provider surface is being verified.

@@ -226,4 +226,6 @@ The shell uses Solapi `POST /messages/v4/send-many/detail` with a single message
 
 Keep all secrets server-only. Do not add provider keys to `NEXT_PUBLIC_*`.
 
+For first-time account/env readiness, see `docs/live-api-connection-checklist.md`.
+
 For live activation order, smoke payloads, rollback steps, and n8n scheduling, see `docs/RUNBOOK.md`.
