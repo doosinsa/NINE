@@ -152,6 +152,7 @@
 - 개발과 smoke test는 현재 MacBook에서 수행하고, 정기 실행은 나중에 Mac Mini 또는 항상 켜져 있는 Mac으로 옮긴다.
 - Vercel production에서 KIS token 발급이 HTTP 403으로 실패한 이력이 있으므로, KIS 가격 수집은 Vercel serverless runtime에 의존하지 않는다.
 - Mac/n8n worker는 collector script 또는 로컬 API route를 실행해 Supabase에 결과를 저장하고, Vercel UI는 저장된 Supabase 데이터만 읽는다.
+- KIS access token은 collector가 자동으로 발급/갱신하고, 로컬 파일 또는 프로세스 캐시로 재사용한다. 수동 24시간 갱신은 하지 않는다.
 
 ---
 
@@ -242,6 +243,7 @@
 - **실행 위치**: Mac/n8n worker. Vercel production serverless runtime에서 직접 실행하지 않음
 - **소스**: KIS API + Yahoo Finance
 - **저장**: `prices` 테이블 OHLCV
+- **KIS 토큰**: collector가 `access_token`을 자동 발급/재사용하고, 만료 전 갱신한다. 매일 수동 갱신하지 않는다.
 - **실패 처리**: 3회 retry → Solapi LMS 알림
 
 #### F2. 주별 컨센서스 EPS 스냅샷
