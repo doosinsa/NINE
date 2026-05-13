@@ -53,7 +53,7 @@ async function fetchTickerEps({
   ticker: string;
   snapshotDate: string;
 }): Promise<EpsEstimate[]> {
-  const url = new URL("/stock/eps-estimate", baseUrl);
+  const url = new URL("stock/eps-estimate", withTrailingSlash(baseUrl));
   url.search = new URLSearchParams({
     symbol: ticker,
     freq: frequency,
@@ -76,6 +76,10 @@ async function fetchTickerEps({
   return (body.data ?? [])
     .map((row) => toEpsEstimate(symbol, snapshotDate, row))
     .filter((estimate): estimate is EpsEstimate => estimate !== null);
+}
+
+function withTrailingSlash(value: string) {
+  return value.endsWith("/") ? value : `${value}/`;
 }
 
 function toEpsEstimate(symbol: string, snapshotDate: string, row: FinnhubEpsEstimateRow): EpsEstimate | null {

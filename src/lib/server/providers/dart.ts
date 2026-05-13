@@ -49,10 +49,10 @@ export function createDartEarningsProvider(): EarningsProvider {
   }
 
   const corpCodeMap = parseCorpCodeMap(process.env.DART_CORP_CODE_MAP);
-  const baseUrl = process.env.DART_BASE_URL ?? "https://opendart.fss.or.kr";
-  const businessYear = process.env.DART_BUSINESS_YEAR ?? currentKstYear();
-  const reportCode = process.env.DART_REPORT_CODE ?? "11013";
-  const fsDiv = process.env.DART_FS_DIV ?? "CFS";
+  const baseUrl = nonEmpty(process.env.DART_BASE_URL) ?? "https://opendart.fss.or.kr";
+  const businessYear = nonEmpty(process.env.DART_BUSINESS_YEAR) ?? currentKstYear();
+  const reportCode = nonEmpty(process.env.DART_REPORT_CODE) ?? "11013";
+  const fsDiv = nonEmpty(process.env.DART_FS_DIV) ?? "CFS";
 
   return {
     async fetchQuarterlyEarnings(tickers) {
@@ -282,4 +282,9 @@ function currentKstYear() {
     timeZone: "Asia/Seoul",
     year: "numeric",
   }).format(new Date());
+}
+
+function nonEmpty(value: string | undefined) {
+  const trimmed = value?.trim();
+  return trimmed ? trimmed : undefined;
 }

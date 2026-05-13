@@ -40,7 +40,9 @@ export function createKisPriceProvider(): PriceProvider {
   return {
     async fetchDailyPrices(tickers, date) {
       const normalizedDate = toKisDate(date);
-      const krTickers = tickers.map(toKisTicker).filter((ticker): ticker is string => ticker !== null);
+      const krTickers = tickers
+        .map((ticker) => ({ input: ticker, requestTicker: toKisTicker(ticker) }))
+        .filter((ticker): ticker is { input: string; requestTicker: string } => ticker.requestTicker !== null);
       if (krTickers.length === 0) {
         return [];
       }
@@ -55,8 +57,9 @@ export function createKisPriceProvider(): PriceProvider {
             appSecret,
             baseUrl,
             date: normalizedDate,
+            inputTicker: ticker.input,
             marketDivCode,
-            ticker,
+            ticker: ticker.requestTicker,
             trId,
           }),
         ),
@@ -118,6 +121,7 @@ async function fetchTickerDailyPrice({
   appSecret,
   baseUrl,
   date,
+  inputTicker,
   marketDivCode,
   ticker,
   trId,
@@ -127,6 +131,7 @@ async function fetchTickerDailyPrice({
   appSecret: string;
   baseUrl: string;
   date: string;
+  inputTicker: string;
   marketDivCode: string;
   ticker: string;
   trId: string;
@@ -163,7 +168,7 @@ async function fetchTickerDailyPrice({
   }
 
   const row = body.output2?.find((item) => item.stck_bsop_date === date) ?? body.output2?.[0];
-  return row ? toDailyPrice(ticker, row) : null;
+  return row ? toDailyPrice(inputTicker, row) : null;
 }
 
 function toDailyPrice(ticker: string, row: KisDailyPriceRow): DailyPrice | null {

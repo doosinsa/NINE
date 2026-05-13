@@ -4,15 +4,17 @@ Last updated: 2026-05-13 KST
 
 ## Next Action
 
-Wait for live API credential readiness.
+Resolve remaining live provider smoke blockers.
 
 Acceptance criteria:
 - Run `git status --short --branch`.
 - Read `docs/live-api-connection-checklist.md`, `docs/provider-adapters.md`, and `docs/RUNBOOK.md`.
-- Keep `NINE_PROVIDER_MODE=mock` as the default.
-- Do not run live provider calls until the user confirms provider accounts and server-only env values are ready.
-- If credentials are not ready, pause live activation and ask the user to complete the checklist.
-- If credentials are ready, add only the selected provider env values to the target environment and smoke one provider surface at a time.
+- Keep `NINE_PROVIDER_MODE=mock` as the default and keep production selectors mocked until local blockers are resolved.
+- Finnhub EPS live smoke currently fails with HTTP 403 for `stock/eps-estimate`; confirm plan/endpoint access or choose a replacement EPS provider before enabling EPS live.
+- Yahoo Finance earnings live smoke currently fails with HTTP 401 on `quoteSummary`; composite earnings now returns available provider results instead of failing the full route, but a replacement/compatible US earnings source is still needed before US earnings live rollout.
+- DART single-provider earnings smoke passed with `DART_BUSINESS_YEAR=2025`; current-year `2026` Samsung Q1 returned OpenDART status `013` (no data), so set an explicit available business year for smoke/backfill jobs.
+- Solapi notification live smoke passed after explicit user approval; do not send additional real LMS/SMS without renewed approval.
+- Price, Anthropic brief, and NewsAPI Discover local live smoke passed.
 - Do not include provider secret values in chat, docs, commits, or logs.
 
 ## Current Status
@@ -50,6 +52,14 @@ Acceptance criteria:
 - Provider status diagnostics page exists.
 - Provider live smoke helper script exists as `npm run provider:smoke`.
 - First live API connection checklist exists.
+- Local provider env values are present for KIS, DART, Finnhub, NewsAPI, Anthropic, Solapi, SEC EDGAR, and Yahoo Finance base URLs.
+- KITA remains unconfigured and is not part of the current smoke order.
+- Local `.env` keeps `NINE_PROVIDER_MODE=mock` as the default; live smoke tests used per-process selector overrides.
+- Live smoke uncovered and fixed provider adapter issues:
+  - KIS now preserves the input ticker such as `005930.KS` while using the normalized six-digit request code for KIS.
+  - Finnhub now preserves the `/api/v1` base path when constructing `stock/eps-estimate` requests.
+  - DART optional env placeholders now fall back when empty instead of sending empty required query values.
+  - Composite earnings now isolates provider failures so Yahoo Finance 401 does not discard available DART results or turn the whole collection route into a 500.
 
 ## Verified
 
@@ -261,6 +271,19 @@ Acceptance criteria:
   - No live provider calls were run.
   - `npm run typecheck` passed.
   - `npm run build` passed.
+- First local live provider smoke pass:
+  - Status endpoint returned `ok: true`; KITA was the only missing env and is outside the current smoke order.
+  - Prices with `NINE_PRICE_PROVIDER=composite` returned `providerMode: "live"`, requested 2, collected 2, and persisted to Supabase.
+  - Finnhub EPS reached the corrected API path but failed with HTTP 403 for `stock/eps-estimate`; do not enable EPS live until account access or provider choice is resolved.
+  - DART-only earnings with current-year default returned `providerMode: "live"`, requested 1, collected 0, and preserved the response envelope because OpenDART returned status `013` for 2026 Samsung Q1.
+  - DART-only earnings with `DART_BUSINESS_YEAR=2025` returned `providerMode: "live"`, requested 1, collected 1, and persisted to Supabase.
+  - Composite earnings now returns a successful envelope even when Yahoo Finance earnings fails with HTTP 401; replacement/compatible US earnings source is still needed.
+  - Anthropic briefs with `NINE_LLM_PROVIDER=anthropic` returned `providerMode: "live"`, requested 1, generated 1, and persisted to Supabase.
+  - Latest saved PLTR brief was checked for banned copy; `AI가 추천`, `성공 가능성 높음`, and `강추` were not present.
+  - NewsAPI Discover with `NINE_DISCOVER_SIGNAL_PROVIDER=newsapi` returned `ok: true` with 2 themes.
+  - Solapi notification smoke was run after explicit user approval; it returned `providerMode: "live"`, `sent: true`, `persisted: true`, and provider message id present.
+  - `npm run typecheck` passed after adapter fixes.
+  - `npm run build` passed after adapter fixes.
 - Mock-first LLM core brief collection route verified locally:
   - Added `POST /api/briefs/collect` using `createExternalProviders().llm.generateCoreBrief`.
   - Added `CoreBriefCollectionRequest` and `CoreBriefCollectionResponse` contracts.
