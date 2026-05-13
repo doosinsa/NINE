@@ -80,6 +80,8 @@ First-time setup checklist: `docs/live-api-connection-checklist.md`.
 Default stance:
 
 - Keep `NINE_PROVIDER_MODE=mock` unless a single provider surface is being verified.
+- Vercel production stays `NINE_PROVIDER_MODE=mock` for provider collection jobs. Use Vercel for UI/API shell and Supabase reads; run live external collection from a Mac/n8n worker.
+- KIS token requests passed locally but returned HTTP 403 from Vercel production runtime, so do not retry KR price collection from Vercel until KIS runtime/IP policy is explicitly resolved.
 - Do not paste provider secrets into chat, docs, commits, shell history notes, or screenshots.
 - Enable one provider selector at a time. Avoid switching every selector to live in one deploy.
 - Use a small ticker set first: `005930.KS`, `000660.KS`, `PLTR`, `NVDA`.
@@ -117,6 +119,8 @@ NINE_PROVIDER_MODE=mock
 ## Live Smoke Checklist
 
 Run live smoke tests one provider at a time after the relevant env values are present in the target environment.
+
+For provider collection jobs, prefer the Mac/n8n worker target. Vercel production smoke is useful for status/read-only checks, but it is not the primary runtime for KIS-backed collection.
 
 Helper command:
 
@@ -301,14 +305,26 @@ Expected: `ok: true`, `providerMode: "live"`, `sent: true`, `providerMessageId` 
 
 Recommended order for provider-backed collection jobs:
 
-1. Daily prices: `POST /api/prices/collect`
-2. Weekly EPS snapshots: `POST /api/eps/collect`
-3. Quarterly earnings snapshots: `POST /api/earnings/collect`
-4. Core briefs after EPS/earnings refresh: `POST /api/briefs/collect`
-5. Discover refresh: `GET /api/discover`
-6. Notifications only after scoring/brief data is current: `POST /api/notifications/send`
+The worker can be developed on the MacBook and moved later to Mac Mini. Keep the same repo, `.env`, and command schedule.
+
+Recommended order for provider-backed collection jobs:
+
+1. Daily prices: local collector script or local `POST /api/prices/collect`
+2. Weekly EPS snapshots: local collector script or local `POST /api/eps/collect`
+3. Quarterly earnings snapshots: local collector script or local `POST /api/earnings/collect`
+4. Core briefs after EPS/earnings refresh: local collector script or local `POST /api/briefs/collect`
+5. Discover refresh: local collector script or local `GET /api/discover`
+6. Notifications only after scoring/brief data is current: local `POST /api/notifications/send`
 
 Use narrow ticker payloads during initial rollout. Move to full-universe payloads only after live smoke tests and persisted row counts look normal.
+
+For long-running operations, prefer scripts such as:
+
+```bash
+npm run collect:prices -- --date 2026-05-13 --tickers 005930.KS,PLTR
+```
+
+These scripts should load `.env`, call provider adapters, upsert Supabase rows, and send Solapi failure notifications without requiring a public Vercel function.
 
 ## Git
 

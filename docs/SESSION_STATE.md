@@ -4,12 +4,16 @@ Last updated: 2026-05-13 KST
 
 ## Next Action
 
-Resolve remaining live provider smoke blockers.
+Build Mac/n8n provider collector scripts.
 
 Acceptance criteria:
 - Run `git status --short --branch`.
 - Read `docs/live-api-connection-checklist.md`, `docs/provider-adapters.md`, and `docs/RUNBOOK.md`.
-- Keep `NINE_PROVIDER_MODE=mock` as the default and keep production selectors mocked until local blockers are resolved.
+- Keep `NINE_PROVIDER_MODE=mock` as the default and keep production selectors mocked for provider collection jobs.
+- Production price live rollout was attempted and rolled back: `NINE_PRICE_PROVIDER=composite` failed because KIS token request returned HTTP 403 from Vercel production runtime.
+- Before retrying production KR price live, verify whether KIS app credentials allow server-to-server calls from Vercel's US runtime or move the collection job to an approved runtime such as the Mac mini/n8n host.
+- PRD now defines Vercel as UI/API shell and Mac/n8n worker as the external provider collection runtime.
+- Next implementation target: add local collector scripts starting with `npm run collect:prices`, then smoke locally with `005930.KS,PLTR`.
 - Finnhub EPS live smoke currently fails with HTTP 403 for `stock/eps-estimate`; confirm plan/endpoint access or choose a replacement EPS provider before enabling EPS live.
 - Yahoo Finance earnings live smoke currently fails with HTTP 401 on `quoteSummary`; composite earnings now returns available provider results instead of failing the full route, but a replacement/compatible US earnings source is still needed before US earnings live rollout.
 - DART single-provider earnings smoke passed with `DART_BUSINESS_YEAR=2025`; current-year `2026` Samsung Q1 returned OpenDART status `013` (no data), so set an explicit available business year for smoke/backfill jobs.
@@ -53,6 +57,8 @@ Acceptance criteria:
 - Provider live smoke helper script exists as `npm run provider:smoke`.
 - First live API connection checklist exists.
 - Local provider env values are present for KIS, DART, Finnhub, NewsAPI, Anthropic, Solapi, SEC EDGAR, and Yahoo Finance base URLs.
+- Vercel production env now has price provider env values and baseline provider selectors, but selectors were rolled back to `mock` after KIS production token smoke failed.
+- PRD and provider runbooks now document the Mac/n8n worker architecture: develop and smoke on MacBook, then move repo and `.env` to Mac Mini or another always-on Mac for scheduled collection.
 - KITA remains unconfigured and is not part of the current smoke order.
 - Local `.env` keeps `NINE_PROVIDER_MODE=mock` as the default; live smoke tests used per-process selector overrides.
 - Live smoke uncovered and fixed provider adapter issues:
@@ -284,6 +290,13 @@ Acceptance criteria:
   - Solapi notification smoke was run after explicit user approval; it returned `providerMode: "live"`, `sent: true`, `persisted: true`, and provider message id present.
   - `npm run typecheck` passed after adapter fixes.
   - `npm run build` passed after adapter fixes.
+- First production price rollout attempt:
+  - Added production env names for baseline provider selectors, KIS price, and Yahoo Finance price.
+  - Deployed once with selectors still mocked; production status returned `providerMode: "mock"` and KIS/Yahoo Finance configured.
+  - Changed production selectors to `NINE_PROVIDER_MODE=live` and `NINE_PRICE_PROVIDER=composite`, then deployed `https://nine-je907pne8-doosinsas-projects.vercel.app`.
+  - Production `prices` smoke with `005930.KS` and `PLTR` failed with HTTP 500; Vercel logs showed `KIS token request failed with HTTP 403`.
+  - Rolled production selectors back to `NINE_PROVIDER_MODE=mock` and `NINE_PRICE_PROVIDER=mock`, then deployed `https://nine-hykux428h-doosinsas-projects.vercel.app`.
+  - Rollback status smoke returned `providerMode: "mock"`.
 - Mock-first LLM core brief collection route verified locally:
   - Added `POST /api/briefs/collect` using `createExternalProviders().llm.generateCoreBrief`.
   - Added `CoreBriefCollectionRequest` and `CoreBriefCollectionResponse` contracts.

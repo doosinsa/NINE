@@ -16,10 +16,12 @@ Mock adapters return stable local data so route handlers can be wired without ex
 
 `NINE_PROVIDER_MODE=live` only replaces an individual provider surface when its explicit selector env is set and the required provider env values are present.
 
+Live provider collection is intended to run from a Mac/n8n worker, not Vercel production serverless by default. Vercel can host UI, auth, status, and Supabase-backed reads, but KIS token requests returned HTTP 403 from Vercel production runtime during smoke testing. Build and verify collector scripts on the MacBook, then move the same repo and `.env` to Mac Mini or another always-on Mac for scheduled jobs.
+
 ## Current Wiring
 
 - `GET /api/discover` reads Supabase first, then falls back to `createExternalProviders()` for mock Discover signals and mock Claude-style clustering, then falls back to static mock data if provider initialization fails.
-- `POST /api/prices/collect` calls `createExternalProviders().price.fetchDailyPrices`, then upserts collected rows into Supabase `prices` when Supabase is configured. In mock mode it uses stable mock prices and requires no external provider secrets.
+- `POST /api/prices/collect` calls `createExternalProviders().price.fetchDailyPrices`, then upserts collected rows into Supabase `prices` when Supabase is configured. In mock mode it uses stable mock prices and requires no external provider secrets. For KIS-backed live collection, run this through the Mac/n8n worker or a collector script rather than Vercel production.
 - `POST /api/eps/collect` calls `createExternalProviders().eps.fetchWeeklyEps`, then upserts collected rows into Supabase `eps_estimates` when Supabase is configured. In mock mode it uses stable mock EPS snapshots and requires no external provider secrets.
 - `POST /api/earnings/collect` calls `createExternalProviders().earnings.fetchQuarterlyEarnings`, then upserts collected rows into Supabase `earnings` when Supabase is configured. In mock mode it uses stable mock earnings snapshots and requires no external provider secrets.
 - `POST /api/briefs/collect` builds Core brief inputs from Supabase or mock data, calls `createExternalProviders().llm.generateCoreBrief`, then inserts generated rows into Supabase `llm_briefs` when Supabase is configured. In mock mode it uses stable mock LLM briefs and requires no external provider secrets.

@@ -2,7 +2,7 @@
 
 Use this checklist before the first live provider connection. Keep `NINE_PROVIDER_MODE=mock` until the specific provider surface is ready to smoke test.
 
-Do not paste provider secret values into chat, tracked files, screenshots, or shell history notes. Provider keys belong only in local `.env` or Vercel server-side env.
+Do not paste provider secret values into chat, tracked files, screenshots, or shell history notes. Provider keys belong only in local/Mac worker `.env` or Vercel server-side env. For provider collection jobs, prefer the Mac/n8n worker runtime; Vercel production should remain `NINE_PROVIDER_MODE=mock` unless a specific provider has been proven safe from that runtime.
 
 ## 1. Account Readiness
 
@@ -72,19 +72,18 @@ SEC_USER_AGENT_EMAIL=
 KITA_API_KEY=
 ```
 
-## 3. Vercel Placement
+## 3. Runtime Placement
 
-Add provider env values to Vercel Production only after local mock checks pass.
+Use Mac/n8n worker placement for provider collection jobs. The current development MacBook is acceptable for building and smoke testing; move the same repo and `.env` to Mac Mini or another always-on Mac for scheduled operation.
 
-Recommended process:
+Vercel placement is limited:
 
-1. Keep `NINE_PROVIDER_MODE=mock` in production.
-2. Add the required provider key/env names for one provider surface.
-3. Deploy once with selectors still set to `mock`.
-4. Confirm `/api/providers/status` shows the provider as configured without exposing secret values.
-5. Change only the target selector to live, then deploy again.
+- Keep `NINE_PROVIDER_MODE=mock` in Vercel production.
+- Do not rely on Vercel production for KIS-backed price collection; KIS token requests returned HTTP 403 from Vercel production runtime during live smoke.
+- Vercel can still host UI, auth, status, and Supabase-backed API reads.
+- Add live provider secrets to Vercel only when a specific production API surface intentionally needs them and has passed a runtime-specific smoke test.
 
-Example for first price smoke:
+Mac/n8n worker example for first price smoke:
 
 ```env
 NINE_PROVIDER_MODE=live
@@ -108,7 +107,7 @@ Use small payloads and one provider surface at a time.
 6. Discover: `NINE_DISCOVER_SIGNAL_PROVIDER=newsapi`, then smoke `discover`.
 7. Notifications: `NINE_NOTIFICATION_PROVIDER=solapi`, then smoke `notifications` only to your own phone number.
 
-For non-local targets, the helper must be called with explicit acknowledgement:
+For non-local targets, the helper must be called with explicit acknowledgement. Do not use this as the default path for KIS price collection on Vercel production.
 
 ```bash
 NINE_SMOKE_ALLOW_LIVE=true npm run provider:smoke -- \

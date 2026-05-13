@@ -114,10 +114,10 @@
 | 레이어 | 기술 | 비고 |
 |---|---|---|
 | DB / 백엔드 | Supabase Cloud (PostgreSQL) | 무료 티어 (500MB) |
-| 워크플로우 / Cron | n8n | Mac Mini 자체 호스팅 |
+| 워크플로우 / Cron | n8n + 로컬 collector scripts | MacBook에서 개발·검증 후 Mac Mini 또는 상시 실행 Mac으로 이전 |
 | LLM | Claude Haiku API (`claude-haiku-4-5-20251001`) | 월 $30 cap |
 | 프론트엔드 | Next.js 16 + Tailwind v4 | 모바일 우선, PWA |
-| 호스팅 (UI) | Vercel | 무료 티어 |
+| 호스팅 (UI/API shell) | Vercel | 무료 티어. 외부 데이터 수집 worker는 Vercel에서 직접 실행하지 않음 |
 | 알림 | Solapi LMS | n8n 연동 패턴 기존 |
 | 인증 | 단일 비밀번호 (env var hash) | Supabase Auth 사용 X |
 | **데이터 소스 (KR)** | DART OpenAPI + KIS Developer API + 네이버 페이 증권/한경 컨센서스 스크레이핑 | KIS는 신규 가입 필요 |
@@ -145,6 +145,13 @@
 ### Phase 2/3 미래 옵션 (PRD 명시)
 - Phase 2 (6개월 후 검토): FnSpace API 코인제 (~월 5~20만원, 약관 재확인 필수)
 - Phase 3 (alpha 입증 + 자산 증가 시): FnResearch 월 30만원 (단 DB 누적 약관 협상 필요)
+
+### 운영 아키텍처 원칙
+- Vercel은 로그인, 화면, API envelope, Supabase 조회를 담당한다.
+- KIS, DART, Yahoo Finance, Finnhub, NewsAPI, Anthropic, Solapi 같은 외부 provider 호출은 기본적으로 Mac/n8n worker에서 실행한다.
+- 개발과 smoke test는 현재 MacBook에서 수행하고, 정기 실행은 나중에 Mac Mini 또는 항상 켜져 있는 Mac으로 옮긴다.
+- Vercel production에서 KIS token 발급이 HTTP 403으로 실패한 이력이 있으므로, KIS 가격 수집은 Vercel serverless runtime에 의존하지 않는다.
+- Mac/n8n worker는 collector script 또는 로컬 API route를 실행해 Supabase에 결과를 저장하고, Vercel UI는 저장된 Supabase 데이터만 읽는다.
 
 ---
 
@@ -232,21 +239,25 @@
 
 #### F1. 일별 가격·거래량
 - **트리거**: 한국 16:00 / 미국 익일 07:00
+- **실행 위치**: Mac/n8n worker. Vercel production serverless runtime에서 직접 실행하지 않음
 - **소스**: KIS API + Yahoo Finance
 - **저장**: `prices` 테이블 OHLCV
 - **실패 처리**: 3회 retry → Solapi LMS 알림
 
 #### F2. 주별 컨센서스 EPS 스냅샷
 - **트리거**: 일요일 10:00
+- **실행 위치**: Mac/n8n worker
 - **소스**: 네이버 페이 증권 + 한경 컨센서스 스크레이핑 (KR), Finnhub (US)
 - **저장**: `eps_estimates` 테이블 시계열 누적
 - **약관 회피**: user-agent 정상값, 요청 간격 2초+
 
 #### F3. 분기 실적 수집
 - **트리거**: 어닝 발표일 자동 감지 (DART + Yahoo Earnings Calendar)
+- **실행 위치**: Mac/n8n worker
 - **컨퍼런스콜**: 한국은 DART 사업보고서 텍스트, 미국은 Yahoo Transcripts
 
 #### F4. Discover 시그널 수집 🆕
+- **실행 위치**: Mac/n8n worker
 - **글로벌 뉴스**: NewsAPI 매일 수집, Claude Haiku 토픽 클러스터링
 - **한국 수출 데이터**: KITA 월별 품목별 수출 (전년 대비 변화율 추적)
 - **Capex 발표**: 분기 어닝콜 + 정부 예산안 수동 큐레이션 (분기 30분)
