@@ -4,16 +4,16 @@ Last updated: 2026-05-13 KST
 
 ## Next Action
 
-Add provider operations runbook and live smoke checklist.
+Add provider status API endpoint.
 
 Acceptance criteria:
 - Run `git status --short --branch`.
 - Read `docs/provider-adapters.md`.
 - Keep `NINE_PROVIDER_MODE=mock` as the default and do not run live calls without an explicit live provider selection.
-- Document the provider activation sequence for live API connection.
-- Add a live smoke checklist for one provider at a time, including required env, test tickers, rollback to mock mode, and no-secret handling.
-- Include the recommended n8n schedule order for collection routes without enabling any live calls.
-- Preserve `NINE_PROVIDER_MODE=mock` as the default and do not run live calls without explicit keys and provider selections.
+- Add a server-only API route that reports provider mode and provider env readiness without exposing secret values.
+- Use `getProviderStatuses()` and keep response envelopes stable.
+- Document the endpoint in `docs/api-contract.md` and `docs/provider-adapters.md`.
+- Preserve `NINE_PROVIDER_MODE=mock` as the default and do not run live provider calls.
 - Run `npm run typecheck` and `npm run build`.
 
 ## Current Status
@@ -46,6 +46,7 @@ Acceptance criteria:
 - DART KR earnings adapter shell exists, inactive by default.
 - Yahoo Finance US earnings adapter shell exists, inactive by default.
 - Composite KR/US earnings provider wiring exists, inactive by default.
+- Provider operations runbook and live smoke checklist exist.
 
 ## Verified
 
@@ -306,6 +307,12 @@ Acceptance criteria:
   - Single-provider selections `dart` and `yahoo-finance` remain available for isolated provider verification.
   - Updated provider docs with composite earnings activation env and selection rules.
   - Mock/Supabase-disabled `/api/earnings/collect` smoke test returned `200` with `providerMode: "mock"` and `persisted: false`.
+  - No live provider calls were run.
+  - `npm run typecheck` passed.
+  - `npm run build` passed.
+- Provider operations runbook verified locally:
+  - Added provider activation sequence, one-provider-at-a-time live smoke checklist, rollback instructions, no-secret handling, and recommended n8n schedule order to `docs/RUNBOOK.md`.
+  - Linked provider adapter docs to the runbook.
   - No live provider calls were run.
   - `npm run typecheck` passed.
   - `npm run build` passed.

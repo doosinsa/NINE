@@ -224,3 +224,5 @@ The shell uses Solapi `POST /messages/v4/send-many/detail` with a single message
 - Yahoo Finance base URL or replacement provider policy decision.
 
 Keep all secrets server-only. Do not add provider keys to `NEXT_PUBLIC_*`.
+
+For live activation order, smoke payloads, rollback steps, and n8n scheduling, see `docs/RUNBOOK.md`.
