@@ -4,16 +4,16 @@ Last updated: 2026-05-13 KST
 
 ## Next Action
 
-Add provider status diagnostics page.
+Add provider live smoke helper script.
 
 Acceptance criteria:
 - Run `git status --short --branch`.
 - Read `docs/provider-adapters.md`.
 - Keep `NINE_PROVIDER_MODE=mock` as the default and do not run live calls without an explicit live provider selection.
-- Add an authenticated/internal diagnostics UI that reads `GET /api/providers/status`.
-- Show provider mode, configured state, missing env names, and purpose without exposing secret values.
-- Keep the page calm and mobile-safe; do not add charts or recommendation copy.
-- Preserve `NINE_PROVIDER_MODE=mock` as the default and do not run live provider calls.
+- Add a local-only helper script or documented npm command for running provider smoke requests with explicit base URL and payloads.
+- Keep the helper mock-safe by default and require explicit env to target live provider selectors.
+- Do not include or print provider secret values.
+- Update `docs/RUNBOOK.md` with usage.
 - Run `npm run typecheck` and `npm run build`.
 
 ## Current Status
@@ -48,6 +48,7 @@ Acceptance criteria:
 - Composite KR/US earnings provider wiring exists, inactive by default.
 - Provider operations runbook and live smoke checklist exist.
 - Provider status API endpoint exists.
+- Provider status diagnostics page exists.
 
 ## Verified
 
@@ -323,6 +324,13 @@ Acceptance criteria:
   - Documented the endpoint in `docs/api-contract.md` and `docs/provider-adapters.md`.
   - Local smoke test returned `200` with `providerMode: "mock"` and provider readiness metadata.
   - Secret values are not returned; only missing env names are exposed.
+  - No live provider calls were run.
+  - `npm run typecheck` passed.
+  - `npm run build` passed.
+- Provider status diagnostics page verified locally:
+  - Added authenticated `/providers/status` diagnostics UI under the protected main layout.
+  - The page reads `GET /api/providers/status` and shows provider mode, configured state, missing env names, and provider purpose.
+  - Secret values are not shown.
   - No live provider calls were run.
   - `npm run typecheck` passed.
   - `npm run build` passed.
