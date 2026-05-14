@@ -307,6 +307,40 @@ Recommended order for provider-backed collection jobs:
 
 The worker can be developed on the MacBook and moved later to Mac Mini. Keep the same repo, `.env`, and command schedule.
 
+### Local Collector Scripts
+
+Run the local Next app on the Mac/n8n worker, then schedule collector commands against that local app. Keep `NINE_PROVIDER_MODE=mock` as the default in `.env`; use per-process selector overrides only for the provider surface being collected.
+
+Daily price smoke:
+
+```bash
+npm run collect:prices -- --base-url http://127.0.0.1:3000 --tickers 005930.KS,PLTR
+```
+
+Live daily price collection from the Mac worker:
+
+```bash
+NINE_PROVIDER_MODE=live NINE_PRICE_PROVIDER=composite npm run collect:prices -- \
+  --base-url http://127.0.0.1:3000 \
+  --tickers 005930.KS,PLTR
+```
+
+Weekly EPS smoke:
+
+```bash
+npm run collect:eps -- --base-url http://127.0.0.1:3000 --tickers PLTR,NVDA
+```
+
+Live weekly EPS collection from the Mac worker:
+
+```bash
+NINE_PROVIDER_MODE=live NINE_EPS_PROVIDER=finnhub npm run collect:eps -- \
+  --base-url http://127.0.0.1:3000 \
+  --tickers PLTR,NVDA
+```
+
+When `--tickers` is omitted, the API routes use Supabase `stocks` when configured and fall back to mock tickers otherwise. The scripts print only summary counts, persistence status, provider mode, and data source names.
+
 Recommended order for provider-backed collection jobs:
 
 1. Daily prices: local collector script or local `POST /api/prices/collect`
@@ -322,6 +356,7 @@ For long-running operations, prefer scripts such as:
 
 ```bash
 npm run collect:prices -- --date 2026-05-13 --tickers 005930.KS,PLTR
+npm run collect:eps -- --snapshot-date 2026-05-13 --tickers PLTR,NVDA
 ```
 
 These scripts should load `.env`, call provider adapters, upsert Supabase rows, and send Solapi failure notifications without requiring a public Vercel function.

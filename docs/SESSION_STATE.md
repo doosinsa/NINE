@@ -1,10 +1,10 @@
 # NINE Session State
 
-Last updated: 2026-05-13 KST
+Last updated: 2026-05-14 KST
 
 ## Next Action
 
-Build Mac/n8n provider collector scripts.
+Continue Mac/n8n provider collector scripts with earnings collection.
 
 Acceptance criteria:
 - Run `git status --short --branch`.
@@ -13,7 +13,9 @@ Acceptance criteria:
 - Production price live rollout was attempted and rolled back: `NINE_PRICE_PROVIDER=composite` failed because KIS token request returned HTTP 403 from Vercel production runtime.
 - Before retrying production KR price live, verify whether KIS app credentials allow server-to-server calls from Vercel's US runtime or move the collection job to an approved runtime such as the Mac mini/n8n host.
 - PRD now defines Vercel as UI/API shell and Mac/n8n worker as the external provider collection runtime.
-- Next implementation target: add local collector scripts starting with `npm run collect:prices`, then smoke locally with `005930.KS,PLTR`.
+- `npm run collect:prices` now exists and was smoke-tested locally with `005930.KS,PLTR`.
+- `npm run collect:eps` now exists and was smoke-tested locally with `PLTR,NVDA`.
+- Next implementation target: add `npm run collect:earnings` for quarterly earnings snapshots, then smoke locally with `005930.KS,PLTR`.
 - Finnhub EPS live smoke currently fails with HTTP 403 for `stock/eps-estimate`; confirm plan/endpoint access or choose a replacement EPS provider before enabling EPS live.
 - Yahoo Finance earnings live smoke currently fails with HTTP 401 on `quoteSummary`; composite earnings now returns available provider results instead of failing the full route, but a replacement/compatible US earnings source is still needed before US earnings live rollout.
 - DART single-provider earnings smoke passed with `DART_BUSINESS_YEAR=2025`; current-year `2026` Samsung Q1 returned OpenDART status `013` (no data), so set an explicit available business year for smoke/backfill jobs.
@@ -55,6 +57,8 @@ Acceptance criteria:
 - Provider status API endpoint exists.
 - Provider status diagnostics page exists.
 - Provider live smoke helper script exists as `npm run provider:smoke`.
+- Daily price collector script exists as `npm run collect:prices`.
+- Weekly EPS collector script exists as `npm run collect:eps`.
 - First live API connection checklist exists.
 - Local provider env values are present for KIS, DART, Finnhub, NewsAPI, Anthropic, Solapi, SEC EDGAR, and Yahoo Finance base URLs.
 - Vercel production env now has price provider env values and baseline provider selectors, but selectors were rolled back to `mock` after KIS production token smoke failed.
@@ -387,6 +391,20 @@ Acceptance criteria:
   - Linked the checklist from `docs/RUNBOOK.md`, `docs/ENVIRONMENT.md`, and `docs/provider-adapters.md`.
   - No live provider calls were run; `NINE_PROVIDER_MODE=mock` remains the default.
   - No provider secret values were added.
+  - `npm run typecheck` passed.
+  - `npm run build` passed.
+- Daily price collector script verified locally:
+  - Added `scripts/collect-prices.mjs` and `npm run collect:prices`.
+  - The script posts to local `/api/prices/collect` and supports `--base-url`, `--date`, `--tickers`, and `--timeout-ms`.
+  - Runbook documents Mac/n8n usage with `NINE_PROVIDER_MODE=mock` as the default and per-process live selector overrides.
+  - Local worker smoke against `http://127.0.0.1:3001` with `005930.KS,PLTR` returned `providerMode: "mock"`, `collectedCount: 2`, `persisted: true`, and data sources `kis` and `yahoo-finance`.
+  - `npm run typecheck` passed.
+  - `npm run build` passed.
+- Weekly EPS collector script verified locally:
+  - Added `scripts/collect-eps.mjs` and `npm run collect:eps`.
+  - The script posts to local `/api/eps/collect` and supports `--base-url`, `--snapshot-date`, `--date`, `--tickers`, and `--timeout-ms`.
+  - Runbook documents Mac/n8n usage with `NINE_PROVIDER_MODE=mock` as the default and per-process `NINE_EPS_PROVIDER=finnhub` live selector override.
+  - Local worker smoke against `http://127.0.0.1:3001` with `PLTR,NVDA` returned `providerMode: "mock"`, `collectedCount: 1`, `persisted: true`, and data source `finnhub`.
   - `npm run typecheck` passed.
   - `npm run build` passed.
 - Auth implementation verified locally with temporary env values:

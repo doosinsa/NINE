@@ -5,6 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "collect:eps": "node scripts/collect-eps.mjs",
+    "collect:prices": "node scripts/collect-prices.mjs",
     "provider:smoke": "node scripts/provider-smoke.mjs",
     "start": "next start",
     "typecheck": "tsc --noEmit"
