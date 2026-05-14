@@ -339,6 +339,47 @@ NINE_PROVIDER_MODE=live NINE_EPS_PROVIDER=finnhub npm run collect:eps -- \
   --tickers PLTR,NVDA
 ```
 
+Quarterly earnings smoke:
+
+```bash
+npm run collect:earnings -- --base-url http://127.0.0.1:3000 --tickers 005930.KS,PLTR
+```
+
+Live quarterly earnings collection from the Mac worker:
+
+```bash
+NINE_PROVIDER_MODE=live NINE_EARNINGS_PROVIDER=composite npm run collect:earnings -- \
+  --base-url http://127.0.0.1:3000 \
+  --tickers 005930.KS,PLTR
+```
+
+Core brief smoke:
+
+```bash
+npm run collect:briefs -- --base-url http://127.0.0.1:3000 --tickers PLTR
+```
+
+Live Core brief collection from the Mac worker:
+
+```bash
+NINE_PROVIDER_MODE=live NINE_LLM_PROVIDER=anthropic npm run collect:briefs -- \
+  --base-url http://127.0.0.1:3000 \
+  --tickers PLTR
+```
+
+Discover smoke:
+
+```bash
+npm run collect:discover -- --base-url http://127.0.0.1:3000
+```
+
+Live Discover collection from the Mac worker:
+
+```bash
+NINE_PROVIDER_MODE=live NINE_DISCOVER_SIGNAL_PROVIDER=newsapi NINE_LLM_PROVIDER=anthropic npm run collect:discover -- \
+  --base-url http://127.0.0.1:3000
+```
+
 When `--tickers` is omitted, the API routes use Supabase `stocks` when configured and fall back to mock tickers otherwise. The scripts print only summary counts, persistence status, provider mode, and data source names.
 
 Recommended order for provider-backed collection jobs:
@@ -357,6 +398,9 @@ For long-running operations, prefer scripts such as:
 ```bash
 npm run collect:prices -- --date 2026-05-13 --tickers 005930.KS,PLTR
 npm run collect:eps -- --snapshot-date 2026-05-13 --tickers PLTR,NVDA
+npm run collect:earnings -- --tickers 005930.KS,PLTR
+npm run collect:briefs -- --tickers PLTR
+npm run collect:discover
 ```
 
 These scripts should load `.env`, call provider adapters, upsert Supabase rows, and send Solapi failure notifications without requiring a public Vercel function.

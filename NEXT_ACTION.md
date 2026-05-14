@@ -1,6 +1,6 @@
 # NEXT_ACTION
 
-Continue Mac/n8n provider collector scripts with earnings collection.
+Continue Mac/n8n provider collector scripts with notification dispatch collection.
 
 ## Resume Command
 
@@ -20,7 +20,10 @@ Continue Mac/n8n provider collector scripts with earnings collection.
 - PRD now defines Vercel as UI/API shell and Mac/n8n worker as the external provider collection runtime.
 - `npm run collect:prices` now exists and was smoke-tested locally with `005930.KS,PLTR`.
 - `npm run collect:eps` now exists and was smoke-tested locally with `PLTR,NVDA`.
-- Next implementation target: add `npm run collect:earnings` for quarterly earnings snapshots, then smoke locally with `005930.KS,PLTR`.
+- `npm run collect:earnings` now exists and was smoke-tested locally with `005930.KS,PLTR`.
+- `npm run collect:briefs` now exists and was smoke-tested locally with `PLTR`.
+- `npm run collect:discover` now exists and was smoke-tested locally.
+- Next implementation target: add `npm run collect:notifications` or equivalent safe notification dispatch helper. Keep real Solapi sends gated behind explicit approval/acknowledgement.
 - Finnhub EPS live smoke currently fails with HTTP 403 for `stock/eps-estimate`; confirm plan/endpoint access or choose a replacement EPS provider before enabling EPS live.
 - Yahoo Finance earnings live smoke currently fails with HTTP 401 on `quoteSummary`; composite earnings now returns available provider results instead of failing the full route, but a replacement/compatible US earnings source is still needed before US earnings live rollout.
 - DART single-provider earnings smoke passed with `DART_BUSINESS_YEAR=2025`; current-year `2026` Samsung Q1 returned OpenDART status `013` (no data), so set an explicit available business year for smoke/backfill jobs.

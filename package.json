@@ -5,6 +5,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "collect:briefs": "node scripts/collect-briefs.mjs",
+    "collect:discover": "node scripts/collect-discover.mjs",
+    "collect:earnings": "node scripts/collect-earnings.mjs",
     "collect:eps": "node scripts/collect-eps.mjs",
     "collect:prices": "node scripts/collect-prices.mjs",
     "provider:smoke": "node scripts/provider-smoke.mjs",

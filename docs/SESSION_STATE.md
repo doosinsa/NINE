@@ -4,7 +4,7 @@ Last updated: 2026-05-14 KST
 
 ## Next Action
 
-Continue Mac/n8n provider collector scripts with earnings collection.
+Continue Mac/n8n provider collector scripts with notification dispatch collection.
 
 Acceptance criteria:
 - Run `git status --short --branch`.
@@ -15,7 +15,10 @@ Acceptance criteria:
 - PRD now defines Vercel as UI/API shell and Mac/n8n worker as the external provider collection runtime.
 - `npm run collect:prices` now exists and was smoke-tested locally with `005930.KS,PLTR`.
 - `npm run collect:eps` now exists and was smoke-tested locally with `PLTR,NVDA`.
-- Next implementation target: add `npm run collect:earnings` for quarterly earnings snapshots, then smoke locally with `005930.KS,PLTR`.
+- `npm run collect:earnings` now exists and was smoke-tested locally with `005930.KS,PLTR`.
+- `npm run collect:briefs` now exists and was smoke-tested locally with `PLTR`.
+- `npm run collect:discover` now exists and was smoke-tested locally.
+- Next implementation target: add `npm run collect:notifications` or equivalent safe notification dispatch helper. Keep real Solapi sends gated behind explicit approval/acknowledgement.
 - Finnhub EPS live smoke currently fails with HTTP 403 for `stock/eps-estimate`; confirm plan/endpoint access or choose a replacement EPS provider before enabling EPS live.
 - Yahoo Finance earnings live smoke currently fails with HTTP 401 on `quoteSummary`; composite earnings now returns available provider results instead of failing the full route, but a replacement/compatible US earnings source is still needed before US earnings live rollout.
 - DART single-provider earnings smoke passed with `DART_BUSINESS_YEAR=2025`; current-year `2026` Samsung Q1 returned OpenDART status `013` (no data), so set an explicit available business year for smoke/backfill jobs.
@@ -59,6 +62,9 @@ Acceptance criteria:
 - Provider live smoke helper script exists as `npm run provider:smoke`.
 - Daily price collector script exists as `npm run collect:prices`.
 - Weekly EPS collector script exists as `npm run collect:eps`.
+- Quarterly earnings collector script exists as `npm run collect:earnings`.
+- Core brief collector script exists as `npm run collect:briefs`.
+- Discover collector script exists as `npm run collect:discover`.
 - First live API connection checklist exists.
 - Local provider env values are present for KIS, DART, Finnhub, NewsAPI, Anthropic, Solapi, SEC EDGAR, and Yahoo Finance base URLs.
 - Vercel production env now has price provider env values and baseline provider selectors, but selectors were rolled back to `mock` after KIS production token smoke failed.
@@ -405,6 +411,27 @@ Acceptance criteria:
   - The script posts to local `/api/eps/collect` and supports `--base-url`, `--snapshot-date`, `--date`, `--tickers`, and `--timeout-ms`.
   - Runbook documents Mac/n8n usage with `NINE_PROVIDER_MODE=mock` as the default and per-process `NINE_EPS_PROVIDER=finnhub` live selector override.
   - Local worker smoke against `http://127.0.0.1:3001` with `PLTR,NVDA` returned `providerMode: "mock"`, `collectedCount: 1`, `persisted: true`, and data source `finnhub`.
+  - `npm run typecheck` passed.
+  - `npm run build` passed.
+- Quarterly earnings collector script verified locally:
+  - Added `scripts/collect-earnings.mjs` and `npm run collect:earnings`.
+  - The script posts to local `/api/earnings/collect` and supports `--base-url`, `--tickers`, and `--timeout-ms`.
+  - Runbook documents Mac/n8n usage with `NINE_PROVIDER_MODE=mock` as the default and per-process `NINE_EARNINGS_PROVIDER=composite` live selector override.
+  - Local worker smoke against `http://127.0.0.1:3001` with `005930.KS,PLTR` returned `providerMode: "mock"`, `collectedCount: 2`, `persisted: true`, fiscal quarter `2026Q1`, and data sources `dart` and `yahoo-finance`.
+  - `npm run typecheck` passed.
+  - `npm run build` passed.
+- Core brief collector script verified locally:
+  - Added `scripts/collect-briefs.mjs` and `npm run collect:briefs`.
+  - The script posts to local `/api/briefs/collect` and supports `--base-url`, `--tickers`, and `--timeout-ms`.
+  - Runbook documents Mac/n8n usage with `NINE_PROVIDER_MODE=mock` as the default and per-process `NINE_LLM_PROVIDER=anthropic` live selector override.
+  - Local worker smoke against `http://127.0.0.1:3001` with `PLTR` returned `providerMode: "mock"`, `generatedCount: 1`, `persisted: true`, `narrativeWarningCount: 1`, and `bannedCopyPresent: false`.
+  - `npm run typecheck` passed.
+  - `npm run build` passed.
+- Discover collector script verified locally:
+  - Added `scripts/collect-discover.mjs` and `npm run collect:discover`.
+  - The script calls local `GET /api/discover` and supports `--base-url` and `--timeout-ms`.
+  - Runbook documents Mac/n8n usage with `NINE_PROVIDER_MODE=mock` as the default and per-process `NINE_DISCOVER_SIGNAL_PROVIDER=newsapi NINE_LLM_PROVIDER=anthropic` live selector override.
+  - Local worker smoke against `http://127.0.0.1:3001` returned week `2026-05-04`, `themeCount: 2`, and `representativeTickerCount: 6`.
   - `npm run typecheck` passed.
   - `npm run build` passed.
 - Auth implementation verified locally with temporary env values:
