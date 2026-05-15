@@ -4,7 +4,7 @@ Last updated: 2026-05-15 KST
 
 ## Next Action
 
-Continue Mac/n8n provider collector hardening with failure notification hooks.
+Continue provider rollout hardening by resolving live EPS and US earnings source blockers.
 
 Acceptance criteria:
 - Run `git status --short --branch`.
@@ -19,7 +19,9 @@ Acceptance criteria:
 - `npm run collect:briefs` now exists and was smoke-tested locally with `PLTR`.
 - `npm run collect:discover` now exists and was smoke-tested locally.
 - `npm run collect:notifications` now exists and was smoke-tested locally in mock mode. It always requires `NINE_COLLECT_ALLOW_NOTIFICATIONS=true` and `--to` or `NINE_NOTIFICATION_TO`.
-- Next implementation target: add safe failure-notification hooks or n8n wrapper guidance around the collector scripts. Keep real Solapi sends gated behind explicit approval/acknowledgement.
+- `npm run collect:with-failure-notify` now exists and was smoke-tested locally in mock mode.
+- `docs/n8n-mac-worker-schedule.md` now contains the Mac worker scheduling note set for n8n Cron + Execute Command workflows.
+- Next implementation target: resolve live EPS and US earnings source blockers before enabling those workflows. Finnhub EPS currently fails with HTTP 403, and Yahoo Finance earnings quoteSummary currently fails with HTTP 401.
 - Finnhub EPS live smoke currently fails with HTTP 403 for `stock/eps-estimate`; confirm plan/endpoint access or choose a replacement EPS provider before enabling EPS live.
 - Yahoo Finance earnings live smoke currently fails with HTTP 401 on `quoteSummary`; composite earnings now returns available provider results instead of failing the full route, but a replacement/compatible US earnings source is still needed before US earnings live rollout.
 - DART single-provider earnings smoke passed with `DART_BUSINESS_YEAR=2025`; current-year `2026` Samsung Q1 returned OpenDART status `013` (no data), so set an explicit available business year for smoke/backfill jobs.
@@ -58,6 +60,7 @@ Acceptance criteria:
 - Yahoo Finance US earnings adapter shell exists, inactive by default.
 - Composite KR/US earnings provider wiring exists, inactive by default.
 - Provider operations runbook and live smoke checklist exist.
+- Mac worker n8n schedule note set exists as `docs/n8n-mac-worker-schedule.md`.
 - Provider status API endpoint exists.
 - Provider status diagnostics page exists.
 - Provider live smoke helper script exists as `npm run provider:smoke`.
@@ -445,6 +448,20 @@ Acceptance criteria:
   - Local worker smoke against `http://127.0.0.1:3001` with mock provider returned `providerMode: "mock"`, `sent: false`, `persisted: true`, event id present, and provider message id absent.
   - Temporary mock notification smoke rows were deleted from Supabase after verification.
   - `npm run typecheck` passed.
+- Collector failure wrapper verified locally:
+  - Added `scripts/collect-with-failure-notify.mjs` and `npm run collect:with-failure-notify`.
+  - The wrapper runs any collector command after `--` and forwards stdout/stderr unchanged.
+  - The wrapper only attempts failure paging when `NINE_COLLECT_FAILURE_NOTIFY=true` or `--notify-failure` is set, plus `NINE_COLLECT_ALLOW_NOTIFICATIONS=true` and `--to` or `NINE_NOTIFICATION_TO`.
+  - Help output was verified.
+  - A forced `collect:prices` timeout triggered a mock failure notification and persisted a temporary `notification_events` row.
+  - The temporary failure row was deleted from Supabase after verification.
+  - `npm run typecheck` passed.
+- n8n Mac worker scheduling note set completed:
+  - Added `docs/n8n-mac-worker-schedule.md`.
+  - The note set defines worker prerequisites, `.env` defaults, local app runtime setup, n8n Cron + Execute Command pattern, and per-workflow mock/live commands.
+  - Covered daily prices, weekly EPS, quarterly earnings, Core briefs, Discover, and manual notification smoke.
+  - Commands keep `NINE_PROVIDER_MODE=mock` as the default and use per-process live selector overrides.
+  - Failure paging stays gated behind `NINE_COLLECT_FAILURE_NOTIFY=true`, `NINE_COLLECT_ALLOW_NOTIFICATIONS=true`, and `NINE_NOTIFICATION_TO` or `--to`.
 - Auth implementation verified locally with temporary env values:
   - `npm run typecheck` passed.
   - `npm run build` passed.

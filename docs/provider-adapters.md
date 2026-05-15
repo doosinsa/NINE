@@ -32,6 +32,7 @@ Live provider collection is intended to run from a Mac/n8n worker, not Vercel pr
 - `npm run collect:discover` is the Mac/n8n CLI wrapper for the Discover refresh route. It calls the local worker `GET /api/discover` path and prints theme and representative ticker counts without reading or printing provider secret values.
 - `POST /api/notifications/send` calls `createExternalProviders().notifications.send`, then records a Supabase `notification_events` row when Supabase is configured. In mock mode it does not send a real LMS and requires no external provider secrets.
 - `npm run collect:notifications` is the Mac/n8n CLI wrapper for the notification dispatch route. It posts one notification to the local worker app, accepts `--base-url`, `--tier`, `--to`, `--body`, and `--ticker`, and always requires `NINE_COLLECT_ALLOW_NOTIFICATIONS=true` because the target worker may be configured for live Solapi sends. It prints only booleans and summary metadata, not recipient values, event ids, provider message ids, or provider secret values.
+- `npm run collect:with-failure-notify` is the Mac/n8n collector wrapper that runs any collector command after `--` and optionally sends a failure notification if `NINE_COLLECT_FAILURE_NOTIFY=true` or `--notify-failure` is set. It still requires `NINE_COLLECT_ALLOW_NOTIFICATIONS=true` and a `--to` recipient before dispatching a notification, so it stays opt-in and safe by default.
 - `GET /api/providers/status` reports provider mode and env readiness through `getProviderStatuses()` without returning secret values or making external provider calls.
 - KIS has a live KR daily price adapter shell. It is inactive by default and only replaces the mock price provider when both `NINE_PROVIDER_MODE=live` and `NINE_PRICE_PROVIDER=kis` are set.
 - Yahoo Finance has a live US daily price adapter shell. It is inactive by default and only replaces the mock price provider when both `NINE_PROVIDER_MODE=live` and `NINE_PRICE_PROVIDER=yahoo-finance` are set.
@@ -236,4 +237,4 @@ Keep all secrets server-only. Do not add provider keys to `NEXT_PUBLIC_*`.
 
 For first-time account/env readiness, see `docs/live-api-connection-checklist.md`.
 
-For live activation order, smoke payloads, rollback steps, and n8n scheduling, see `docs/RUNBOOK.md`.
+For live activation order, smoke payloads, rollback steps, and n8n scheduling, see `docs/RUNBOOK.md` and `docs/n8n-mac-worker-schedule.md`.

@@ -11,6 +11,7 @@
     "collect:eps": "node scripts/collect-eps.mjs",
     "collect:notifications": "node scripts/collect-notifications.mjs",
     "collect:prices": "node scripts/collect-prices.mjs",
+    "collect:with-failure-notify": "node scripts/collect-with-failure-notify.mjs",
     "provider:smoke": "node scripts/provider-smoke.mjs",
     "start": "next start",
     "typecheck": "tsc --noEmit"

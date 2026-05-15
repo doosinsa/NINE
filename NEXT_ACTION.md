@@ -1,6 +1,6 @@
 # NEXT_ACTION
 
-Continue Mac/n8n provider collector hardening with failure notification hooks.
+Continue provider rollout hardening by resolving live EPS and US earnings source blockers.
 
 ## Resume Command
 
@@ -24,7 +24,9 @@ Continue Mac/n8n provider collector hardening with failure notification hooks.
 - `npm run collect:briefs` now exists and was smoke-tested locally with `PLTR`.
 - `npm run collect:discover` now exists and was smoke-tested locally.
 - `npm run collect:notifications` now exists and was smoke-tested locally in mock mode. It always requires `NINE_COLLECT_ALLOW_NOTIFICATIONS=true` and `--to` or `NINE_NOTIFICATION_TO`.
-- Next implementation target: add safe failure-notification hooks or n8n wrapper guidance around the collector scripts. Keep real Solapi sends gated behind explicit approval/acknowledgement.
+- `npm run collect:with-failure-notify` now exists and was smoke-tested locally in mock mode. It wraps any collector command after `--` and can page your own phone only when `NINE_COLLECT_FAILURE_NOTIFY=true` or `--notify-failure` is set, plus `NINE_COLLECT_ALLOW_NOTIFICATIONS=true` and `--to` or `NINE_NOTIFICATION_TO`.
+- `docs/n8n-mac-worker-schedule.md` now contains the Mac worker scheduling note set for n8n Cron + Execute Command workflows.
+- Next implementation target: resolve live EPS and US earnings source blockers before enabling those workflows. Finnhub EPS currently fails with HTTP 403, and Yahoo Finance earnings quoteSummary currently fails with HTTP 401.
 - Finnhub EPS live smoke currently fails with HTTP 403 for `stock/eps-estimate`; confirm plan/endpoint access or choose a replacement EPS provider before enabling EPS live.
 - Yahoo Finance earnings live smoke currently fails with HTTP 401 on `quoteSummary`; composite earnings now returns available provider results instead of failing the full route, but a replacement/compatible US earnings source is still needed before US earnings live rollout.
 - DART single-provider earnings smoke passed with `DART_BUSINESS_YEAR=2025`; current-year `2026` Samsung Q1 returned OpenDART status `013` (no data), so set an explicit available business year for smoke/backfill jobs.

@@ -307,6 +307,8 @@ Recommended order for provider-backed collection jobs:
 
 The worker can be developed on the MacBook and moved later to Mac Mini. Keep the same repo, `.env`, and command schedule.
 
+Detailed Mac worker workflow commands are in `docs/n8n-mac-worker-schedule.md`.
+
 ### Local Collector Scripts
 
 Run the local Next app on the Mac/n8n worker, then schedule collector commands against that local app. Keep `NINE_PROVIDER_MODE=mock` as the default in `.env`; use per-process selector overrides only for the provider surface being collected.
@@ -388,6 +390,14 @@ NINE_COLLECT_ALLOW_NOTIFICATIONS=true npm run collect:notifications -- \
   --to 01000000000
 ```
 
+Collector failure wrapper:
+
+```bash
+NINE_COLLECT_FAILURE_NOTIFY=true NINE_COLLECT_ALLOW_NOTIFICATIONS=true npm run collect:with-failure-notify -- \
+  --to 01000000000 \
+  -- npm run collect:prices -- --base-url http://127.0.0.1:3000 --tickers 005930.KS,PLTR
+```
+
 Live notification dispatch from the Mac worker:
 
 ```bash
@@ -400,6 +410,13 @@ NINE_PROVIDER_MODE=live NINE_NOTIFICATION_PROVIDER=solapi NINE_COLLECT_ALLOW_NOT
 ```
 
 Do not schedule live notification dispatch until the recipient, tier policy, and Solapi spend guard are intentionally approved. The notification collector always requires `NINE_COLLECT_ALLOW_NOTIFICATIONS=true`, even in mock mode, because the target worker can be running with live Solapi selectors.
+The failure wrapper is opt-in and only notifies when `NINE_COLLECT_FAILURE_NOTIFY=true` or `--notify-failure` is used. Leave it off for routine jobs unless you want the Mac/n8n worker to page your own phone number on collector failure.
+
+n8n pattern:
+
+1. Cron node starts the job.
+2. Execute Command node runs the collector through `npm run collect:with-failure-notify -- --to 01000000000 -- npm run collect:<job> ...`.
+3. Keep `NINE_COLLECT_FAILURE_NOTIFY=true` only on workflows where you want failure paging, and leave the flag unset for silent runs.
 
 When `--tickers` is omitted, the API routes use Supabase `stocks` when configured and fall back to mock tickers otherwise. The scripts print only summary counts, persistence status, provider mode, and data source names.
 
@@ -410,7 +427,7 @@ Recommended order for provider-backed collection jobs:
 3. Quarterly earnings snapshots: local collector script or local `POST /api/earnings/collect`
 4. Core briefs after EPS/earnings refresh: local collector script or local `POST /api/briefs/collect`
 5. Discover refresh: local collector script or local `GET /api/discover`
-6. Notifications only after scoring/brief data is current: local collector script or local `POST /api/notifications/send`
+6. Notifications only after scoring/brief data is current: local collector script, failure wrapper, or local `POST /api/notifications/send`
 
 Use narrow ticker payloads during initial rollout. Move to full-universe payloads only after live smoke tests and persisted row counts look normal.
 
@@ -423,9 +440,10 @@ npm run collect:earnings -- --tickers 005930.KS,PLTR
 npm run collect:briefs -- --tickers PLTR
 npm run collect:discover
 NINE_COLLECT_ALLOW_NOTIFICATIONS=true npm run collect:notifications -- --to 01000000000
+NINE_COLLECT_FAILURE_NOTIFY=true NINE_COLLECT_ALLOW_NOTIFICATIONS=true npm run collect:with-failure-notify -- --to 01000000000 -- npm run collect:discover
 ```
 
-These scripts should load `.env`, call provider adapters, upsert Supabase rows, and send Solapi failure notifications without requiring a public Vercel function.
+These scripts should load `.env`, call provider adapters, upsert Supabase rows, and optionally send Solapi failure notifications without requiring a public Vercel function.
 
 ## Git
 
