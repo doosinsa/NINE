@@ -1,10 +1,10 @@
 # NINE Session State
 
-Last updated: 2026-05-14 KST
+Last updated: 2026-05-15 KST
 
 ## Next Action
 
-Continue Mac/n8n provider collector scripts with notification dispatch collection.
+Continue Mac/n8n provider collector hardening with failure notification hooks.
 
 Acceptance criteria:
 - Run `git status --short --branch`.
@@ -18,7 +18,8 @@ Acceptance criteria:
 - `npm run collect:earnings` now exists and was smoke-tested locally with `005930.KS,PLTR`.
 - `npm run collect:briefs` now exists and was smoke-tested locally with `PLTR`.
 - `npm run collect:discover` now exists and was smoke-tested locally.
-- Next implementation target: add `npm run collect:notifications` or equivalent safe notification dispatch helper. Keep real Solapi sends gated behind explicit approval/acknowledgement.
+- `npm run collect:notifications` now exists and was smoke-tested locally in mock mode. It always requires `NINE_COLLECT_ALLOW_NOTIFICATIONS=true` and `--to` or `NINE_NOTIFICATION_TO`.
+- Next implementation target: add safe failure-notification hooks or n8n wrapper guidance around the collector scripts. Keep real Solapi sends gated behind explicit approval/acknowledgement.
 - Finnhub EPS live smoke currently fails with HTTP 403 for `stock/eps-estimate`; confirm plan/endpoint access or choose a replacement EPS provider before enabling EPS live.
 - Yahoo Finance earnings live smoke currently fails with HTTP 401 on `quoteSummary`; composite earnings now returns available provider results instead of failing the full route, but a replacement/compatible US earnings source is still needed before US earnings live rollout.
 - DART single-provider earnings smoke passed with `DART_BUSINESS_YEAR=2025`; current-year `2026` Samsung Q1 returned OpenDART status `013` (no data), so set an explicit available business year for smoke/backfill jobs.
@@ -65,6 +66,7 @@ Acceptance criteria:
 - Quarterly earnings collector script exists as `npm run collect:earnings`.
 - Core brief collector script exists as `npm run collect:briefs`.
 - Discover collector script exists as `npm run collect:discover`.
+- Notification dispatch collector script exists as `npm run collect:notifications`.
 - First live API connection checklist exists.
 - Local provider env values are present for KIS, DART, Finnhub, NewsAPI, Anthropic, Solapi, SEC EDGAR, and Yahoo Finance base URLs.
 - Vercel production env now has price provider env values and baseline provider selectors, but selectors were rolled back to `mock` after KIS production token smoke failed.
@@ -434,6 +436,15 @@ Acceptance criteria:
   - Local worker smoke against `http://127.0.0.1:3001` returned week `2026-05-04`, `themeCount: 2`, and `representativeTickerCount: 6`.
   - `npm run typecheck` passed.
   - `npm run build` passed.
+- Notification dispatch collector script verified locally:
+  - Added `scripts/collect-notifications.mjs` and `npm run collect:notifications`.
+  - The script posts to local `/api/notifications/send` and supports `--base-url`, `--tier`, `--to`, `--body`, `--ticker`, and `--timeout-ms`.
+  - The script always requires `NINE_COLLECT_ALLOW_NOTIFICATIONS=true` before dispatch because the target worker may be configured for live Solapi sends.
+  - Help output was verified.
+  - Missing acknowledgement correctly refused dispatch before any API call.
+  - Local worker smoke against `http://127.0.0.1:3001` with mock provider returned `providerMode: "mock"`, `sent: false`, `persisted: true`, event id present, and provider message id absent.
+  - Temporary mock notification smoke rows were deleted from Supabase after verification.
+  - `npm run typecheck` passed.
 - Auth implementation verified locally with temporary env values:
   - `npm run typecheck` passed.
   - `npm run build` passed.

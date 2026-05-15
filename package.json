@@ -9,6 +9,7 @@
     "collect:discover": "node scripts/collect-discover.mjs",
     "collect:earnings": "node scripts/collect-earnings.mjs",
     "collect:eps": "node scripts/collect-eps.mjs",
+    "collect:notifications": "node scripts/collect-notifications.mjs",
     "collect:prices": "node scripts/collect-prices.mjs",
     "provider:smoke": "node scripts/provider-smoke.mjs",
     "start": "next start",

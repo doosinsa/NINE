@@ -380,6 +380,27 @@ NINE_PROVIDER_MODE=live NINE_DISCOVER_SIGNAL_PROVIDER=newsapi NINE_LLM_PROVIDER=
   --base-url http://127.0.0.1:3000
 ```
 
+Notification dispatch smoke:
+
+```bash
+NINE_COLLECT_ALLOW_NOTIFICATIONS=true npm run collect:notifications -- \
+  --base-url http://127.0.0.1:3000 \
+  --to 01000000000
+```
+
+Live notification dispatch from the Mac worker:
+
+```bash
+NINE_PROVIDER_MODE=live NINE_NOTIFICATION_PROVIDER=solapi NINE_COLLECT_ALLOW_NOTIFICATIONS=true npm run collect:notifications -- \
+  --base-url http://127.0.0.1:3000 \
+  --tier tier_3 \
+  --to 01000000000 \
+  --body "NINE live notification smoke" \
+  --ticker PLTR
+```
+
+Do not schedule live notification dispatch until the recipient, tier policy, and Solapi spend guard are intentionally approved. The notification collector always requires `NINE_COLLECT_ALLOW_NOTIFICATIONS=true`, even in mock mode, because the target worker can be running with live Solapi selectors.
+
 When `--tickers` is omitted, the API routes use Supabase `stocks` when configured and fall back to mock tickers otherwise. The scripts print only summary counts, persistence status, provider mode, and data source names.
 
 Recommended order for provider-backed collection jobs:
@@ -389,7 +410,7 @@ Recommended order for provider-backed collection jobs:
 3. Quarterly earnings snapshots: local collector script or local `POST /api/earnings/collect`
 4. Core briefs after EPS/earnings refresh: local collector script or local `POST /api/briefs/collect`
 5. Discover refresh: local collector script or local `GET /api/discover`
-6. Notifications only after scoring/brief data is current: local `POST /api/notifications/send`
+6. Notifications only after scoring/brief data is current: local collector script or local `POST /api/notifications/send`
 
 Use narrow ticker payloads during initial rollout. Move to full-universe payloads only after live smoke tests and persisted row counts look normal.
 
@@ -401,6 +422,7 @@ npm run collect:eps -- --snapshot-date 2026-05-13 --tickers PLTR,NVDA
 npm run collect:earnings -- --tickers 005930.KS,PLTR
 npm run collect:briefs -- --tickers PLTR
 npm run collect:discover
+NINE_COLLECT_ALLOW_NOTIFICATIONS=true npm run collect:notifications -- --to 01000000000
 ```
 
 These scripts should load `.env`, call provider adapters, upsert Supabase rows, and send Solapi failure notifications without requiring a public Vercel function.
