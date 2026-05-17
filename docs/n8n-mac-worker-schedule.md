@@ -75,6 +75,8 @@ LaunchAgent templates for the same profiles live under `ops/launchd/`, with the 
 Ready-to-paste worker API workflow notes are also collected in `ops/n8n/execute-command-workflows.md`.
 When `N8N_API_KEY` and `N8N_BASE_URL` are configured, `npm run n8n:register` creates or updates the prepared workflows through the n8n API without printing the API key.
 
+For operational checks on the Mac worker, `npm run n8n:monitor` reads local n8n SQLite workflow and execution metadata and prints a summary without reading n8n API keys, provider secrets, credentials, or execution request bodies. Use `npm run n8n:monitor -- --strict` when wrapping the monitor with failure notification tooling; strict mode exits non-zero if no NINE workflows are found, any workflow is inactive, or any workflow's latest execution failed.
+
 Each workflow uses:
 
 1. Cron node.
@@ -140,7 +142,7 @@ Use Alpha Vantage for the current US EPS live path. Finnhub EPS live smoke curre
 
 Cron:
 
-- Quarterly backfill window, for example weekdays at `20 8 * * 1-5` KST during earnings season.
+- Quarterly backfill window, for example `20 8 1-7 1,4,7,10 *` KST during the first week of January, April, July, and October.
 
 Mock smoke command:
 
@@ -159,6 +161,7 @@ npm run collect:with-failure-notify -- -- npm run collect:earnings -- --base-url
 ```
 
 This command expects the earnings live worker already running on port 3002 with `DART_BUSINESS_YEAR=2025 NINE_PROVIDER_MODE=live NINE_EARNINGS_PROVIDER=composite-alpha-vantage`.
+For n8n HTTP Request schedules, include a narrow JSON body such as `{"tickers":["005930.KS","PLTR"]}`. Do not run the earnings workflow against the broad default universe until the Alpha Vantage quota path is widened or replaced.
 Use explicit available DART years for smoke or backfill jobs. `DART_BUSINESS_YEAR=2025` passed for Samsung; current-year `2026` Q1 returned OpenDART status `013` during smoke.
 Use Alpha Vantage for US earnings while Yahoo Finance quoteSummary returns HTTP 401.
 

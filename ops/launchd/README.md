@@ -44,6 +44,8 @@ curl -sS http://localhost:5678/api/v1/workflows -H "X-N8N-API-KEY: $N8N_API_KEY"
 npm run provider:smoke -- --base-url http://127.0.0.1:3006 --suite status
 npm run provider:smoke -- --base-url http://127.0.0.1:3001 --suite status
 npm run provider:smoke -- --base-url http://127.0.0.1:3002 --suite status
+npm run n8n:monitor
+npm run n8n:monitor -- --strict
 ```
 
 ## Stop

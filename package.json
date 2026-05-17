@@ -14,6 +14,7 @@
     "collect:with-failure-notify": "node scripts/collect-with-failure-notify.mjs",
     "provider:smoke": "node scripts/provider-smoke.mjs",
     "n8n:register": "node scripts/register-n8n-workflows.mjs",
+    "n8n:monitor": "node scripts/monitor-n8n-workflows.mjs",
     "start": "next start",
     "worker:start": "node scripts/start-worker.mjs",
     "typecheck": "tsc --noEmit"

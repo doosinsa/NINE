@@ -71,8 +71,21 @@ Acceptance criteria:
 - Direct EPS smoke with `PLTR,NVDA` returned `ok: true`, `providerMode: "live"`, `collectedCount: 0`, and no provider error.
 - Direct earnings, Core Briefs mock, and Discover route smokes returned `ok: true`.
 - Verification after n8n launchd/EPS payload hardening: `plutil -lint ops/launchd/*.plist ops/launchd/disabled/*.plist` passed, `node --check scripts/register-n8n-workflows.mjs` passed, `npm run typecheck` passed, and `npm run build` passed.
+- Follow-up n8n monitor on 2026-05-17 KST verified n8n launchd is running and four NINE workflows are active. Recent manual executions: Discover success, earnings success, EPS success, Core Briefs had two earlier failures against the live Anthropic worker and then succeeded after the mock/status fallback.
+- Re-ran active worker smokes: status passed on ports `3001`, `3002`, `3005`, and `3006`; Discover live returned two themes; Core Briefs mock returned `bannedCopyPresent: false`; EPS live returned `collectedCount: 0`; earnings live returned DART-only data because Alpha Vantage reported free-tier rate limiting.
+- Updated `scripts/register-n8n-workflows.mjs` so `NINE - Quarterly Earnings Collect` runs on `20 8 1-7 1,4,7,10 *` instead of every weekday and sends `{"tickers":["005930.KS","PLTR"]}` to avoid broad default universe collection.
+- Updated `docs/n8n-mac-worker-schedule.md` with the quarterly cron and narrow earnings payload guidance.
+- Re-ran `npm run n8n:register`; all four workflows stayed `active: true`, and SQLite verification confirmed EPS/Core Briefs/Discover definitions plus the narrowed quarterly earnings definition.
+- Verification after quarterly earnings schedule hardening: `node --check scripts/register-n8n-workflows.mjs` passed, `plutil -lint ops/launchd/*.plist ops/launchd/disabled/*.plist` passed, `npm run typecheck` passed, and `npm run build` passed.
+- Added `scripts/monitor-n8n-workflows.mjs` and `npm run n8n:monitor` to summarize local n8n SQLite workflow/execution metadata without reading n8n API keys, provider secrets, credentials, or execution request bodies.
+- Documented `npm run n8n:monitor` in `docs/RUNBOOK.md`, `docs/n8n-mac-worker-schedule.md`, and `ops/launchd/README.md`.
+- `npm run n8n:monitor -- --limit 6` reported four active NINE workflows, no inactive workflows, and no latest-failure workflows. Historical Core Briefs failures remain visible, but the latest Core Briefs execution is success after the mock/status fallback.
+- Verification after n8n monitor tooling: `node --check scripts/register-n8n-workflows.mjs` passed, `node --check scripts/monitor-n8n-workflows.mjs` passed, `npm run n8n:monitor -- --limit 6` passed, `plutil -lint ops/launchd/*.plist ops/launchd/disabled/*.plist` passed, `npm run typecheck` passed, and `npm run build` passed.
+- Added `--strict` to `npm run n8n:monitor`; strict mode exits non-zero if no matching NINE workflows are found, any workflow is inactive, or any workflow's latest execution is non-success.
+- Documented strict monitor usage in `docs/RUNBOOK.md`, `docs/n8n-mac-worker-schedule.md`, and `ops/launchd/README.md` so it can be wrapped by failure notification tooling later.
+- Verification after strict monitor hardening: `node --check scripts/register-n8n-workflows.mjs` passed, `node --check scripts/monitor-n8n-workflows.mjs` passed, `npm run n8n:monitor -- --strict --limit 3` passed, `npm run n8n:monitor -- --workflow-prefix NO_MATCH --strict` failed as expected, `plutil -lint ops/launchd/*.plist ops/launchd/disabled/*.plist` passed, `npm run typecheck` passed, and `npm run build` passed.
 - Price workflow remains disabled/not registered, notification paging remains disabled, and live Anthropic briefs remain disabled.
-- Next implementation target: monitor the next scheduled n8n runs and inspect executions/logs if any workflow fails. Separately fix Anthropic HTTP 401 before moving Core Briefs back to live worker `3004`, and choose a broader EPS source/path before expanding past the narrow Alpha Vantage `PLTR,NVDA` schedule.
+- Next implementation target: monitor the next scheduled n8n runs and inspect executions/logs if any workflow fails. Separately fix Anthropic HTTP 401 before moving Core Briefs back to live worker `3004`, and choose a broader EPS/US earnings source or paid Alpha Vantage quota path before expanding past the narrow Alpha Vantage schedules.
 - Operating decision: the current MacBook sleeps and is not a reliable always-on scheduler host. Treat the MacBook n8n/worker setup as development/manual verification only; move repo, `.env`, n8n data/config, and launchd setup to a Mac Mini or another always-on Mac before relying on scheduled automation.
 - Local Alpha Vantage smoke is now unblocked and verified on this machine.
 - Finnhub EPS live smoke still fails with HTTP 403 for `stock/eps-estimate`; keep it disabled unless plan/endpoint access is confirmed.
@@ -123,6 +136,7 @@ Acceptance criteria:
 - Provider status API endpoint exists.
 - Provider status diagnostics page exists.
 - Provider live smoke helper script exists as `npm run provider:smoke`.
+- n8n local workflow monitor exists as `npm run n8n:monitor`.
 - Daily price collector script exists as `npm run collect:prices`.
 - Weekly EPS collector script exists as `npm run collect:eps`.
 - Quarterly earnings collector script exists as `npm run collect:earnings`.

@@ -318,6 +318,18 @@ If `N8N_API_KEY` and `N8N_BASE_URL` are configured in `.env`, register or update
 npm run n8n:register
 ```
 
+Monitor local n8n workflow definitions and recent execution status from the local SQLite metadata store without using the n8n API key:
+
+```bash
+npm run n8n:monitor
+```
+
+Use strict mode when the command is wrapped by failure notification tooling; it exits non-zero if no NINE workflows are found, any workflow is inactive, or any workflow's latest execution failed:
+
+```bash
+npm run n8n:monitor -- --strict
+```
+
 The prepared EPS workflow uses a narrow JSON body, `{"tickers":["PLTR","NVDA"]}`, because Alpha Vantage free-tier EPS collection can fail if the full Supabase universe is requested at once.
 
 ### Local Collector Scripts
