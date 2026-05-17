@@ -4,16 +4,18 @@ import type { EarningsProvider } from "@/lib/server/providers/types";
 
 export function createCompositeEarningsProvider({
   dart,
-  yahooFinance,
+  us,
+  usProviderName = "US earnings",
 }: {
   dart: EarningsProvider;
-  yahooFinance: EarningsProvider;
+  us: EarningsProvider;
+  usProviderName?: string;
 }): EarningsProvider {
   return {
     async fetchQuarterlyEarnings(tickers) {
       const [krResult, usResult] = await Promise.allSettled([
         dart.fetchQuarterlyEarnings(tickers),
-        yahooFinance.fetchQuarterlyEarnings(tickers),
+        us.fetchQuarterlyEarnings(tickers),
       ]);
 
       const krEarnings = krResult.status === "fulfilled" ? krResult.value : [];
@@ -24,7 +26,7 @@ export function createCompositeEarningsProvider({
       }
 
       if (usResult.status === "rejected") {
-        console.error("Yahoo Finance earnings provider failed in composite mode.", usResult.reason);
+        console.error(`${usProviderName} provider failed in composite mode.`, usResult.reason);
       }
 
       if (krResult.status === "rejected" && usResult.status === "rejected") {

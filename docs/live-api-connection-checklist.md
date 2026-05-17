@@ -10,7 +10,8 @@ Confirm these accounts or access paths before changing production env:
 
 - KIS Developers: app key, app secret, and production base URL for KR daily price collection.
 - DART OpenAPI: API key and corporate code mappings for KR tickers to test first.
-- Finnhub: API key for US EPS snapshots.
+- Alpha Vantage: API key for replacement US EPS snapshots and US quarterly EPS earnings.
+- Finnhub: API key for US EPS snapshots if the account has access to `stock/eps-estimate`.
 - NewsAPI or compatible provider: API key for Discover news signals.
 - Anthropic: API key and intended Haiku model name for briefs and Discover clustering.
 - Solapi: API key, API secret, and verified sender number for LMS notification smoke.
@@ -47,6 +48,8 @@ YAHOO_FINANCE_QUOTE_SUMMARY_BASE_URL=https://query2.finance.yahoo.com
 FINNHUB_API_KEY=
 FINNHUB_BASE_URL=https://finnhub.io/api/v1
 FINNHUB_EPS_FREQ=quarterly
+ALPHA_VANTAGE_API_KEY=
+ALPHA_VANTAGE_BASE_URL=https://www.alphavantage.co
 DART_API_KEY=
 DART_BASE_URL=https://opendart.fss.or.kr
 DART_CORP_CODE_MAP=
@@ -101,8 +104,8 @@ Use small payloads and one provider surface at a time.
 
 1. Status: `npm run provider:smoke -- --base-url "$NINE_BASE_URL" --suite status`
 2. Prices: `NINE_PRICE_PROVIDER=composite`, then smoke `prices` with `005930.KS,PLTR`.
-3. EPS: `NINE_EPS_PROVIDER=finnhub`, then smoke `eps` with `PLTR,NVDA`.
-4. Earnings: `NINE_EARNINGS_PROVIDER=composite`, then smoke `earnings` with `005930.KS,PLTR`.
+3. EPS: prefer `NINE_EPS_PROVIDER=alpha-vantage` unless Finnhub plan access to `stock/eps-estimate` has been confirmed, then smoke `eps` with `PLTR,NVDA`.
+4. Earnings: prefer `NINE_EARNINGS_PROVIDER=composite-alpha-vantage` for KR DART + US Alpha Vantage unless Yahoo quoteSummary compatibility has been confirmed, then smoke `earnings` with `005930.KS,PLTR`.
 5. Briefs: `NINE_LLM_PROVIDER=anthropic`, then smoke `briefs` with `PLTR`.
 6. Discover: `NINE_DISCOVER_SIGNAL_PROVIDER=newsapi`, then smoke `discover`.
 7. Notifications: `NINE_NOTIFICATION_PROVIDER=solapi`, then smoke `notifications` only to your own phone number.

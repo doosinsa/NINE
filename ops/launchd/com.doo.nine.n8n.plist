@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.doo.nine.n8n</string>
+  <key>WorkingDirectory</key>
+  <string>/Users/doo/Development/NINE</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/Users/doo/.nvm/versions/node/v22.22.0/bin/node</string>
+    <string>/Users/doo/.npm/_npx/a8a7eec953f1f314/node_modules/n8n/bin/n8n</string>
+    <string>start</string>
+  </array>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key>
+    <string>/Users/doo/.nvm/versions/node/v22.22.0/bin:/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+  </dict>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>KeepAlive</key>
+  <true/>
+  <key>StandardOutPath</key>
+  <string>/Users/doo/Development/NINE/logs/n8n.log</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/doo/Development/NINE/logs/n8n.err.log</string>
+</dict>
+</plist>

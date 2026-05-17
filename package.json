@@ -13,7 +13,9 @@
     "collect:prices": "node scripts/collect-prices.mjs",
     "collect:with-failure-notify": "node scripts/collect-with-failure-notify.mjs",
     "provider:smoke": "node scripts/provider-smoke.mjs",
+    "n8n:register": "node scripts/register-n8n-workflows.mjs",
     "start": "next start",
+    "worker:start": "node scripts/start-worker.mjs",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

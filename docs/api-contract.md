@@ -124,7 +124,7 @@ Request: `WeeklyEpsCollectionRequest`
 }
 ```
 
-When `tickers` is omitted, the route collects the current Supabase `stocks` universe if Supabase is configured, otherwise the mock universe. With `NINE_PROVIDER_MODE=mock`, the route uses mock EPS estimates and does not require external provider secrets. When Supabase is configured, collected rows are upserted into `eps_estimates`; without Supabase, the response still returns collected mock/provider rows with `persisted: false`.
+When `tickers` is omitted, the route collects the current Supabase `stocks` universe if Supabase is configured, otherwise the mock universe. With `NINE_PROVIDER_MODE=mock`, the route uses mock EPS estimates and does not require external provider secrets. Live US EPS can use `NINE_EPS_PROVIDER=alpha-vantage`; Finnhub remains available only after plan access to `stock/eps-estimate` is confirmed. When Supabase is configured, collected rows are upserted into `eps_estimates`; without Supabase, the response still returns collected mock/provider rows with `persisted: false`.
 
 Response data: `WeeklyEpsCollectionResponse`
 
@@ -139,7 +139,7 @@ Request: `QuarterlyEarningsCollectionRequest`
 }
 ```
 
-When `tickers` is omitted, the route collects the current Supabase `stocks` universe if Supabase is configured, otherwise the mock universe. With `NINE_PROVIDER_MODE=mock`, the route uses mock earnings snapshots and does not require external provider secrets. When Supabase is configured, collected rows are upserted into `earnings`; without Supabase, the response still returns collected mock/provider rows with `persisted: false`.
+When `tickers` is omitted, the route collects the current Supabase `stocks` universe if Supabase is configured, otherwise the mock universe. With `NINE_PROVIDER_MODE=mock`, the route uses mock earnings snapshots and does not require external provider secrets. Live KR/US collection should use `NINE_EARNINGS_PROVIDER=composite-alpha-vantage` while Yahoo Finance quoteSummary is blocked. When Supabase is configured, collected rows are upserted into `earnings`; without Supabase, the response still returns collected mock/provider rows with `persisted: false`.
 
 Response data: `QuarterlyEarningsCollectionResponse`
 

@@ -61,7 +61,7 @@ type DbEpsEstimate = {
   fy_year: number;
   consensus: number;
   analyst_count: number | null;
-  data_source: "naver" | "hankyung" | "finnhub" | "fnguide";
+  data_source: "naver" | "hankyung" | "finnhub" | "fnguide" | "alpha-vantage";
 };
 
 type DbQuarterlyReview = {
@@ -97,6 +97,7 @@ type DbEarningsSnapshot = {
   eps: number | null;
   eps_surprise: number | null;
   reported_at: string;
+  data_source: "dart" | "yahoo-finance" | "alpha-vantage" | "sec-edgar" | null;
 };
 
 type DbNotificationEvent = {
@@ -215,7 +216,7 @@ function toEarningsSnapshot(row: DbEarningsSnapshot): EarningsSnapshot {
     eps: row.eps,
     epsSurprise: row.eps_surprise,
     reportedAt: row.reported_at,
-    dataSource: row.ticker.includes(".") ? "dart" : "yahoo-finance",
+    dataSource: row.data_source ?? (row.ticker.includes(".") ? "dart" : "yahoo-finance"),
   };
 }
 
@@ -442,24 +443,39 @@ export async function upsertQuarterlyEarningsInSupabase(earnings: EarningsSnapsh
   if (!supabase) return null;
   if (earnings.length === 0) return 0;
 
-  const { error } = await supabase.from("earnings").upsert(
-    earnings.map((snapshot) => ({
-      ticker: snapshot.ticker,
-      fiscal_quarter: snapshot.fiscalQuarter,
-      revenue: snapshot.revenue,
-      revenue_yoy: snapshot.revenueYoy,
-      eps: snapshot.eps,
-      eps_surprise: snapshot.epsSurprise,
-      reported_at: snapshot.reportedAt,
-    })),
-    { onConflict: "ticker,fiscal_quarter" },
-  );
+  const rows = earnings.map((snapshot) => ({
+    ticker: snapshot.ticker,
+    fiscal_quarter: snapshot.fiscalQuarter,
+    revenue: snapshot.revenue,
+    revenue_yoy: snapshot.revenueYoy,
+    eps: snapshot.eps,
+    eps_surprise: snapshot.epsSurprise,
+    reported_at: snapshot.reportedAt,
+    data_source: snapshot.dataSource,
+  }));
+
+  const { error } = await supabase.from("earnings").upsert(rows, { onConflict: "ticker,fiscal_quarter" });
+
+  if (isMissingDataSourceColumnError(error)) {
+    const fallbackRows = rows.map(({ data_source: _dataSource, ...row }) => row);
+    const { error: fallbackError } = await supabase
+      .from("earnings")
+      .upsert(fallbackRows, { onConflict: "ticker,fiscal_quarter" });
+
+    if (!fallbackError) {
+      return earnings.length;
+    }
+  }
 
   if (error) {
     throw new Error("Failed to persist quarterly earnings snapshots.");
   }
 
   return earnings.length;
+}
+
+function isMissingDataSourceColumnError(error: { code?: string; message?: string } | null) {
+  return error?.code === "PGRST204" || /data_source/i.test(error?.message ?? "");
 }
 
 export async function insertCoreBriefsInSupabase(briefs: LlmBrief[]): Promise<number | null> {

@@ -106,7 +106,7 @@ export type EpsEstimate = {
   fyYear: number;
   consensus: number;
   analystCount: number | null;
-  dataSource: "naver" | "hankyung" | "finnhub" | "fnguide";
+  dataSource: "naver" | "hankyung" | "finnhub" | "fnguide" | "alpha-vantage";
 };
 
 export type WeeklyEpsCollectionRequest = {
@@ -132,7 +132,7 @@ export type EarningsSnapshot = {
   eps: number | null;
   epsSurprise: number | null;
   reportedAt: string;
-  dataSource: "dart" | "yahoo-finance";
+  dataSource: "dart" | "yahoo-finance" | "alpha-vantage" | "sec-edgar";
 };
 
 export type QuarterlyEarningsCollectionRequest = {
@@ -206,6 +206,7 @@ export type DailyPriceCollectionResponse = {
 
 export type ProviderStatusItem = {
   provider:
+    | "alpha-vantage"
     | "anthropic"
     | "dart"
     | "finnhub"

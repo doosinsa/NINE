@@ -1,6 +1,6 @@
 # NEXT_ACTION
 
-Continue provider rollout hardening by resolving live EPS and US earnings source blockers.
+Continue provider rollout hardening by monitoring the active n8n schedules and resolving remaining live-provider blockers.
 
 ## Resume Command
 
@@ -25,11 +25,66 @@ Continue provider rollout hardening by resolving live EPS and US earnings source
 - `npm run collect:discover` now exists and was smoke-tested locally.
 - `npm run collect:notifications` now exists and was smoke-tested locally in mock mode. It always requires `NINE_COLLECT_ALLOW_NOTIFICATIONS=true` and `--to` or `NINE_NOTIFICATION_TO`.
 - `npm run collect:with-failure-notify` now exists and was smoke-tested locally in mock mode. It wraps any collector command after `--` and can page your own phone only when `NINE_COLLECT_FAILURE_NOTIFY=true` or `--notify-failure` is set, plus `NINE_COLLECT_ALLOW_NOTIFICATIONS=true` and `--to` or `NINE_NOTIFICATION_TO`.
-- `docs/n8n-mac-worker-schedule.md` now contains the Mac worker scheduling note set for n8n Cron + Execute Command workflows.
-- Next implementation target: resolve live EPS and US earnings source blockers before enabling those workflows. Finnhub EPS currently fails with HTTP 403, and Yahoo Finance earnings quoteSummary currently fails with HTTP 401.
-- Finnhub EPS live smoke currently fails with HTTP 403 for `stock/eps-estimate`; confirm plan/endpoint access or choose a replacement EPS provider before enabling EPS live.
-- Yahoo Finance earnings live smoke currently fails with HTTP 401 on `quoteSummary`; composite earnings now returns available provider results instead of failing the full route, but a replacement/compatible US earnings source is still needed before US earnings live rollout.
+- `docs/n8n-mac-worker-schedule.md` now contains the Mac worker scheduling note set for n8n Cron + local worker API workflows.
+- Alpha Vantage fallback code now exists for US EPS (`NINE_EPS_PROVIDER=alpha-vantage`) and US earnings (`NINE_EARNINGS_PROVIDER=alpha-vantage` or KR/US `composite-alpha-vantage`).
+- New migration `supabase/migrations/20260515000000_provider_source_expansion.sql` adds `alpha-vantage` to EPS source values and persists earnings `data_source`; it has been applied to the linked Supabase project with `npx supabase db push`.
+- Alpha Vantage env is present on the local Mac worker `.env`; do not print or commit its value.
+- Mac worker live smoke was verified on local port 3001 with the worker process started using `NINE_PROVIDER_MODE=live`, `NINE_EPS_PROVIDER=alpha-vantage`, `NINE_EARNINGS_PROVIDER=composite-alpha-vantage`, and `DART_BUSINESS_YEAR=2025`.
+- EPS collector smoke for `PLTR,NVDA` returned `providerMode: "live"`, `collectedCount: 0`, `persistedCount: 0`, and no provider error.
+- Earnings collector smoke for `005930.KS,PLTR` returned `providerMode: "live"`, `collectedCount: 2`, `persistedCount: 2`, fiscal quarters `2025Q1` and `2026Q1`, and data sources `alpha-vantage` and `dart`.
+- n8n Mac worker docs now state that provider selectors are read by the Next worker process, not the collector CLI process.
+- `docs/n8n-mac-worker-schedule.md` now documents separate worker ports for mock/status, Alpha Vantage EPS, DART + Alpha Vantage earnings, prices, briefs, and Discover.
+- n8n mock dry-run passed on local port 3006 through `npm run collect:with-failure-notify -- -- npm run collect:<job> ...` for status, prices, EPS, earnings, briefs, and Discover. No notification dispatch was run.
+- `docs/RUNBOOK.md` and `docs/n8n-mac-worker-schedule.md` now avoid empty `--to "$NINE_NOTIFICATION_TO"` in dry-run examples; `--to` should only be added when failure paging is enabled and configured.
+- Verification after n8n worker doc/dry-run update: `npm run typecheck` passed and `npm run build` passed.
+- Added `scripts/start-worker.mjs` and `npm run worker:start` to start profile-specific workers without printing provider secrets.
+- Added LaunchAgent templates under `ops/launchd/` for mock/status, EPS, earnings, briefs, and Discover workers. The price worker template is kept disabled under `ops/launchd/disabled/` until KIS is re-verified from the Mac worker runtime.
+- Installed and bootstrapped the non-price LaunchAgents into `~/Library/LaunchAgents`.
+- Active launchd worker ports: mock/status `3006`, EPS `3001`, earnings `3002`, briefs `3004`, Discover `3005`.
+- LaunchAgent status smoke passed on all five active worker ports. EPS/earnings/briefs/Discover workers reported `providerMode: "live"` and mock/status reported `providerMode: "mock"`.
+- Added ready-to-paste n8n worker API workflow notes in `ops/n8n/execute-command-workflows.md` and linked them from the runbook/schedule docs.
+- n8n is now running at `http://localhost:5678`; API access works with `N8N_API_KEY` from `.env`.
+- Added `scripts/register-n8n-workflows.mjs` and `npm run n8n:register` to create missing NINE workflows without printing the API key.
+- Registered four inactive n8n workflows through the API: `NINE - Weekly EPS Collect`, `NINE - Quarterly Earnings Collect`, `NINE - Core Briefs Collect`, and `NINE - Discover Collect`.
+- Verified the created workflow list through `/api/v1/workflows`; each workflow is inactive and has two nodes.
+- Verified the EPS workflow detail: Schedule Trigger cron `10 10 * * 0` connects to HTTP Request `POST http://127.0.0.1:3001/api/eps/collect`.
+- Re-ran `npm run n8n:register`; it reported all four workflows as `exists`, so registration is idempotent.
+- Verification after n8n registration: `npm run typecheck` passed and `npm run build` passed.
+- Launchd mock worker wrapper dry-run passed against `http://127.0.0.1:3006` with `npm run collect:with-failure-notify -- -- npm run collect:eps -- --base-url http://127.0.0.1:3006 --tickers PLTR,NVDA`.
+- Verification after launchd/n8n setup: `plutil -lint ops/launchd/*.plist ops/launchd/disabled/*.plist` passed, `npm run typecheck` passed, and `npm run build` passed.
+- User reported `Unrecognized node type: n8n-nodes-base.executeCommand` when running Discover.
+- Updated `scripts/register-n8n-workflows.mjs` so all workflows use `n8n-nodes-base.httpRequest` instead of `executeCommand`.
+- Re-ran `npm run n8n:register`; all four workflows were updated and remain inactive.
+- Verified all four n8n workflows now contain only `scheduleTrigger` + `httpRequest` nodes.
+- Verified Discover worker API `GET http://127.0.0.1:3005/api/discover` returned `ok: true`.
+- Verification after HTTP Request workflow update: `node --check scripts/register-n8n-workflows.mjs` passed, `npm run typecheck` passed, and `npm run build` passed.
+- User reported Core Briefs workflow failed at `Call Worker API` with "The service was not able to process your request".
+- Direct `POST http://127.0.0.1:3004/api/briefs/collect` returned `SERVER_ERROR`; `logs/worker-briefs.err.log` showed `Anthropic request failed with HTTP 401`.
+- `ANTHROPIC_API_KEY` is present but currently rejected by Anthropic at runtime. Do not schedule the live briefs worker until the Anthropic key/account/model access is fixed.
+- Updated Core Briefs workflow to call the mock/status worker: `POST http://127.0.0.1:3006/api/briefs/collect`.
+- Re-ran `npm run n8n:register`; Core Briefs and the other workflows were updated and remain inactive.
+- Verified Core Briefs workflow now uses `n8n-nodes-base.httpRequest` with URL `http://127.0.0.1:3006/api/briefs/collect`.
+- Direct `POST http://127.0.0.1:3006/api/briefs/collect` returned `ok: true`, `providerMode: "mock"`, `generatedCount: 3`, and `persistedCount: 3`.
+- Verification after Core Briefs fallback update: `node --check scripts/register-n8n-workflows.mjs` passed, `npm run typecheck` passed, and `npm run build` passed.
+- Activated four n8n workflows by API: EPS, quarterly earnings, Core Briefs, and Discover.
+- Verified all four workflows are `active: true` and contain only `scheduleTrigger` + `httpRequest` nodes.
+- Added `ops/launchd/com.doo.nine.n8n.plist`, installed it into `~/Library/LaunchAgents`, and restarted n8n under launchd as `com.doo.nine.n8n`.
+- Verified n8n is listening on port `5678`, reloaded all four active NINE workflows after launchd restart, and starts the JS task runner after adding the Node binary directory to the LaunchAgent `PATH`.
+- Direct EPS route smoke without a body failed because Alpha Vantage rejected broad default universe collection with a rate-limit message.
+- Updated `scripts/register-n8n-workflows.mjs` so the EPS workflow sends JSON body `{"tickers":["PLTR","NVDA"]}`.
+- Re-ran `npm run n8n:register`; all four workflows remained `active: true`, and the EPS workflow now includes the narrow JSON body.
+- Direct EPS smoke with `PLTR,NVDA` returned `ok: true`, `providerMode: "live"`, `collectedCount: 0`, and no provider error.
+- Direct earnings, Core Briefs mock, and Discover route smokes returned `ok: true`.
+- Verification after n8n launchd/EPS payload hardening: `plutil -lint ops/launchd/*.plist ops/launchd/disabled/*.plist` passed, `node --check scripts/register-n8n-workflows.mjs` passed, `npm run typecheck` passed, and `npm run build` passed.
+- Price workflow remains disabled/not registered, notification paging remains disabled, and live Anthropic briefs remain disabled.
+- Next implementation target: monitor the next scheduled n8n runs and inspect executions/logs if any workflow fails. Separately fix Anthropic HTTP 401 before moving Core Briefs back to live worker `3004`, and choose a broader EPS source/path before expanding past the narrow Alpha Vantage `PLTR,NVDA` schedule.
+- Operating decision: the current MacBook sleeps and is not a reliable always-on scheduler host. Treat the MacBook n8n/worker setup as development/manual verification only; move repo, `.env`, n8n data/config, and launchd setup to a Mac Mini or another always-on Mac before relying on scheduled automation.
+- Local Alpha Vantage smoke is now unblocked and verified on this machine.
+- Finnhub EPS live smoke still fails with HTTP 403 for `stock/eps-estimate`; keep it disabled unless plan/endpoint access is confirmed.
+- Yahoo Finance earnings live smoke still fails with HTTP 401 on `quoteSummary`; keep `composite-alpha-vantage` as the current US earnings live rollout path.
 - DART single-provider earnings smoke passed with `DART_BUSINESS_YEAR=2025`; current-year `2026` Samsung Q1 returned OpenDART status `013` (no data), so set an explicit available business year for smoke/backfill jobs.
 - Solapi notification live smoke passed after explicit user approval; do not send additional real LMS/SMS without renewed approval.
 - Price, Anthropic brief, and NewsAPI Discover local live smoke passed.
+- Verification after Alpha Vantage fallback implementation: `npm run typecheck` passed, `npm run build` passed, mock `collect:eps` passed against local port 3001, mock `collect:earnings` passed before and after applying the migration, and `/api/providers/status` now only reports `KITA_API_KEY` missing.
+- Local live smoke passed on direct route calls: `/api/providers/status` reported `providerMode: "live"`, `POST /api/eps/collect` returned `200` with `collectedCount: 0`, and `POST /api/earnings/collect` returned `200` with DART KR + Alpha Vantage US rows.
 - Do not include provider secret values in chat, docs, commits, or logs.

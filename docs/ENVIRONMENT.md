@@ -72,6 +72,8 @@ DART_CORP_CODE_MAP=
 DART_BUSINESS_YEAR=
 DART_REPORT_CODE=11013
 DART_FS_DIV=CFS
+ALPHA_VANTAGE_API_KEY=
+ALPHA_VANTAGE_BASE_URL=https://www.alphavantage.co
 FINNHUB_API_KEY=
 FINNHUB_BASE_URL=https://finnhub.io/api/v1
 FINNHUB_EPS_FREQ=quarterly
@@ -110,8 +112,8 @@ Needed before live external provider calls:
 - `NINE_PRICE_PROVIDER=composite` for KR and US prices together, or `kis`/`yahoo-finance` for a single price surface
 - `NINE_DISCOVER_SIGNAL_PROVIDER=newsapi`
 - `NINE_LLM_PROVIDER=anthropic`
-- `NINE_EPS_PROVIDER=finnhub`
-- `NINE_EARNINGS_PROVIDER=composite` for KR and US earnings together, or `dart`/`yahoo-finance` for a single earnings surface
+- `NINE_EPS_PROVIDER=alpha-vantage` for the current US live EPS path, or `finnhub` after plan access is confirmed
+- `NINE_EARNINGS_PROVIDER=composite-alpha-vantage` for KR and US earnings together, or `dart`/`alpha-vantage`/`yahoo-finance` for a single earnings surface
 - `NINE_NOTIFICATION_PROVIDER=solapi`
 - `ANTHROPIC_API_KEY`
 - `ANTHROPIC_BASE_URL`
@@ -129,6 +131,8 @@ Needed before live external provider calls:
 - `DART_BUSINESS_YEAR`
 - `DART_REPORT_CODE`
 - `DART_FS_DIV`
+- `ALPHA_VANTAGE_API_KEY`
+- `ALPHA_VANTAGE_BASE_URL`
 - `FINNHUB_API_KEY`
 - `FINNHUB_BASE_URL`
 - `FINNHUB_EPS_FREQ`

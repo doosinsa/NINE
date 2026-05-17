@@ -103,8 +103,8 @@ Provider selectors:
 
 ```env
 NINE_PRICE_PROVIDER=composite
-NINE_EPS_PROVIDER=finnhub
-NINE_EARNINGS_PROVIDER=composite
+NINE_EPS_PROVIDER=alpha-vantage
+NINE_EARNINGS_PROVIDER=composite-alpha-vantage
 NINE_DISCOVER_SIGNAL_PROVIDER=newsapi
 NINE_LLM_PROVIDER=anthropic
 NINE_NOTIFICATION_PROVIDER=solapi
@@ -125,10 +125,10 @@ For provider collection jobs, prefer the Mac/n8n worker target. Vercel productio
 Helper command:
 
 ```bash
-npm run provider:smoke -- --base-url http://127.0.0.1:3000 --suite status
+npm run provider:smoke -- --base-url http://127.0.0.1:3006 --suite status
 ```
 
-The helper defaults to `http://127.0.0.1:3000` and the read-only `status` suite. Non-local targets require an explicit live target acknowledgement:
+The helper defaults to `http://127.0.0.1:3000`; the launchd mock/status worker uses `http://127.0.0.1:3006` to avoid normal local dev port conflicts. Non-local targets require an explicit live target acknowledgement:
 
 ```bash
 NINE_SMOKE_ALLOW_LIVE=true npm run provider:smoke -- \
@@ -188,10 +188,9 @@ Required env:
 
 ```env
 NINE_PROVIDER_MODE=live
-NINE_EPS_PROVIDER=finnhub
-FINNHUB_API_KEY=
-FINNHUB_BASE_URL=https://finnhub.io/api/v1
-FINNHUB_EPS_FREQ=quarterly
+NINE_EPS_PROVIDER=alpha-vantage
+ALPHA_VANTAGE_API_KEY=
+ALPHA_VANTAGE_BASE_URL=https://www.alphavantage.co
 ```
 
 Smoke:
@@ -202,7 +201,9 @@ curl -sS -X POST "$NINE_BASE_URL/api/eps/collect" \
   -d '{"tickers":["PLTR","NVDA"],"snapshotDate":"2026-05-13"}'
 ```
 
-Expected: `ok: true`, `providerMode: "live"`, EPS rows with `dataSource: "finnhub"`.
+Expected: `ok: true`, `providerMode: "live"`, EPS rows with `dataSource: "alpha-vantage"`.
+
+Finnhub remains available through `NINE_EPS_PROVIDER=finnhub`, but the available account currently gets HTTP 403 from `stock/eps-estimate`, so do not enable it until plan access is confirmed.
 
 ### Earnings
 
@@ -210,15 +211,15 @@ Required env:
 
 ```env
 NINE_PROVIDER_MODE=live
-NINE_EARNINGS_PROVIDER=composite
+NINE_EARNINGS_PROVIDER=composite-alpha-vantage
 DART_API_KEY=
 DART_BASE_URL=https://opendart.fss.or.kr
 DART_CORP_CODE_MAP={"005930":"00126380","000660":"00164779"}
-DART_BUSINESS_YEAR=2026
+DART_BUSINESS_YEAR=2025
 DART_REPORT_CODE=11013
 DART_FS_DIV=CFS
-YAHOO_FINANCE_BASE_URL=https://query1.finance.yahoo.com
-YAHOO_FINANCE_QUOTE_SUMMARY_BASE_URL=https://query2.finance.yahoo.com
+ALPHA_VANTAGE_API_KEY=
+ALPHA_VANTAGE_BASE_URL=https://www.alphavantage.co
 ```
 
 Smoke:
@@ -229,7 +230,9 @@ curl -sS -X POST "$NINE_BASE_URL/api/earnings/collect" \
   -d '{"tickers":["005930.KS","PLTR"]}'
 ```
 
-Expected: `ok: true`, `providerMode: "live"`, KR row with `dataSource: "dart"`, US row with `dataSource: "yahoo-finance"` when provider data is available.
+Expected: `ok: true`, `providerMode: "live"`, KR row with `dataSource: "dart"`, US row with `dataSource: "alpha-vantage"` when provider data is available.
+
+Yahoo Finance remains available through `NINE_EARNINGS_PROVIDER=yahoo-finance` or the legacy `composite` selector, but quoteSummary currently returns HTTP 401 in live smoke. Prefer Alpha Vantage for US earnings until a Yahoo-compatible source is confirmed.
 
 ### Briefs
 
@@ -308,10 +311,32 @@ Recommended order for provider-backed collection jobs:
 The worker can be developed on the MacBook and moved later to Mac Mini. Keep the same repo, `.env`, and command schedule.
 
 Detailed Mac worker workflow commands are in `docs/n8n-mac-worker-schedule.md`.
+Ready-to-paste n8n worker API workflow notes are in `ops/n8n/execute-command-workflows.md`.
+If `N8N_API_KEY` and `N8N_BASE_URL` are configured in `.env`, register or update the prepared workflows with:
+
+```bash
+npm run n8n:register
+```
+
+The prepared EPS workflow uses a narrow JSON body, `{"tickers":["PLTR","NVDA"]}`, because Alpha Vantage free-tier EPS collection can fail if the full Supabase universe is requested at once.
 
 ### Local Collector Scripts
 
-Run the local Next app on the Mac/n8n worker, then schedule collector commands against that local app. Keep `NINE_PROVIDER_MODE=mock` as the default in `.env`; use per-process selector overrides only for the provider surface being collected.
+Run the local Next app on the Mac/n8n worker, then schedule collector commands against that local app. Keep `NINE_PROVIDER_MODE=mock` as the default in `.env`.
+
+Provider selectors are read by the Next worker process. For live collection, start a dedicated worker process with the intended live selector, then point the collector script at that worker's `--base-url`. Setting `NINE_PROVIDER_MODE=live` only on the collector CLI process does not change provider behavior when the worker was started in mock mode.
+
+Example live worker processes:
+
+```bash
+NINE_PROVIDER_MODE=live NINE_EPS_PROVIDER=alpha-vantage npm run dev -- --hostname 127.0.0.1 --port 3001
+DART_BUSINESS_YEAR=2025 NINE_PROVIDER_MODE=live NINE_EARNINGS_PROVIDER=composite-alpha-vantage npm run dev -- --hostname 127.0.0.1 --port 3002
+NINE_PROVIDER_MODE=live NINE_PRICE_PROVIDER=composite npm run dev -- --hostname 127.0.0.1 --port 3003
+NINE_PROVIDER_MODE=live NINE_LLM_PROVIDER=anthropic npm run dev -- --hostname 127.0.0.1 --port 3004
+NINE_PROVIDER_MODE=live NINE_DISCOVER_SIGNAL_PROVIDER=newsapi NINE_LLM_PROVIDER=anthropic npm run dev -- --hostname 127.0.0.1 --port 3005
+```
+
+For persistent Mac worker processes, use the LaunchAgent templates in `ops/launchd/`. Keep `ops/launchd/disabled/com.doo.nine.worker.prices.plist` disabled until KIS collection is re-verified from the Mac worker runtime.
 
 Daily price smoke:
 
@@ -322,10 +347,12 @@ npm run collect:prices -- --base-url http://127.0.0.1:3000 --tickers 005930.KS,P
 Live daily price collection from the Mac worker:
 
 ```bash
-NINE_PROVIDER_MODE=live NINE_PRICE_PROVIDER=composite npm run collect:prices -- \
-  --base-url http://127.0.0.1:3000 \
+npm run collect:prices -- \
+  --base-url http://127.0.0.1:3003 \
   --tickers 005930.KS,PLTR
 ```
+
+This expects a price live worker already running on port 3003 with `NINE_PROVIDER_MODE=live NINE_PRICE_PROVIDER=composite`.
 
 Weekly EPS smoke:
 
@@ -336,10 +363,12 @@ npm run collect:eps -- --base-url http://127.0.0.1:3000 --tickers PLTR,NVDA
 Live weekly EPS collection from the Mac worker:
 
 ```bash
-NINE_PROVIDER_MODE=live NINE_EPS_PROVIDER=finnhub npm run collect:eps -- \
-  --base-url http://127.0.0.1:3000 \
+npm run collect:eps -- \
+  --base-url http://127.0.0.1:3001 \
   --tickers PLTR,NVDA
 ```
+
+This expects the EPS live worker already running on port 3001 with `NINE_PROVIDER_MODE=live NINE_EPS_PROVIDER=alpha-vantage`.
 
 Quarterly earnings smoke:
 
@@ -350,10 +379,12 @@ npm run collect:earnings -- --base-url http://127.0.0.1:3000 --tickers 005930.KS
 Live quarterly earnings collection from the Mac worker:
 
 ```bash
-NINE_PROVIDER_MODE=live NINE_EARNINGS_PROVIDER=composite npm run collect:earnings -- \
-  --base-url http://127.0.0.1:3000 \
+npm run collect:earnings -- \
+  --base-url http://127.0.0.1:3002 \
   --tickers 005930.KS,PLTR
 ```
+
+This expects the earnings live worker already running on port 3002 with `DART_BUSINESS_YEAR=2025 NINE_PROVIDER_MODE=live NINE_EARNINGS_PROVIDER=composite-alpha-vantage`.
 
 Core brief smoke:
 
@@ -361,13 +392,15 @@ Core brief smoke:
 npm run collect:briefs -- --base-url http://127.0.0.1:3000 --tickers PLTR
 ```
 
-Live Core brief collection from the Mac worker:
+Safe scheduled Core brief collection from the Mac worker:
 
 ```bash
-NINE_PROVIDER_MODE=live NINE_LLM_PROVIDER=anthropic npm run collect:briefs -- \
-  --base-url http://127.0.0.1:3000 \
+npm run collect:briefs -- \
+  --base-url http://127.0.0.1:3006 \
   --tickers PLTR
 ```
+
+This uses the mock/status worker until Anthropic live auth is fixed. The brief live worker remains available on port 3004 with `NINE_PROVIDER_MODE=live NINE_LLM_PROVIDER=anthropic`, but keep it out of schedules while Anthropic returns HTTP 401.
 
 Discover smoke:
 
@@ -378,9 +411,11 @@ npm run collect:discover -- --base-url http://127.0.0.1:3000
 Live Discover collection from the Mac worker:
 
 ```bash
-NINE_PROVIDER_MODE=live NINE_DISCOVER_SIGNAL_PROVIDER=newsapi NINE_LLM_PROVIDER=anthropic npm run collect:discover -- \
-  --base-url http://127.0.0.1:3000
+npm run collect:discover -- \
+  --base-url http://127.0.0.1:3005
 ```
+
+This expects a Discover live worker already running on port 3005 with `NINE_PROVIDER_MODE=live NINE_DISCOVER_SIGNAL_PROVIDER=newsapi NINE_LLM_PROVIDER=anthropic`.
 
 Notification dispatch smoke:
 
@@ -415,8 +450,8 @@ The failure wrapper is opt-in and only notifies when `NINE_COLLECT_FAILURE_NOTIF
 n8n pattern:
 
 1. Cron node starts the job.
-2. Execute Command node runs the collector through `npm run collect:with-failure-notify -- --to 01000000000 -- npm run collect:<job> ...`.
-3. Keep `NINE_COLLECT_FAILURE_NOTIFY=true` only on workflows where you want failure paging, and leave the flag unset for silent runs.
+2. HTTP Request node calls the local worker API, such as `POST http://127.0.0.1:3001/api/eps/collect`.
+3. Keep failure paging out of these first schedules; add notification workflows separately only after Solapi dispatch is approved.
 
 When `--tickers` is omitted, the API routes use Supabase `stocks` when configured and fall back to mock tickers otherwise. The scripts print only summary counts, persistence status, provider mode, and data source names.
 

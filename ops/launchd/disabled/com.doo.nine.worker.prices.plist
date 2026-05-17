@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.doo.nine.worker.prices</string>
+  <key>WorkingDirectory</key>
+  <string>/Users/doo/Development/NINE</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/Users/doo/.nvm/versions/node/v22.22.0/bin/node</string>
+    <string>/Users/doo/Development/NINE/scripts/start-worker.mjs</string>
+    <string>--profile</string>
+    <string>prices</string>
+    <string>--mode</string>
+    <string>start</string>
+    <string>--npm-path</string>
+    <string>/Users/doo/.nvm/versions/node/v22.22.0/bin/npm</string>
+  </array>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>KeepAlive</key>
+  <true/>
+  <key>StandardOutPath</key>
+  <string>/Users/doo/Development/NINE/logs/worker-prices.log</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/doo/Development/NINE/logs/worker-prices.err.log</string>
+</dict>
+</plist>

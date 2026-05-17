@@ -1,6 +1,10 @@
 import "server-only";
 
 import { assertProviderConfigured, getProviderMode } from "@/lib/server/providers/config";
+import {
+  createAlphaVantageEarningsProvider,
+  createAlphaVantageEpsProvider,
+} from "@/lib/server/providers/alpha-vantage";
 import { createAnthropicLlmProvider } from "@/lib/server/providers/anthropic";
 import { createCompositeEarningsProvider } from "@/lib/server/providers/composite-earnings";
 import { createCompositePriceProvider } from "@/lib/server/providers/composite-price";
@@ -58,9 +62,19 @@ export function createExternalProviders(): ExternalProviders {
     providers.eps = createFinnhubEpsProvider();
   }
 
+  if (process.env.NINE_EPS_PROVIDER === "alpha-vantage") {
+    assertProviderConfigured("alpha-vantage");
+    providers.eps = createAlphaVantageEpsProvider();
+  }
+
   if (process.env.NINE_EARNINGS_PROVIDER === "dart") {
     assertProviderConfigured("dart");
     providers.earnings = createDartEarningsProvider();
+  }
+
+  if (process.env.NINE_EARNINGS_PROVIDER === "alpha-vantage") {
+    assertProviderConfigured("alpha-vantage");
+    providers.earnings = createAlphaVantageEarningsProvider();
   }
 
   if (process.env.NINE_EARNINGS_PROVIDER === "yahoo-finance") {
@@ -73,7 +87,18 @@ export function createExternalProviders(): ExternalProviders {
     assertProviderConfigured("yahoo-finance");
     providers.earnings = createCompositeEarningsProvider({
       dart: createDartEarningsProvider(),
-      yahooFinance: createYahooFinanceEarningsProvider(),
+      us: createYahooFinanceEarningsProvider(),
+      usProviderName: "Yahoo Finance earnings",
+    });
+  }
+
+  if (process.env.NINE_EARNINGS_PROVIDER === "composite-alpha-vantage") {
+    assertProviderConfigured("dart");
+    assertProviderConfigured("alpha-vantage");
+    providers.earnings = createCompositeEarningsProvider({
+      dart: createDartEarningsProvider(),
+      us: createAlphaVantageEarningsProvider(),
+      usProviderName: "Alpha Vantage earnings",
     });
   }
 

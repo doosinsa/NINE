@@ -10,6 +10,11 @@ type ProviderEnvSpec = {
 
 const providerEnvSpecs: ProviderEnvSpec[] = [
   {
+    provider: "alpha-vantage",
+    purpose: "US EPS estimates and quarterly EPS earnings fallback.",
+    requiredEnv: ["ALPHA_VANTAGE_API_KEY"],
+  },
+  {
     provider: "anthropic",
     purpose: "Claude Haiku core briefs and Discover theme clustering.",
     requiredEnv: ["ANTHROPIC_API_KEY", "ANTHROPIC_MODEL", "ANTHROPIC_VERSION"],

@@ -40,6 +40,7 @@ Live provider collection is intended to run from a Mac/n8n worker, not Vercel pr
 - NewsAPI has a live Discover signal adapter shell. It is inactive by default and only replaces the mock Discover signal provider when both `NINE_PROVIDER_MODE=live` and `NINE_DISCOVER_SIGNAL_PROVIDER=newsapi` are set.
 - Anthropic has a live LLM adapter shell. It is inactive by default and only replaces the mock LLM provider when both `NINE_PROVIDER_MODE=live` and `NINE_LLM_PROVIDER=anthropic` are set.
 - Finnhub has a live EPS adapter shell. It is inactive by default and only replaces the mock EPS provider when both `NINE_PROVIDER_MODE=live` and `NINE_EPS_PROVIDER=finnhub` are set.
+- Alpha Vantage has live US EPS and US quarterly EPS earnings adapter shells. They are inactive by default and only replace the relevant mock provider when `NINE_PROVIDER_MODE=live` plus `NINE_EPS_PROVIDER=alpha-vantage`, `NINE_EARNINGS_PROVIDER=alpha-vantage`, or `NINE_EARNINGS_PROVIDER=composite-alpha-vantage` are set.
 - DART has a live KR earnings adapter shell. It is inactive by default and only replaces the mock earnings provider when both `NINE_PROVIDER_MODE=live` and `NINE_EARNINGS_PROVIDER=dart` are set.
 - Yahoo Finance has a live US earnings adapter shell. It is inactive by default and only replaces the mock earnings provider when both `NINE_PROVIDER_MODE=live` and `NINE_EARNINGS_PROVIDER=yahoo-finance` are set.
 - Composite KR/US earnings wiring is inactive by default and only replaces the mock earnings provider when both `NINE_PROVIDER_MODE=live` and `NINE_EARNINGS_PROVIDER=composite` are set.
@@ -48,8 +49,8 @@ Live provider collection is intended to run from a Mac/n8n worker, not Vercel pr
 ## Adapter Surfaces
 
 - `price.fetchDailyPrices`: KIS for KR, Yahoo Finance for US.
-- `eps.fetchWeeklyEps`: Naver/Hankyung later for KR, Finnhub for US.
-- `earnings.fetchQuarterlyEarnings`: DART for KR, Yahoo Finance/SEC sources for US.
+- `eps.fetchWeeklyEps`: Naver/Hankyung later for KR, Alpha Vantage or Finnhub for US.
+- `earnings.fetchQuarterlyEarnings`: DART for KR, Alpha Vantage or Yahoo Finance/SEC sources for US.
 - `llm.generateCoreBrief`: Claude Haiku JSON brief with bear case required.
 - `llm.extractDiscoverThemes`: Claude Haiku Discover clustering.
 - `discoverSignals.fetchDiscoverSignals`: NewsAPI, KITA export signals, and curated capex signals.
@@ -164,6 +165,47 @@ FINNHUB_EPS_FREQ=quarterly
 
 The shell uses Finnhub `GET /stock/eps-estimate` with `symbol` and `freq`. It maps Finnhub `epsAvg` into NINE's `EpsEstimate.consensus`, `numberAnalysts` into `analystCount`, and keeps `dataSource: "finnhub"`. It skips non-US ticker formats such as `.KS` and `.KQ`; KR EPS remains a separate Naver/Hankyung/KR provider surface.
 
+Finnhub live smoke currently returns HTTP 403 for `stock/eps-estimate` with the available account, so do not enable this selector until plan/endpoint access is confirmed.
+
+## Alpha Vantage EPS and Earnings Shells
+
+EPS activation env:
+
+```env
+NINE_PROVIDER_MODE=live
+NINE_EPS_PROVIDER=alpha-vantage
+ALPHA_VANTAGE_API_KEY=
+ALPHA_VANTAGE_BASE_URL=https://www.alphavantage.co
+```
+
+US earnings activation env:
+
+```env
+NINE_PROVIDER_MODE=live
+NINE_EARNINGS_PROVIDER=alpha-vantage
+ALPHA_VANTAGE_API_KEY=
+ALPHA_VANTAGE_BASE_URL=https://www.alphavantage.co
+```
+
+Composite KR/US earnings activation env:
+
+```env
+NINE_PROVIDER_MODE=live
+NINE_EARNINGS_PROVIDER=composite-alpha-vantage
+DART_API_KEY=
+DART_BASE_URL=https://opendart.fss.or.kr
+DART_CORP_CODE_MAP={"005930":"00126380"}
+DART_BUSINESS_YEAR=2025
+DART_REPORT_CODE=11013
+DART_FS_DIV=CFS
+ALPHA_VANTAGE_API_KEY=
+ALPHA_VANTAGE_BASE_URL=https://www.alphavantage.co
+```
+
+The EPS shell uses Alpha Vantage `EARNINGS_ESTIMATES` and maps quarterly EPS average estimates into NINE `EpsEstimate` rows with `dataSource: "alpha-vantage"`. The earnings shell uses Alpha Vantage `EARNINGS` and maps the latest quarterly reported EPS and surprise into NINE `EarningsSnapshot` rows with `dataSource: "alpha-vantage"`. Revenue is left null because the `EARNINGS` endpoint is EPS-focused.
+
+Alpha Vantage free-tier requests are rate-limited, so the adapter serializes US ticker requests instead of firing them in parallel.
+
 ## DART Earnings Shell
 
 Activation env:
@@ -202,6 +244,8 @@ YAHOO_FINANCE_QUOTE_SUMMARY_BASE_URL=https://query2.finance.yahoo.com
 
 The composite earnings provider calls both DART and Yahoo Finance earnings adapters with the same ticker list, then returns the combined `EarningsSnapshot[]`. Provider-specific ticker filtering stays inside each adapter: DART accepts mapped six-digit KR tickers, while Yahoo Finance skips KR ticker formats and handles US symbols. Use the single-provider selections only for isolated provider verification.
 
+Use `NINE_EARNINGS_PROVIDER=composite-alpha-vantage` for the current US live rollout path while Yahoo Finance quoteSummary returns HTTP 401. The original `composite` selector remains available for Yahoo-compatible environments, but it should not be the default US earnings live path.
+
 ## Solapi Notification Shell
 
 Activation env:
@@ -225,7 +269,8 @@ The shell uses Solapi `POST /messages/v4/send-many/detail` with a single message
 
 - KIS Developers app key/secret and base URL.
 - DART OpenAPI key.
-- Finnhub API key.
+- Alpha Vantage API key.
+- Finnhub API key if plan access for `stock/eps-estimate` is confirmed.
 - NewsAPI or compatible news provider key.
 - KITA export data API key or confirmed no-key access pattern.
 - Anthropic API key and model name.

@@ -7,6 +7,7 @@ export type { EarningsSnapshot } from "@/types/contracts";
 export type ProviderMode = "mock" | "live";
 
 export type ProviderName =
+  | "alpha-vantage"
   | "anthropic"
   | "dart"
   | "finnhub"
