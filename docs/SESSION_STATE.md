@@ -1,6 +1,6 @@
 # NINE Session State
 
-Last updated: 2026-05-17 KST
+Last updated: 2026-05-18 KST
 
 ## Next Action
 
@@ -88,6 +88,9 @@ Acceptance criteria:
 - Follow-up worker status smoke passed on ports `3001`, `3002`, `3005`, and `3006` after the LaunchAgent PATH fix; `n8n:monitor -- --strict --limit 10` still reports four active workflows and no latest failures.
 - Verification after LaunchAgent PATH fix: `launchctl print` shows the explicit node PATH on the worker agents, `stat` shows no new `worker-*.err.log` growth after restart, `npm run provider:smoke -- --base-url http://127.0.0.1:3001 --suite status` passed for the active workers, and `npm run n8n:monitor -- --strict --limit 10` passed.
 - Price workflow remains disabled/not registered, notification paging remains disabled, and live Anthropic briefs remain disabled.
+- Quarterly Earnings n8n workflow is KR-only again with body `{"tickers":["005930.KS"]}` and cron `20 8 1-7 1,4,7,10 *`.
+- Re-ran `npm run n8n:register`; all four NINE workflows remained active after narrowing the quarterly earnings body.
+- Re-ran `npm run n8n:monitor -- --strict --limit 10`; it reports 4 active NINE workflows, no inactive workflows, and no latest failures.
 - Next implementation target: monitor the next scheduled n8n runs and inspect executions/logs if any workflow fails. Separately fix Anthropic HTTP 401 before moving Core Briefs back to live worker `3004`, and choose a broader EPS/US earnings source or paid Alpha Vantage quota path before expanding past the narrow Alpha Vantage schedules.
 - Operating decision: the current MacBook sleeps and is not a reliable always-on scheduler host. Treat the MacBook n8n/worker setup as development/manual verification only; move repo, `.env`, n8n data/config, and launchd setup to a Mac Mini or another always-on Mac before relying on scheduled automation.
 - Local Alpha Vantage smoke is now unblocked and verified on this machine.
@@ -138,6 +141,8 @@ Acceptance criteria:
 - Mac worker n8n schedule note set exists as `docs/n8n-mac-worker-schedule.md`.
 - Worker LaunchAgent templates now set an explicit PATH with the local Node binary directory to avoid `/usr/bin/env node` startup failures.
 - Provider status API endpoint exists.
+- n8n quarterly earnings workflow is KR-only again and remains active after re-registration.
+- Latest `npm run n8n:monitor -- --strict --limit 10` reports 4 active NINE workflows, no inactive workflows, and no latest failures.
 - Provider status diagnostics page exists.
 - Provider live smoke helper script exists as `npm run provider:smoke`.
 - n8n local workflow monitor exists as `npm run n8n:monitor`.

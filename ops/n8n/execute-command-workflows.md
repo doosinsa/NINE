@@ -39,6 +39,14 @@ Cron: weekdays during earnings season, for example `20 8 * * 1-5` KST.
 
 HTTP Request: `POST http://127.0.0.1:3002/api/earnings/collect`
 
+Use a KR-only body such as:
+
+```json
+{"tickers":["005930.KS"]}
+```
+
+Keep US earnings out of the scheduled workflow until the Alpha Vantage path is widened or replaced.
+
 ## Core Briefs
 
 Cron: Sunday after EPS and earnings, for example `11 10 * * 0` KST.

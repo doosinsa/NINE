@@ -26,6 +26,9 @@ Continue provider rollout hardening by monitoring the active n8n schedules and r
 - `npm run collect:notifications` now exists and was smoke-tested locally in mock mode. It always requires `NINE_COLLECT_ALLOW_NOTIFICATIONS=true` and `--to` or `NINE_NOTIFICATION_TO`.
 - `npm run collect:with-failure-notify` now exists and was smoke-tested locally in mock mode. It wraps any collector command after `--` and can page your own phone only when `NINE_COLLECT_FAILURE_NOTIFY=true` or `--notify-failure` is set, plus `NINE_COLLECT_ALLOW_NOTIFICATIONS=true` and `--to` or `NINE_NOTIFICATION_TO`.
 - `docs/n8n-mac-worker-schedule.md` now contains the Mac worker scheduling note set for n8n Cron + local worker API workflows.
+- Quarterly Earnings n8n workflow is now KR-only again: `POST http://127.0.0.1:3002/api/earnings/collect` with `{"tickers":["005930.KS"]}`.
+- Re-ran `npm run n8n:register`; all four active NINE workflows stayed active and the quarterly workflow definition is narrowed as intended.
+- Re-ran `npm run n8n:monitor -- --strict --limit 10`; it reports 4 active NINE workflows, no inactive workflows, and no latest failures.
 - Alpha Vantage fallback code now exists for US EPS (`NINE_EPS_PROVIDER=alpha-vantage`) and US earnings (`NINE_EARNINGS_PROVIDER=alpha-vantage` or KR/US `composite-alpha-vantage`).
 - New migration `supabase/migrations/20260515000000_provider_source_expansion.sql` adds `alpha-vantage` to EPS source values and persists earnings `data_source`; it has been applied to the linked Supabase project with `npx supabase db push`.
 - Alpha Vantage env is present on the local Mac worker `.env`; do not print or commit its value.

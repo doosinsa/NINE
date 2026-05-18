@@ -29,7 +29,7 @@ const workflows = [
     name: "NINE - Quarterly Earnings Collect",
     cron: "20 8 1-7 1,4,7,10 *",
     request: postRequest("http://127.0.0.1:3002/api/earnings/collect", {
-      tickers: ["005930.KS", "PLTR"],
+      tickers: ["005930.KS"],
     }),
   },
   {

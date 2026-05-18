@@ -330,7 +330,7 @@ Use strict mode when the command is wrapped by failure notification tooling; it 
 npm run n8n:monitor -- --strict
 ```
 
-The prepared EPS workflow uses a narrow JSON body, `{"tickers":["PLTR","NVDA"]}`, because Alpha Vantage free-tier EPS collection can fail if the full Supabase universe is requested at once.
+The prepared EPS workflow uses a narrow JSON body, `{"tickers":["PLTR","NVDA"]}`, because Alpha Vantage free-tier EPS collection can fail if the full Supabase universe is requested at once. The quarterly earnings workflow should stay KR-only until the US Alpha Vantage path is widened or replaced.
 
 ### Local Collector Scripts
 

@@ -161,7 +161,7 @@ npm run collect:with-failure-notify -- -- npm run collect:earnings -- --base-url
 ```
 
 This command expects the earnings live worker already running on port 3002 with `DART_BUSINESS_YEAR=2025 NINE_PROVIDER_MODE=live NINE_EARNINGS_PROVIDER=composite-alpha-vantage`.
-For n8n HTTP Request schedules, include a narrow JSON body such as `{"tickers":["005930.KS","PLTR"]}`. Do not run the earnings workflow against the broad default universe until the Alpha Vantage quota path is widened or replaced.
+For n8n HTTP Request schedules, keep the quarterly body KR-only, for example `{"tickers":["005930.KS"]}`. Do not run the earnings workflow against US tickers until the Alpha Vantage quota path is widened or replaced.
 Use explicit available DART years for smoke or backfill jobs. `DART_BUSINESS_YEAR=2025` passed for Samsung; current-year `2026` Q1 returned OpenDART status `013` during smoke.
 Use Alpha Vantage for US earnings while Yahoo Finance quoteSummary returns HTTP 401.
 
