@@ -84,6 +84,9 @@ Acceptance criteria:
 - Added `--strict` to `npm run n8n:monitor`; strict mode exits non-zero if no matching NINE workflows are found, any workflow is inactive, or any workflow's latest execution is non-success.
 - Documented strict monitor usage in `docs/RUNBOOK.md`, `docs/n8n-mac-worker-schedule.md`, and `ops/launchd/README.md` so it can be wrapped by failure notification tooling later.
 - Verification after strict monitor hardening: `node --check scripts/register-n8n-workflows.mjs` passed, `node --check scripts/monitor-n8n-workflows.mjs` passed, `npm run n8n:monitor -- --strict --limit 3` passed, `npm run n8n:monitor -- --workflow-prefix NO_MATCH --strict` failed as expected, `plutil -lint ops/launchd/*.plist ops/launchd/disabled/*.plist` passed, `npm run typecheck` passed, and `npm run build` passed.
+- Added explicit PATH environment variables to the worker LaunchAgent templates and reinstalled the local LaunchAgents. The old `env: node: No such file or directory` launchd noise stopped after restart.
+- Follow-up worker status smoke passed on ports `3001`, `3002`, `3005`, and `3006` after the LaunchAgent PATH fix; `n8n:monitor -- --strict --limit 10` still reports four active workflows and no latest failures.
+- Verification after LaunchAgent PATH fix: `launchctl print` shows the explicit node PATH on the worker agents, `stat` shows no new `worker-*.err.log` growth after restart, `npm run provider:smoke -- --base-url http://127.0.0.1:3001 --suite status` passed for the active workers, and `npm run n8n:monitor -- --strict --limit 10` passed.
 - Price workflow remains disabled/not registered, notification paging remains disabled, and live Anthropic briefs remain disabled.
 - Next implementation target: monitor the next scheduled n8n runs and inspect executions/logs if any workflow fails. Separately fix Anthropic HTTP 401 before moving Core Briefs back to live worker `3004`, and choose a broader EPS/US earnings source or paid Alpha Vantage quota path before expanding past the narrow Alpha Vantage schedules.
 - Operating decision: the current MacBook sleeps and is not a reliable always-on scheduler host. Treat the MacBook n8n/worker setup as development/manual verification only; move repo, `.env`, n8n data/config, and launchd setup to a Mac Mini or another always-on Mac before relying on scheduled automation.
@@ -133,6 +136,7 @@ Acceptance criteria:
 - `NINE_EARNINGS_PROVIDER=composite-alpha-vantage` now combines DART KR earnings with Alpha Vantage US earnings.
 - Provider operations runbook and live smoke checklist exist.
 - Mac worker n8n schedule note set exists as `docs/n8n-mac-worker-schedule.md`.
+- Worker LaunchAgent templates now set an explicit PATH with the local Node binary directory to avoid `/usr/bin/env node` startup failures.
 - Provider status API endpoint exists.
 - Provider status diagnostics page exists.
 - Provider live smoke helper script exists as `npm run provider:smoke`.
